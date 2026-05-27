@@ -1,0 +1,55 @@
+---
+import { appStoreUrl, playStoreUrl } from "../data/site";
+
+const ios = appStoreUrl();
+const android = playStoreUrl();
+const hasStoreLinks = Boolean(ios || android);
+---
+
+<div class="flex flex-wrap gap-3">
+  {
+    ios ? (
+      <a
+        href={ios}
+        class="inline-flex items-center rounded-lg border border-brand-bronze/50 bg-brand-accent px-4 py-2.5 text-sm font-medium text-white hover:border-brand-copper transition"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Download on the App Store
+      </a>
+    ) : (
+      <span
+        class="inline-flex items-center rounded-lg border border-brand-bronze/30 bg-brand-surface px-4 py-2.5 text-sm text-brand-muted cursor-not-allowed"
+        title="Coming soon"
+      >
+        App Store — Coming soon
+      </span>
+    )
+  }
+  {
+    android ? (
+      <a
+        href={android}
+        class="inline-flex items-center rounded-lg border border-brand-bronze/50 bg-brand-accent px-4 py-2.5 text-sm font-medium text-white hover:border-brand-copper transition"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Get it on Google Play
+      </a>
+    ) : (
+      <span
+        class="inline-flex items-center rounded-lg border border-brand-bronze/30 bg-brand-surface px-4 py-2.5 text-sm text-brand-muted cursor-not-allowed"
+        title="Coming soon"
+      >
+        Google Play — Coming soon
+      </span>
+    )
+  }
+</div>
+{
+  !hasStoreLinks && (
+    <p class="mt-2 text-xs text-brand-muted">
+      Store links will appear here when the app is published.
+    </p>
+  )
+}

@@ -1,0 +1,102 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StoreButtons from "../components/StoreButtons.astro";
+import WaitlistForm from "../components/WaitlistForm.astro";
+import { BRAND_NAME, BRAND_TAGLINE, BRAND_LOGO_SRC } from "../data/site";
+import { HOME_HIGHLIGHTS } from "../data/features";
+---
+
+<BaseLayout>
+  <section class="gradient-hero border-b border-brand-bronze/30">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:py-28">
+      <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+        <div>
+          <img
+            src={BRAND_LOGO_SRC}
+            alt=""
+            width="96"
+            height="96"
+            class="h-24 w-24 object-contain drop-shadow-lg mb-6"
+          />
+          <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl text-white leading-none">
+            Your jobsite command center
+          </h1>
+          <p class="mt-4 text-xl text-brand-copper font-medium">{BRAND_TAGLINE}</p>
+          <p class="mt-6 text-brand-muted leading-relaxed max-w-lg">
+            {BRAND_NAME} brings AI assistance, Job Folder, estimates, Getting Paid, and calendar
+            together on one home screen — built for electrical and construction contractors in the
+            field.
+          </p>
+          <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-start">
+            <StoreButtons />
+          </div>
+          <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
+            <img
+              src="/images/promo-ad1.png"
+              alt="Ideal Solutions Pro — jobsite tools promo"
+              class="rounded-lg metal-border w-full object-cover copper-glow"
+              loading="lazy"
+            />
+            <img
+              src="/images/promo-copy.png"
+              alt="Ideal Solutions Pro — built for contractors"
+              class="rounded-lg metal-border w-full object-cover copper-glow"
+              loading="lazy"
+            />
+          </div>
+        </div>
+        <div
+          id="waitlist"
+          class="rounded-xl metal-border bg-brand-surface/90 p-6 sm:p-8 backdrop-blur-sm copper-glow"
+        >
+          <h2 class="font-display text-2xl text-white">Join the launch waitlist</h2>
+          <p class="mt-2 text-sm text-brand-muted">
+            Be first to know when Ideal Solutions Pro hits the App Store and Google Play.
+          </p>
+          <div class="mt-6">
+            <WaitlistForm />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <h2 class="font-display text-3xl sm:text-4xl text-white text-center mb-4">
+      Built for how you actually work
+    </h2>
+    <p class="text-center text-brand-muted max-w-2xl mx-auto mb-12">
+      From side jobs to pro crews — industrial-grade tools, scaled to your plan.
+    </p>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        HOME_HIGHLIGHTS.map((item) => (
+          <div class="rounded-xl metal-border bg-brand-surface p-6 hover:border-brand-copper/50 transition">
+            <h3 class="font-display text-xl text-white">{item.title}</h3>
+            <p class="mt-2 text-sm text-brand-muted">{item.body}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="text-center mt-10">
+      <a href="/features" class="text-brand-copper font-medium hover:text-brand-highlight transition">
+        See all features →
+      </a>
+    </p>
+  </section>
+
+  <section class="bg-brand-accent/50 border-y border-brand-bronze/25">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 text-center">
+      <h2 class="font-display text-3xl text-white">Plans that grow with your business</h2>
+      <p class="mt-3 text-brand-muted">
+        Start with a 7-day free trial, then choose Side Hustle, Boss Man, Super Boss Man, or Enterprise.
+      </p>
+      <a
+        href="/pricing"
+        class="mt-6 inline-block rounded-lg bg-brand-copper px-6 py-3 text-sm font-semibold text-brand-bg hover:brightness-110 transition"
+      >
+        View pricing
+      </a>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,58 @@
+---
+import { CONTACT_EMAIL, waitlistFormAction } from "../data/site";
+
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+const action = waitlistFormAction();
+const formId = compact ? "waitlist-footer" : "waitlist-hero";
+---
+
+{
+  action ? (
+    <form
+      id={formId}
+      method="POST"
+      action={action}
+      class:list={["flex flex-col gap-2", !compact && "sm:flex-row sm:items-stretch max-w-md"]}
+    >
+      <input type="hidden" name="_subject" value="Ideal Solutions Pro waitlist" />
+      <label class="sr-only" for={`${formId}-email`}>
+        Email address
+      </label>
+      <input
+        id={`${formId}-email`}
+        type="email"
+        name="email"
+        required
+        placeholder="you@company.com"
+        autocomplete="email"
+        class="flex-1 rounded-lg border border-brand-metal/50 bg-brand-bg px-4 py-2.5 text-sm text-white placeholder:text-brand-muted focus:border-brand-highlight focus:outline-none focus:ring-1 focus:ring-brand-highlight"
+      />
+      <button
+        type="submit"
+        class:list={[
+          "rounded-lg bg-brand-highlight px-5 py-2.5 text-sm font-semibold text-brand-bg hover:brightness-110 transition shrink-0",
+          compact && "w-full sm:w-auto",
+        ]}
+      >
+        Join waitlist
+      </button>
+    </form>
+  ) : (
+    <div class="rounded-lg border border-brand-metal/40 bg-brand-bg/50 px-4 py-3 text-sm text-brand-muted">
+      <p>
+        Set <code class="text-brand-highlight">PUBLIC_WAITLIST_FORM_ACTION</code> to your Formspree
+        URL to enable the waitlist form.
+      </p>
+      <p class="mt-2">
+        Or email us at{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`} class="text-white underline">
+          {CONTACT_EMAIL}
+        </a>
+      </p>
+    </div>
+  )
+}

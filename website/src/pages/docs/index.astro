@@ -1,0 +1,30 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/PageHero.astro";
+
+const docs = (await getCollection("docs")).sort(
+  (a, b) => (a.data.order ?? 99) - (b.data.order ?? 99),
+);
+---
+
+<BaseLayout title="Docs" description="Getting started with Ideal Solutions Pro.">
+  <PageHero title="Documentation" subtitle="Guides for plans, setup, and common questions." />
+  <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6 pb-16">
+    <ul class="space-y-4">
+      {
+        docs.map((doc) => (
+          <li>
+            <a
+              href={`/docs/${doc.id}`}
+              class="block rounded-lg metal-border bg-brand-surface px-5 py-4 hover:border-brand-highlight/50 transition"
+            >
+              <h2 class="font-display text-xl text-white">{doc.data.title}</h2>
+              <p class="mt-1 text-sm text-brand-muted">{doc.data.description}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>

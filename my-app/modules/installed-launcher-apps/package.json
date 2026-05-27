@@ -1,0 +1,11 @@
+{
+  "name": "installed-launcher-apps",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "expo": {
+    "plugin": "./app.plugin.js"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

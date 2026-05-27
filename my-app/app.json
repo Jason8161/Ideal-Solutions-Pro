@@ -1,0 +1,103 @@
+{
+  "expo": {
+    "name": "Ideal Solutions Pro",
+    "slug": "ideal-solutions",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/app-background.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#141210"
+    },
+    "scheme": ["myapp", "ideal-solutions"],
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "buildNumber": "15",
+      "bundleIdentifier": "com.idealsolutions.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "CFBundleDisplayName": "Ideal Solutions Pro",
+        "NSMicrophoneUsageDescription": "Ideal Solutions Pro uses the microphone when you tap the mic button to dictate into text fields instead of typing.",
+        "NSSpeechRecognitionUsageDescription": "Ideal Solutions Pro uses speech recognition when you dictate into text fields with the mic button.",
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        },
+        "LSApplicationQueriesSchemes": []
+      }
+    },
+    "android": {
+      "package": "com.idealsolutions.app",
+      "label": "Ideal Solutions Pro",
+      "softwareKeyboardLayoutMode": "resize",
+      "adaptiveIcon": {
+        "backgroundColor": "#141210",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Ideal Solutions Pro uses your location for nearby suppliers, maps, and recording where you clock in or out.",
+          "isAndroidBackgroundLocationEnabled": false,
+          "isAndroidForegroundServiceEnabled": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/app-background.png",
+          "resizeMode": "cover",
+          "enableFullScreenImage_legacy": true,
+          "backgroundColor": "#141210",
+          "dark": {
+            "backgroundColor": "#141210"
+          }
+        }
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Ideal Solutions Pro can read your contacts when you pick a customer or employee from your address book, and save a customer you enter to your address book when you choose that option."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Ideal Solutions Pro uses your photo library when you choose a company logo or other images from your device.",
+          "cameraPermission": "Ideal Solutions Pro uses your camera for optional clock-in verification photos."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#FF8C00"
+        }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Ideal Solutions Pro uses the microphone when you tap the mic button to dictate into text fields instead of typing.",
+          "speechRecognitionPermission": "Ideal Solutions Pro uses speech recognition when you dictate into text fields with the mic button."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LegalCard from "../../components/LegalCard.astro";
+import { LEGAL_DOCUMENTS } from "../../data/legal";
+---
+
+<BaseLayout
+  title="Legal Stuff"
+  description="Review Ideal Solutions Pro policies, disclaimers, and agreements — privacy, terms, AI disclaimer, GPS consent, data deletion, and EULA."
+>
+  <section class="gradient-hero-legal border-b border-brand-legal/20">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 text-center">
+      <div
+        class="inline-flex items-center justify-center h-14 w-14 rounded-xl border border-brand-legal/40 bg-brand-legal/10 text-brand-legal mb-6 shadow-[0_0_24px_rgba(59,130,246,0.25)]"
+        aria-hidden="true"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8">
+          <path
+            fill-rule="evenodd"
+            d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.75.75 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516 11.209 11.209 0 0 1-7.877-3.08ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V17a.75.75 0 0 1 .75-.75Z"
+            clip-rule="evenodd"></path>
+        </svg>
+      </div>
+      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl text-white tracking-wide">
+        Legal Stuff
+      </h1>
+      <p class="mt-4 text-lg text-brand-muted max-w-2xl mx-auto leading-relaxed">
+        Review the policies, disclaimers, and agreements that help keep Ideal Solutions Pro secure,
+        transparent, and protected.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 pb-20">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {LEGAL_DOCUMENTS.map((doc) => (
+        <LegalCard document={doc} />
+      ))}
+    </div>
+    <p class="mt-10 text-center text-xs text-brand-muted">
+      Questions? Contact{" "}
+      <a href="mailto:legal@idealsolutionspro.com" class="text-brand-legal hover:underline">
+        legal@idealsolutionspro.com
+      </a>
+    </p>
+  </section>
+</BaseLayout>

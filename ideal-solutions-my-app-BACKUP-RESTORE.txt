@@ -1,0 +1,24 @@
+Ideal Solutions — my-app backup restore (2026-05-17)
+
+BACKUP FILE (same folder as this file):
+  ideal-solutions-my-app-backup-2026-05-17_1900.zip
+
+WHAT IS INSIDE
+  Source code and project files from my-app. Large folders were left out to keep the zip smaller:
+  - node_modules  → run npm install after restore
+  - .expo         → recreated by Expo when you run the app
+  - Some Android/iOS build cache folders → rebuilt by Gradle/Xcode
+
+HOW TO RESTORE ON THIS PC OR ANOTHER DEVICE
+  1. Create an empty folder named:  my-app
+  2. Unzip the backup so that package.json and the app folder end up inside my-app
+     (the zip has paths like "app\..." at the root — extract "into" the my-app folder so my-app\package.json exists)
+  3. Open a terminal in my-app and run:
+       npm install
+  4. Start as usual, e.g.  npx expo start
+
+GIT
+  This project folder did not contain a .git directory at backup time, so this zip is a files-only snapshot (no branch history). For version history, use Git on the machine where the repo lives, or push to GitHub/GitLab and clone on the other device.
+
+NEWER BACKUP
+  Copy the same steps: zip the my-app folder again (or use git bundle / push to GitHub).

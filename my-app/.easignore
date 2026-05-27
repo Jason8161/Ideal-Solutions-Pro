@@ -1,0 +1,29 @@
+﻿# EAS archive ignores (required when EAS_NO_VCS=1; .gitignore is NOT used)
+.expo
+.expo/
+.expo/**
+**/.expo
+**/.expo/**
+
+# Generated native projects (must be produced on EAS, not uploaded from Windows)
+android
+android/
+ios
+ios/
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies and caches
+node_modules/
+node_modules/.cache/
+
+# Build outputs
+dist/
+web-build/
+
+# OS / editor
+.DS_Store
+Thumbs.db

@@ -1,0 +1,68 @@
+---
+import { CONTACT_EMAIL, contactFormAction } from "../data/site";
+
+const action = contactFormAction();
+---
+
+{
+  action ? (
+    <form method="POST" action={action} class="space-y-4 max-w-lg">
+      <input type="hidden" name="_subject" value="Ideal Solutions Pro contact" />
+      <div>
+        <label for="contact-name" class="block text-sm font-medium text-white mb-1">
+          Name
+        </label>
+        <input
+          id="contact-name"
+          type="text"
+          name="name"
+          required
+          class="w-full rounded-lg border border-brand-metal/50 bg-brand-bg px-4 py-2.5 text-sm text-white focus:border-brand-highlight focus:outline-none focus:ring-1 focus:ring-brand-highlight"
+        />
+      </div>
+      <div>
+        <label for="contact-email" class="block text-sm font-medium text-white mb-1">
+          Email
+        </label>
+        <input
+          id="contact-email"
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          class="w-full rounded-lg border border-brand-metal/50 bg-brand-bg px-4 py-2.5 text-sm text-white focus:border-brand-highlight focus:outline-none focus:ring-1 focus:ring-brand-highlight"
+        />
+      </div>
+      <div>
+        <label for="contact-message" class="block text-sm font-medium text-white mb-1">
+          Message
+        </label>
+        <textarea
+          id="contact-message"
+          name="message"
+          required
+          rows={5}
+          class="w-full rounded-lg border border-brand-metal/50 bg-brand-bg px-4 py-2.5 text-sm text-white focus:border-brand-highlight focus:outline-none focus:ring-1 focus:ring-brand-highlight"
+        />
+      </div>
+      <button
+        type="submit"
+        class="rounded-lg bg-brand-highlight px-6 py-2.5 text-sm font-semibold text-brand-bg hover:brightness-110 transition"
+      >
+        Send message
+      </button>
+    </form>
+  ) : (
+    <div class="rounded-lg border border-brand-metal/40 bg-brand-surface px-4 py-4 text-sm text-brand-muted max-w-lg">
+      <p>
+        Set <code class="text-brand-highlight">PUBLIC_CONTACT_FORM_ACTION</code> (or reuse the
+        waitlist Formspree URL) to enable the contact form.
+      </p>
+      <p class="mt-3">
+        <a href={`mailto:${CONTACT_EMAIL}`} class="text-white underline">
+          {CONTACT_EMAIL}
+        </a>
+      </p>
+    </div>
+  )
+}

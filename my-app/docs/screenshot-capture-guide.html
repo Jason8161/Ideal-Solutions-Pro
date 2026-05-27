@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ideal Solutions — Screenshot safe zones</title>
+  <style>
+    :root {
+      --frame-w: 390px;
+      --frame-h: 844px;
+      --caption-ratio: 0.32;
+      --safe-top: 54px;
+      --safe-bottom: 34px;
+      --brand: #0b1f3a;
+      --accent: #c9a227;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #1a1a1a;
+      color: #eee;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 8px;
+    }
+    .intro {
+      max-width: 720px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #bbb;
+      margin-bottom: 24px;
+    }
+    .workspace {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      align-items: flex-start;
+    }
+    .phone-wrap {
+      position: relative;
+    }
+    .phone {
+      width: var(--frame-w);
+      height: var(--frame-h);
+      border-radius: 40px;
+      border: 3px solid #444;
+      background: var(--brand);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, #2a3544 0%, #0b1f3a 40%, #1e2a38 100%);
+      opacity: 0.9;
+    }
+    .status-safe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--safe-top);
+      border-bottom: 2px dashed rgba(255, 200, 80, 0.6);
+      background: rgba(255, 200, 80, 0.08);
+      pointer-events: none;
+    }
+    .ui-safe {
+      position: absolute;
+      top: var(--safe-top);
+      left: 12px;
+      right: 12px;
+      bottom: calc(var(--frame-h) * var(--caption-ratio) + var(--safe-bottom));
+      border: 2px dashed rgba(100, 200, 255, 0.5);
+      background: rgba(100, 200, 255, 0.05);
+      pointer-events: none;
+    }
+    .caption-band {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: calc(var(--frame-h) * var(--caption-ratio));
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 55%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px 24px 36px;
+      pointer-events: none;
+    }
+    .caption-headline {
+      font-family: Impact, "Arial Narrow", sans-serif;
+      font-size: 1.65rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: #fff;
+      line-height: 1.1;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    }
+    .caption-sub {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.35;
+    }
+    .home-footer-hint {
+      position: absolute;
+      bottom: calc(var(--frame-h) * var(--caption-ratio) + 4px);
+      left: 0;
+      right: 0;
+      height: 52px;
+      border-top: 2px solid rgba(255, 80, 80, 0.5);
+      background: rgba(255, 80, 80, 0.06);
+      font-size: 10px;
+      color: rgba(255, 180, 180, 0.9);
+      text-align: center;
+      padding-top: 4px;
+      pointer-events: none;
+    }
+    .controls {
+      flex: 1;
+      min-width: 280px;
+      max-width: 420px;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: #999;
+      margin: 12px 0 4px;
+    }
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      background: #2a2a2a;
+      color: #fff;
+      font: inherit;
+    }
+    textarea { min-height: 56px; resize: vertical; }
+    .sizes {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    .sizes code {
+      background: #333;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .legend {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+    .legend span {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 6px;
+      vertical-align: middle;
+      border-radius: 2px;
+    }
+    .yellow { background: rgba(255, 200, 80, 0.4); border: 1px solid rgba(255,200,80,0.8); }
+    .blue { background: rgba(100, 200, 255, 0.2); border: 1px solid rgba(100,200,255,0.6); }
+    .red { background: rgba(255, 80, 80, 0.2); border: 1px solid rgba(255,80,80,0.6); }
+    .export-note {
+      margin-top: 20px;
+      padding: 12px;
+      background: #2d2d2d;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ideal Solutions — screenshot overlay</h1>
+  <p class="intro">
+    Reference only: open this file in a browser while compositing real iPhone screenshots in Photopea or Canva.
+    Yellow = status bar; blue = keep primary UI visible; red = home footer (avoid covering on home shot);
+    bottom gradient = suggested caption band. See <code>docs/APP_STORE_SCREENSHOTS.md</code>.
+  </p>
+
+  <div class="workspace">
+    <div class="phone-wrap">
+      <div class="phone" id="phone">
+        <div class="status-safe" title="Status bar safe zone"></div>
+        <div class="ui-safe" title="Primary UI — do not cover with headline"></div>
+        <div class="home-footer-hint" id="footerHint">Home footer bar — keep clear on /</div>
+        <div class="caption-band">
+          <div class="caption-headline" id="headline">Your jobsite command center</div>
+          <div class="caption-sub" id="subline">AI, jobs, pay, and calendar — one home screen</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <label for="preset">Screenshot preset</label>
+      <select id="preset">
+        <option value="home">1 — Home grid (/)</option>
+        <option value="job">2 — Job Folder (/job-folder/boss-man)</option>
+        <option value="materials">3 — Materials search</option>
+        <option value="subscribe">4 — Subscribe (/settings/subscribe)</option>
+        <option value="paid">5 — Getting Paid</option>
+        <option value="estimates">6 — Estimates</option>
+      </select>
+
+      <label for="headlineInput">Headline (white)</label>
+      <input type="text" id="headlineInput" />
+
+      <label for="sublineInput">Subline</label>
+      <textarea id="sublineInput"></textarea>
+
+      <label for="sizeSelect">Export size (reference)</label>
+      <select id="sizeSelect">
+        <option value="1290,2796">6.7" — 1290 × 2796 (default)</option>
+        <option value="1320,2868">6.9" — 1320 × 2868</option>
+        <option value="1284,2778">6.5" — 1284 × 2778</option>
+        <option value="1179,2556">6.1" — 1179 × 2556</option>
+      </select>
+
+      <div class="sizes" id="sizeLabel"></div>
+
+      <div class="legend">
+        <p><span class="yellow"></span> Status / notch area</p>
+        <p><span class="blue"></span> Main UI — screenshot content</p>
+        <p><span class="red"></span> Footer (home only)</p>
+        <p>Bottom dark band = caption + gradient in your editor</p>
+      </div>
+
+      <div class="export-note">
+        <strong>Windows workflow:</strong> Paste your real PNG behind this frame in Photopea at the selected pixel size.
+        Match caption band to ~32% from bottom. Do not use this HTML as the App Store image by itself.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PRESETS = {
+      home: {
+        headline: "Your jobsite command center",
+        subline: "AI, jobs, pay, and calendar — one home screen",
+        showFooter: true,
+      },
+      job: {
+        headline: "Job Folder built for contractors",
+        subline: "Customers, jobs, photos, and reports in one place",
+        showFooter: false,
+      },
+      materials: {
+        headline: "Find materials fast",
+        subline: "Search suppliers and build lists on the job",
+        showFooter: false,
+      },
+      subscribe: {
+        headline: "Plans that grow with your business",
+        subline: "Free trial to Boss Man — upgrade when you are ready",
+        showFooter: false,
+      },
+      paid: {
+        headline: "Get paid your way",
+        subline: "Cash App, Venmo, Square — tap and go",
+        showFooter: false,
+      },
+      estimates: {
+        headline: "Professional estimates",
+        subline: "Create, send, and track estimates from the field",
+        showFooter: false,
+      },
+    };
+
+    const presetEl = document.getElementById("preset");
+    const headlineInput = document.getElementById("headlineInput");
+    const sublineInput = document.getElementById("sublineInput");
+    const headlineEl = document.getElementById("headline");
+    const sublineEl = document.getElementById("subline");
+    const footerHint = document.getElementById("footerHint");
+    const sizeSelect = document.getElementById("sizeSelect");
+    const sizeLabel = document.getElementById("sizeLabel");
+
+    function applyPreset(key) {
+      const p = PRESETS[key];
+      headlineInput.value = p.headline;
+      sublineInput.value = p.subline;
+      footerHint.style.display = p.showFooter ? "block" : "none";
+      syncText();
+    }
+
+    function syncText() {
+      headlineEl.textContent = headlineInput.value;
+      sublineEl.textContent = sublineInput.value;
+    }
+
+    function updateSizeLabel() {
+      const [w, h] = sizeSelect.value.split(",").map(Number);
+      sizeLabel.innerHTML =
+        "Export canvas: <code>" + w + " × " + h + " px</code> portrait.<br>" +
+        "Caption band height ≈ <code>" + Math.round(h * 0.32) + " px</code> from bottom.";
+    }
+
+    presetEl.addEventListener("change", () => applyPreset(presetEl.value));
+    headlineInput.addEventListener("input", syncText);
+    sublineInput.addEventListener("input", syncText);
+    sizeSelect.addEventListener("change", updateSizeLabel);
+
+    applyPreset("home");
+    updateSizeLabel();
+  </script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+---
+import { BRAND_NAME, BRAND_LOGO_SRC, NAV_LINKS } from "../data/site";
+
+const pathname = Astro.url.pathname;
+const isLegalActive = pathname === "/legal" || pathname.startsWith("/legal/");
+---
+
+<header class="sticky top-0 z-50 border-b border-brand-bronze/30 bg-brand-bg/95 backdrop-blur-md">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+    <a href="/" class="flex items-center gap-3 shrink-0" aria-label={BRAND_NAME}>
+      <img
+        src={BRAND_LOGO_SRC}
+        alt=""
+        width="44"
+        height="44"
+        class="h-11 w-11 object-contain"
+      />
+      <span class="font-display text-xl tracking-wide text-white hidden sm:inline">
+        {BRAND_NAME}
+      </span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-5 text-sm text-brand-muted" aria-label="Main">
+      {
+        NAV_LINKS.map((link) =>
+          link.variant === "legal" ? (
+            <a
+              href={link.href}
+              class:list={["legal-nav-link", isLegalActive && "is-active"]}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="h-4 w-4 shrink-0"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.75.75 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516 11.209 11.209 0 0 1-7.877-3.08ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V17a.75.75 0 0 1 .75-.75Z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              {link.label}
+            </a>
+          ) : (
+            <a
+              href={link.href}
+              class="hover:text-white transition-colors"
+              class:list={[
+                link.href !== "/" &&
+                  pathname.startsWith(link.href) &&
+                  "text-white",
+                link.href === "/" && pathname === "/" && "text-white",
+              ]}
+            >
+              {link.label}
+            </a>
+          ),
+        )
+      }
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a
+        href="/#waitlist"
+        class="hidden sm:inline-flex rounded-lg bg-brand-highlight px-4 py-2 text-sm font-semibold text-brand-bg hover:brightness-110 transition"
+      >
+        Join waitlist
+      </a>
+      <button
+        type="button"
+        class="md:hidden inline-flex items-center justify-center rounded-lg border border-brand-metal/50 p-2 text-white hover:border-brand-legal/50 hover:shadow-[0_0_12px_rgba(59,130,246,0.25)] transition"
+        aria-expanded="false"
+        aria-controls="mobile-nav-panel"
+        id="mobile-nav-toggle"
+      >
+        <span class="sr-only">Open menu</span>
+        <svg class="h-6 w-6 menu-icon-open" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg class="h-6 w-6 menu-icon-close hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="mobile-nav-panel"
+    class="md:hidden hidden border-t border-brand-metal/30 bg-brand-surface/98 backdrop-blur-md"
+    role="dialog"
+    aria-label="Mobile navigation"
+  >
+    <nav class="flex flex-col px-4 py-4 gap-1 text-sm" aria-label="Mobile">
+      {
+        NAV_LINKS.map((link) =>
+          link.variant === "legal" ? (
+            <a
+              href={link.href}
+              class:list={[
+                "legal-nav-link rounded-lg px-3 py-2.5 border border-transparent hover:border-brand-legal/30 hover:bg-brand-legal/5",
+                isLegalActive && "is-active border-brand-legal/40 bg-brand-legal/10",
+              ]}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="h-4 w-4 shrink-0"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.75.75 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516 11.209 11.209 0 0 1-7.877-3.08ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V17a.75.75 0 0 1 .75-.75Z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              {link.label}
+            </a>
+          ) : (
+            <a
+              href={link.href}
+              class="rounded-lg px-3 py-2.5 text-brand-muted hover:text-white hover:bg-brand-accent/40 transition"
+            >
+              {link.label}
+            </a>
+          ),
+        )
+      }
+      <a
+        href="/#waitlist"
+        class="mt-2 rounded-lg bg-brand-highlight px-3 py-2.5 text-center text-sm font-semibold text-brand-bg"
+      >
+        Join waitlist
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  function initMobileNav() {
+    const toggle = document.getElementById("mobile-nav-toggle");
+    const panel = document.getElementById("mobile-nav-panel");
+    if (!toggle || !panel) return;
+
+    const openIcon = toggle.querySelector(".menu-icon-open");
+    const closeIcon = toggle.querySelector(".menu-icon-close");
+
+    toggle.addEventListener("click", () => {
+      const open = panel.classList.toggle("hidden");
+      const isOpen = !open;
+      toggle.setAttribute("aria-expanded", String(isOpen));
+      openIcon?.classList.toggle("hidden", isOpen);
+      closeIcon?.classList.toggle("hidden", !isOpen);
+    });
+
+    panel.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        panel.classList.add("hidden");
+        toggle.setAttribute("aria-expanded", "false");
+        openIcon?.classList.remove("hidden");
+        closeIcon?.classList.add("hidden");
+      });
+    });
+  }
+
+  initMobileNav();
+  document.addEventListener("astro:page-load", initMobileNav);
+</script>

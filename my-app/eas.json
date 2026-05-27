@@ -1,0 +1,62 @@
+{
+  "cli": {
+    "version": ">=16.17.4",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_BETA_FULL_ACCESS": "false",
+        "EXPO_PUBLIC_SUBSCRIPTIONS_DISABLED": "false"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "distribution": "store",
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
+    },
+    "employee-ios": {
+      "extends": "production",
+      "env": {
+        "APP_VARIANT": "employee",
+        "EXPO_PUBLIC_APP_VARIANT": "employee"
+      }
+    },
+    "employee-android": {
+      "extends": "production",
+      "env": {
+        "APP_VARIANT": "employee",
+        "EXPO_PUBLIC_APP_VARIANT": "employee"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6771799454"
+      }
+    }
+  }
+}

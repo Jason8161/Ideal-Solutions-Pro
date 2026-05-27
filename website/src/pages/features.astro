@@ -1,0 +1,23 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/PageHero.astro";
+import FeatureCard from "../components/FeatureCard.astro";
+import { FEATURE_SECTIONS } from "../data/features";
+---
+
+<BaseLayout
+  title="Features"
+  description="AI, Job Folder, materials search, estimates, Getting Paid, and crew tools for contractors."
+>
+  <PageHero
+    title="Features"
+    subtitle="Everything on your home screen is built for trades work — not generic office software."
+  />
+  <section class="mx-auto max-w-6xl px-4 sm:px-6 pb-16">
+    {
+      FEATURE_SECTIONS.map((feature, i) => (
+        <FeatureCard feature={feature} reversed={i % 2 === 1} />
+      ))
+    }
+  </section>
+</BaseLayout>

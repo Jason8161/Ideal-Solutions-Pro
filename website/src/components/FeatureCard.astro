@@ -1,0 +1,36 @@
+---
+import type { FeatureSection } from "../data/features";
+
+interface Props {
+  feature: FeatureSection;
+  reversed?: boolean;
+}
+
+const { feature, reversed = false } = Astro.props;
+---
+
+<article
+  class:list={[
+    "grid gap-8 items-center md:grid-cols-2 py-12 border-b border-brand-metal/20 last:border-0",
+    reversed && "md:[&>*:first-child]:order-2",
+  ]}
+  id={feature.id}
+>
+  <div class="relative rounded-xl overflow-hidden metal-border aspect-[4/3] bg-brand-surface">
+    <img
+      src={feature.image}
+      alt={feature.imageAlt}
+      class="absolute inset-0 w-full h-full object-contain p-4"
+      loading="lazy"
+    />
+    <div class="absolute inset-x-0 bottom-0 gradient-card-overlay p-4 pt-16">
+      <p class="font-display text-2xl text-white">{feature.headline}</p>
+      <p class="text-sm text-white/85">{feature.subline}</p>
+    </div>
+  </div>
+  <div>
+    <h2 class="font-display text-3xl text-white mb-3">{feature.headline}</h2>
+    <p class="text-brand-highlight text-sm font-medium mb-4">{feature.subline}</p>
+    <p class="text-brand-muted leading-relaxed">{feature.description}</p>
+  </div>
+</article>

@@ -1,0 +1,3401 @@
+{
+  "success": true,
+  "platform": "homedepot_search",
+  "store_no": "8119",
+  "zipcode": "84118",
+  "search": "Wire",
+  "page": 1,
+  "total_results": 5882,
+  "no_of_pages": 246,
+  "result_count": 24,
+  "results": [
+    {
+      "name": "1-1/4 in. x 100 ft. 75 lb. 14-Gauge Galvanized Steel Wire",
+      "brand": "OOK",
+      "id": "301977351",
+      "url": "https://www.homedepot.com/p/OOK-1-1-4-in-x-100-ft-75-lb-14-Gauge-Galvanized-Steel-Wire-534804/301977351",
+      "model_no": "534804",
+      "upc": "049223501420",
+      "retail_id": "396328",
+      "product_type": "MERCHANDISE",
+      "parent_id": "301977351",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/f13407f1-0763-445c-ab48-cd27c8719542/svn/ook-wire-rope-534804-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/f13407f1-0763-445c-ab48-cd27c8719542/svn/ook-wire-rope-534804-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [],
+      "total_options": null,
+      "rating": 4.71,
+      "total_reviews": 362,
+      "price": 11.98,
+      "list_price": 11.98,
+      "price_per_unit": 0.12,
+      "unit_of_measure": "each",
+      "units_per_case": 100,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": 607060,
+          "tags": [
+            "BMSM"
+          ],
+          "tiers": [
+            {
+              "min_quantity": 5,
+              "reward_value": 5,
+              "reward_type": "PERCNTOFF"
+            },
+            {
+              "min_quantity": 10,
+              "reward_value": 10,
+              "reward_type": "PERCNTOFF"
+            }
+          ]
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Hardware",
+        "Chains & Ropes",
+        "Wire Rope"
+      ],
+      "department": "Wire Rope",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 90,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 29,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "bestseller",
+          "label": "Best Seller"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": null,
+      "key_features": [
+        {
+          "name": "Product Length (ft.)",
+          "value": "100 ft"
+        },
+        {
+          "name": "Working Load Limit (lbs.)",
+          "value": "75"
+        },
+        {
+          "name": "Strand Construction",
+          "value": "1x19"
+        },
+        {
+          "name": "Features",
+          "value": "Abrasion Resistant"
+        },
+        {
+          "name": "Package Quantity",
+          "value": "1"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "1 in. x 25 ft. 55 lb. 16-Gauge Galvanized Steel Wire",
+      "brand": "OOK",
+      "id": "301977353",
+      "url": "https://www.homedepot.com/p/OOK-1-in-x-25-ft-55-lb-16-Gauge-Galvanized-Steel-Wire-534642/301977353",
+      "model_no": "534642",
+      "upc": "049223501307",
+      "retail_id": "459989",
+      "product_type": "MERCHANDISE",
+      "parent_id": "335785503",
+      "is_primary_sku": true,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/51d12945-cdc6-4029-8f70-4377cd7e0c83/svn/ook-wire-rope-534642-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/51d12945-cdc6-4029-8f70-4377cd7e0c83/svn/ook-wire-rope-534642-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [],
+      "total_options": 2,
+      "rating": 4.63,
+      "total_reviews": 241,
+      "price": 2.97,
+      "list_price": 2.97,
+      "price_per_unit": 0.12,
+      "unit_of_measure": "each",
+      "units_per_case": 25,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Hardware",
+        "Chains & Ropes",
+        "Wire Rope"
+      ],
+      "department": "Wire Rope",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-18",
+          "delivery_end_date": "2026-05-18",
+          "delivery_timeline": "later",
+          "inventory": {
+            "quantity": 47,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 9,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [],
+      "returnable": null,
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 18,
+      "key_features": [
+        {
+          "name": "Product Length (ft.)",
+          "value": "25 ft"
+        },
+        {
+          "name": "Working Load Limit (lbs.)",
+          "value": "55"
+        },
+        {
+          "name": "Strand Construction",
+          "value": "1x19"
+        },
+        {
+          "name": "Features",
+          "value": "Abrasion Resistant"
+        },
+        {
+          "name": "Package Quantity",
+          "value": "1"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "½  in. 110 ft. 25 lbs. 18-Gauge Galvanized Steel Wire (2-Pack)",
+      "brand": "OOK",
+      "id": "325852302",
+      "url": "https://www.homedepot.com/p/OOK-in-110-ft-25-lbs-18-Gauge-Galvanized-Steel-Wire-2-Pack-9986213/325852302",
+      "model_no": "9986213",
+      "upc": "049223001487",
+      "retail_id": "1010016007",
+      "product_type": "MERCHANDISE",
+      "parent_id": "325852302",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/11fc4aff-d7da-42a7-b17d-634e47cdceea/svn/ook-wire-rope-9986213-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/11fc4aff-d7da-42a7-b17d-634e47cdceea/svn/ook-wire-rope-9986213-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [],
+      "total_options": null,
+      "rating": 4.8,
+      "total_reviews": 5,
+      "price": 10.56,
+      "list_price": 10.56,
+      "price_per_unit": 0.1,
+      "unit_of_measure": "each",
+      "units_per_case": 110,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": 607060,
+          "tags": [
+            "BMSM"
+          ],
+          "tiers": [
+            {
+              "min_quantity": 5,
+              "reward_value": 5,
+              "reward_type": "PERCNTOFF"
+            },
+            {
+              "min_quantity": 10,
+              "reward_value": 10,
+              "reward_type": "PERCNTOFF"
+            }
+          ]
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Hardware",
+        "Chains & Ropes",
+        "Wire Rope"
+      ],
+      "department": "Wire Rope",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Online",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "pickup",
+          "service_type": "boss",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": null,
+          "delivery_timeline": null,
+          "inventory": {
+            "quantity": 0,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 107,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": null,
+      "key_features": [
+        {
+          "name": "Product Length (ft.)",
+          "value": "110.0 ft"
+        },
+        {
+          "name": "Working Load Limit (lbs.)",
+          "value": "25"
+        },
+        {
+          "name": "Strand Construction",
+          "value": "1x7"
+        },
+        {
+          "name": "Features",
+          "value": "Abrasion Resistant"
+        },
+        {
+          "name": "Package Quantity",
+          "value": "2"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "110 ft. 25 lb. Galvanized Steel Wire",
+      "brand": "OOK",
+      "id": "100125749",
+      "url": "https://www.homedepot.com/p/OOK-110-ft-25-lb-Galvanized-Steel-Wire-50131/100125749",
+      "model_no": "50131",
+      "upc": "049223501314",
+      "retail_id": "396292",
+      "product_type": "MERCHANDISE",
+      "parent_id": "335785505",
+      "is_primary_sku": true,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/40922ce6-8c61-4c30-b61c-59bbe658b70b/svn/ook-wire-rope-50131-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/40922ce6-8c61-4c30-b61c-59bbe658b70b/svn/ook-wire-rope-50131-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [],
+      "total_options": 2,
+      "rating": 4.51,
+      "total_reviews": 723,
+      "price": 7.35,
+      "list_price": 7.35,
+      "price_per_unit": 0.07,
+      "unit_of_measure": "each",
+      "units_per_case": 110,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Hardware",
+        "Chains & Ropes",
+        "Wire Rope"
+      ],
+      "department": "Wire Rope",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 215,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 15,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 392,
+      "key_features": [
+        {
+          "name": "Product Length (ft.)",
+          "value": "110 ft"
+        },
+        {
+          "name": "Working Load Limit (lbs.)",
+          "value": "25"
+        },
+        {
+          "name": "Strand Construction",
+          "value": "1x7"
+        },
+        {
+          "name": "Features",
+          "value": "Abrasion Resistant"
+        },
+        {
+          "name": "Package Quantity",
+          "value": "1"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "250 ft. 12/2 Solid Romex SIMpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202019375",
+      "url": "https://www.homedepot.com/p/Southwire-250-ft-12-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28828269/202019375",
+      "model_no": "28828269",
+      "upc": "032886003103",
+      "retail_id": "268844",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202019375",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/9007f829-7b2d-47d1-bf0d-d5097c10cd94/svn/southwire-nm-wires-28828269-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/9007f829-7b2d-47d1-bf0d-d5097c10cd94/svn/southwire-nm-wires-28828269-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316378",
+          "label": "Yellow",
+          "value": "812e22cf-5b46-4a71-9152-620c2d09cea7",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/81/812e22cf-5b46-4a71-9152-620c2d09cea7_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-25-ft-12-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28828221/202316378",
+          "is_selected": false
+        }
+      ],
+      "total_options": 6,
+      "rating": 4.67,
+      "total_reviews": 2180,
+      "price": 188.74,
+      "list_price": 188.74,
+      "price_per_unit": 0.75,
+      "unit_of_measure": "each",
+      "units_per_case": 250,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": 542341,
+          "tags": [
+            "BMSM"
+          ],
+          "tiers": [
+            {
+              "min_quantity": 30,
+              "reward_value": 10,
+              "reward_type": "PERCNTOFF"
+            },
+            {
+              "min_quantity": 60,
+              "reward_value": 15,
+              "reward_type": "PERCNTOFF"
+            }
+          ]
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 428,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 108,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "bestseller",
+          "label": "Best Seller"
+        },
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 4228,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "250 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "20"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "250 ft. 14/2 Romex SIMpull Solid NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202019377",
+      "url": "https://www.homedepot.com/p/Southwire-250-ft-14-2-Romex-SIMpull-Solid-NM-B-W-G-Wire-28827469/202019377",
+      "model_no": "28827469",
+      "upc": "032886003110",
+      "retail_id": "268550",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202019377",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/3b011fc9-01d7-4d7f-ad1d-bebec73d8235/svn/southwire-nm-wires-28827469-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/3b011fc9-01d7-4d7f-ad1d-bebec73d8235/svn/southwire-nm-wires-28827469-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316473",
+          "label": "White",
+          "value": "345aeaa2-38b0-419e-bb94-540ac88fff6f",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/34/345aeaa2-38b0-419e-bb94-540ac88fff6f_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-1-000-ft-14-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28827401/202316473",
+          "is_selected": false
+        }
+      ],
+      "total_options": 5,
+      "rating": 4.7,
+      "total_reviews": 1900,
+      "price": 124,
+      "list_price": 124,
+      "price_per_unit": 0.5,
+      "unit_of_measure": "each",
+      "units_per_case": 250,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": 542342,
+          "tags": [
+            "BMSM"
+          ],
+          "tiers": [
+            {
+              "min_quantity": 33,
+              "reward_value": 10,
+              "reward_type": "PERCNTOFF"
+            },
+            {
+              "min_quantity": 66,
+              "reward_value": 15,
+              "reward_type": "PERCNTOFF"
+            }
+          ]
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 333,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 128,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 12,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "250 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "15"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "100 ft. 14/2 Solid Romex SIMpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202316379",
+      "url": "https://www.homedepot.com/p/Southwire-100-ft-14-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28827428/202316379",
+      "model_no": "28827428",
+      "upc": "032886263040",
+      "retail_id": "376537",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202316379",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/7da0378a-6a93-4f2d-8074-c4e29fc65edb/svn/southwire-nm-wires-28827428-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/f68ffd21-28bb-4602-8a3a-9453aca017fa/svn/southwire-nm-wires-28827428-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/7da0378a-6a93-4f2d-8074-c4e29fc65edb/svn/southwire-nm-wires-28827428-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/f68ffd21-28bb-4602-8a3a-9453aca017fa/svn/southwire-nm-wires-28827428-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316379",
+          "label": "White",
+          "value": "bafda5b2-998c-4c64-8a16-35d1db4a30aa",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/ba/bafda5b2-998c-4c64-8a16-35d1db4a30aa_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-100-ft-14-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28827428/202316379",
+          "is_selected": true
+        }
+      ],
+      "total_options": 2,
+      "rating": 4.75,
+      "total_reviews": 2499,
+      "price": 84,
+      "list_price": 84,
+      "price_per_unit": 0.84,
+      "unit_of_measure": "each",
+      "units_per_case": 100,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 117,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 26,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 3775,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "100 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "15"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "1-1/2 in. x 250 ft. 0 lb. 24-Gauge Galvanized Steel Wire",
+      "brand": "OOK",
+      "id": "301977349",
+      "url": "https://www.homedepot.com/p/OOK-1-1-2-in-x-250-ft-0-lb-24-Gauge-Galvanized-Steel-Wire-534656/301977349",
+      "model_no": "534656",
+      "upc": "049223501376",
+      "retail_id": "396263",
+      "product_type": "MERCHANDISE",
+      "parent_id": "335785501",
+      "is_primary_sku": true,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/f835dfe0-423a-4038-844d-d977072b16cc/svn/ook-wire-rope-534656-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/f835dfe0-423a-4038-844d-d977072b16cc/svn/ook-wire-rope-534656-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [],
+      "total_options": 3,
+      "rating": 4.5,
+      "total_reviews": 450,
+      "price": 7.27,
+      "list_price": 7.27,
+      "price_per_unit": 0.03,
+      "unit_of_measure": "each",
+      "units_per_case": 250,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": 607060,
+          "tags": [
+            "BMSM"
+          ],
+          "tiers": [
+            {
+              "min_quantity": 5,
+              "reward_value": 5,
+              "reward_type": "PERCNTOFF"
+            },
+            {
+              "min_quantity": 10,
+              "reward_value": 10,
+              "reward_type": "PERCNTOFF"
+            }
+          ]
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Hardware",
+        "Chains & Ropes",
+        "Wire Rope"
+      ],
+      "department": "Wire Rope",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 68,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 12,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": null,
+      "key_features": [
+        {
+          "name": "Product Length (ft.)",
+          "value": "250 ft"
+        },
+        {
+          "name": "Working Load Limit (lbs.)",
+          "value": "10"
+        },
+        {
+          "name": "Strand Construction",
+          "value": "1x19"
+        },
+        {
+          "name": "Features",
+          "value": "Abrasion Resistant"
+        },
+        {
+          "name": "Package Quantity",
+          "value": "1"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "½  in. 110 ft. 25 lbs. 18-Gauge Galvanized Steel Wire (2-Pack)",
+      "brand": "OOK",
+      "id": "338862621",
+      "url": "https://www.homedepot.com/p/sets/OOK-in-110-ft-25-lbs-18-Gauge-Galvanized-Steel-Wire-2-Pack-9986213/338862621",
+      "model_no": "9986213",
+      "upc": "049223501314",
+      "retail_id": null,
+      "product_type": "CONFIGURABLE_BUNDLE",
+      "parent_id": "338862621",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/11fc4aff-d7da-42a7-b17d-634e47cdceea/svn/ook-wire-rope-9986213-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/11fc4aff-d7da-42a7-b17d-634e47cdceea/svn/ook-wire-rope-9986213-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [],
+      "total_options": null,
+      "rating": 4.65,
+      "total_reviews": 457,
+      "price": 14.7,
+      "list_price": 14.7,
+      "price_per_unit": null,
+      "unit_of_measure": "each",
+      "units_per_case": 0,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Hardware",
+        "Chains & Ropes",
+        "Wire Rope"
+      ],
+      "department": "Wire Rope",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Browse Only",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": false,
+      "fulfillment_options": [],
+      "excluded_ship_states": [],
+      "is_sponsored": null,
+      "retailer_badges": [],
+      "returnable": null,
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": null,
+      "key_features": null,
+      "fuel_type_options": null
+    },
+    {
+      "name": "100 ft. 12/2 Solid Romex SIMpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202316375",
+      "url": "https://www.homedepot.com/p/Southwire-100-ft-12-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28828228/202316375",
+      "model_no": "28828228",
+      "upc": "032886263095",
+      "retail_id": "372665",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202316375",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/ba628de3-99bd-4aa8-8ec2-62e45d512037/svn/southwire-nm-wires-28828228-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/4ac9ffca-1919-451b-9606-9a6cb4ec812c/svn/southwire-nm-wires-28828228-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/ba628de3-99bd-4aa8-8ec2-62e45d512037/svn/southwire-nm-wires-28828228-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/4ac9ffca-1919-451b-9606-9a6cb4ec812c/svn/southwire-nm-wires-28828228-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316375",
+          "label": "Yellow",
+          "value": "f9ed170f-4c05-43e4-bb75-3df7256ff682",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/f9/f9ed170f-4c05-43e4-bb75-3df7256ff682_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-100-ft-12-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28828228/202316375",
+          "is_selected": true
+        }
+      ],
+      "total_options": 6,
+      "rating": 4.67,
+      "total_reviews": 2180,
+      "price": 109,
+      "list_price": 109,
+      "price_per_unit": 1.09,
+      "unit_of_measure": "each",
+      "units_per_case": 100,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 38,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 26,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 4326,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "100 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "20"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "50 ft. 14/2 Solid Romex Simpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202316377",
+      "url": "https://www.homedepot.com/p/Southwire-50-ft-14-2-Solid-Romex-Simpull-CU-NM-B-W-G-Wire-28827422/202316377",
+      "model_no": "28827422",
+      "upc": "032886263033",
+      "retail_id": "374674",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202316377",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/3e546ad3-ddd2-4539-b676-fa1e24258311/svn/southwire-nm-wires-28827422-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/f68ffd21-28bb-4602-8a3a-9453aca017fa/svn/southwire-nm-wires-28827422-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/3e546ad3-ddd2-4539-b676-fa1e24258311/svn/southwire-nm-wires-28827422-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/f68ffd21-28bb-4602-8a3a-9453aca017fa/svn/southwire-nm-wires-28827422-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316377",
+          "label": "White",
+          "value": "dfc25b32-88b5-4051-b90b-f217029cb5ff",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/df/dfc25b32-88b5-4051-b90b-f217029cb5ff_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-50-ft-14-2-Solid-Romex-Simpull-CU-NM-B-W-G-Wire-28827422/202316377",
+          "is_selected": true
+        }
+      ],
+      "total_options": 5,
+      "rating": 4.7,
+      "total_reviews": 2304,
+      "price": 52,
+      "list_price": 52,
+      "price_per_unit": 1.04,
+      "unit_of_measure": "each",
+      "units_per_case": 50,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 84,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 25,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "GU,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 2615,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "50 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "15"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "25 ft. 12/2 Solid Romex SIMpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202316378",
+      "url": "https://www.homedepot.com/p/Southwire-25-ft-12-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28828221/202316378",
+      "model_no": "28828221",
+      "upc": "032886263071",
+      "retail_id": "374710",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202316378",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/547a8d31-53e6-4622-b13e-325b34424495/svn/southwire-nm-wires-28828221-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/4ac9ffca-1919-451b-9606-9a6cb4ec812c/svn/southwire-nm-wires-28828221-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/547a8d31-53e6-4622-b13e-325b34424495/svn/southwire-nm-wires-28828221-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/4ac9ffca-1919-451b-9606-9a6cb4ec812c/svn/southwire-nm-wires-28828221-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316378",
+          "label": "Yellow",
+          "value": "812e22cf-5b46-4a71-9152-620c2d09cea7",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/81/812e22cf-5b46-4a71-9152-620c2d09cea7_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-25-ft-12-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28828221/202316378",
+          "is_selected": true
+        }
+      ],
+      "total_options": 6,
+      "rating": 4.67,
+      "total_reviews": 2180,
+      "price": 42,
+      "list_price": 42,
+      "price_per_unit": 1.68,
+      "unit_of_measure": "each",
+      "units_per_case": 25,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 50,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 27,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 2168,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "25 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "20"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "100 ft. 150 lb. 12-Gauge Galvanized Wire",
+      "brand": "Hillman",
+      "id": "203721762",
+      "url": "https://www.homedepot.com/p/Hillman-100-ft-150-lb-12-Gauge-Galvanized-Wire-122339/203721762",
+      "model_no": "122339",
+      "upc": "008236702446",
+      "retail_id": "197502",
+      "product_type": "MERCHANDISE",
+      "parent_id": "203721762",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/8eb9e321-2f40-4921-b591-584c612835f7/svn/hillman-wire-rope-122339-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/8eb9e321-2f40-4921-b591-584c612835f7/svn/hillman-wire-rope-122339-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [],
+      "total_options": null,
+      "rating": 4.7,
+      "total_reviews": 229,
+      "price": 16.77,
+      "list_price": 16.77,
+      "price_per_unit": 0.17,
+      "unit_of_measure": "each",
+      "units_per_case": 100,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": 607060,
+          "tags": [
+            "BMSM"
+          ],
+          "tiers": [
+            {
+              "min_quantity": 5,
+              "reward_value": 5,
+              "reward_type": "PERCNTOFF"
+            },
+            {
+              "min_quantity": 10,
+              "reward_value": 10,
+              "reward_type": "PERCNTOFF"
+            }
+          ]
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Hardware",
+        "Chains & Ropes",
+        "Wire Rope"
+      ],
+      "department": "Wire Rope",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 80,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 11,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 482,
+      "key_features": [
+        {
+          "name": "Product Length (ft.)",
+          "value": "100 ft"
+        },
+        {
+          "name": "Working Load Limit (lbs.)",
+          "value": "150"
+        },
+        {
+          "name": "Strand Construction",
+          "value": "1x7"
+        },
+        {
+          "name": "Features",
+          "value": "Abrasion Resistant"
+        },
+        {
+          "name": "Package Quantity",
+          "value": "1"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "125 ft. 6/3 Black Stranded Romex SIMpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202316279",
+      "url": "https://www.homedepot.com/p/Southwire-125-ft-6-3-Black-Stranded-Romex-SIMpull-CU-NM-B-W-G-Wire-63950002/202316279",
+      "model_no": "63950002",
+      "upc": "032886263705",
+      "retail_id": "269018",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202316279",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/92d1b374-1e3a-40f0-a642-66326c332840/svn/southwire-nm-wires-63950002-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/fc91d85d-a13f-4e5f-becd-6c290c3140ba/svn/southwire-nm-wires-63950002-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/92d1b374-1e3a-40f0-a642-66326c332840/svn/southwire-nm-wires-63950002-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/fc91d85d-a13f-4e5f-becd-6c290c3140ba/svn/southwire-nm-wires-63950002-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316279",
+          "label": "Black",
+          "value": "4381a2ce-c4e9-4a63-84b1-c98a54090626",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/43/4381a2ce-c4e9-4a63-84b1-c98a54090626_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-125-ft-6-3-Black-Stranded-Romex-SIMpull-CU-NM-B-W-G-Wire-63950002/202316279",
+          "is_selected": true
+        }
+      ],
+      "total_options": 5,
+      "rating": 4.7,
+      "total_reviews": 527,
+      "price": 496,
+      "list_price": 496,
+      "price_per_unit": 3.97,
+      "unit_of_measure": "each",
+      "units_per_case": 125,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 14,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 13,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "GU,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 1837,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "125 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Stranded"
+        },
+        {
+          "name": "Max Amps",
+          "value": "55"
+        },
+        {
+          "name": "Gauge",
+          "value": "6"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "50 ft. 12/2 Solid Romex SIMpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202316374",
+      "url": "https://www.homedepot.com/p/Southwire-50-ft-12-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28828222/202316374",
+      "model_no": "28828222",
+      "upc": "032886263088",
+      "retail_id": "372648",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202316374",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/3cbb6a2e-e447-49ba-83bf-eb805e56301b/svn/southwire-nm-wires-28828222-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/4ac9ffca-1919-451b-9606-9a6cb4ec812c/svn/southwire-nm-wires-28828222-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/3cbb6a2e-e447-49ba-83bf-eb805e56301b/svn/southwire-nm-wires-28828222-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/4ac9ffca-1919-451b-9606-9a6cb4ec812c/svn/southwire-nm-wires-28828222-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316374",
+          "label": "Yellow",
+          "value": "a477a174-3f1b-4596-b7e2-5f09e093e14e",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/a4/a477a174-3f1b-4596-b7e2-5f09e093e14e_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-50-ft-12-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28828222/202316374",
+          "is_selected": true
+        }
+      ],
+      "total_options": 6,
+      "rating": 4.67,
+      "total_reviews": 2180,
+      "price": 69,
+      "list_price": 69,
+      "price_per_unit": 1.38,
+      "unit_of_measure": "each",
+      "units_per_case": 50,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 42,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 30,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "GU,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 3447,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "50 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "20"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "15 ft. 14/2 Solid Romex SIMpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202210510",
+      "url": "https://www.homedepot.com/p/Southwire-15-ft-14-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28827426/202210510",
+      "model_no": "28827426",
+      "upc": "032886849442",
+      "retail_id": "908401",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202210510",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/a996e2a4-12e9-4a27-8957-f07861ada9d2/svn/southwire-nm-wires-28827426-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/f68ffd21-28bb-4602-8a3a-9453aca017fa/svn/southwire-nm-wires-28827426-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/a996e2a4-12e9-4a27-8957-f07861ada9d2/svn/southwire-nm-wires-28827426-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/f68ffd21-28bb-4602-8a3a-9453aca017fa/svn/southwire-nm-wires-28827426-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202210510",
+          "label": "White",
+          "value": "4aa92e6f-d2e5-469b-89af-f49571e6a3e9",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/4a/4aa92e6f-d2e5-469b-89af-f49571e6a3e9_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-15-ft-14-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28827426/202210510",
+          "is_selected": true
+        }
+      ],
+      "total_options": 5,
+      "rating": 4.7,
+      "total_reviews": 2304,
+      "price": 24,
+      "list_price": 24,
+      "price_per_unit": 1.6,
+      "unit_of_measure": "each",
+      "units_per_case": 15,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 43,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 25,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 1269,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "15 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "15"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "50 ft. 14/2 Gray Solid CerroMax Copper UF-B Cable with Ground Wire",
+      "brand": "Cerrowire",
+      "id": "202206546",
+      "url": "https://www.homedepot.com/p/Cerrowire-50-ft-14-2-Gray-Solid-CerroMax-Copper-UF-B-Cable-with-Ground-Wire-138-1402BR/202206546",
+      "model_no": "138-1402BR",
+      "upc": "048243266036",
+      "retail_id": "461496",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202206546",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/f9557106-5b18-4201-9e3c-08dc095ed4a5/svn/cerrowire-outdoor-electrical-wires-138-1402br-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/e7406d2d-52a4-4707-b0d4-edaca2271f47/svn/cerrowire-outdoor-electrical-wires-138-1402br-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/f9557106-5b18-4201-9e3c-08dc095ed4a5/svn/cerrowire-outdoor-electrical-wires-138-1402br-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/e7406d2d-52a4-4707-b0d4-edaca2271f47/svn/cerrowire-outdoor-electrical-wires-138-1402br-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [],
+      "total_options": 1,
+      "rating": 4.61,
+      "total_reviews": 305,
+      "price": 58,
+      "list_price": 58,
+      "price_per_unit": 1.16,
+      "unit_of_measure": "each",
+      "units_per_case": 50,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Outdoor Electrical Wires"
+      ],
+      "department": "Outdoor Electrical Wires",
+      "breadcrumbs": [],
+      "collection": {
+        "id": "Family-315331013",
+        "name": "Cerrowire - CerroMax Underground Feeder Building Wire Assortment",
+        "url": "https://www.homedepot.com/collection/Electrical/Cerrowire-CerroMax-Underground-Feeder-Building-Wire-Assortment/Family-315331013?omsid=202206546"
+      },
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 12,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 9,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 52,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "50 ft"
+        },
+        {
+          "name": "Max Amps",
+          "value": "15"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Features",
+          "value": "Weatherproof"
+        },
+        {
+          "name": "Features",
+          "value": "Waterproof"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "100 ft. 100 lb. 20-Gauge Multi-Purpose Wire",
+      "brand": "OOK",
+      "id": "203721757",
+      "url": "https://www.homedepot.com/p/OOK-100-ft-100-lb-20-Gauge-Multi-Purpose-Wire-122063/203721757",
+      "model_no": "122063",
+      "upc": "008236695496",
+      "retail_id": "196413",
+      "product_type": "MERCHANDISE",
+      "parent_id": "203721757",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/a5af4d4f-b691-4032-ab3a-5429559f0882/svn/ook-wire-rope-122063-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/a5af4d4f-b691-4032-ab3a-5429559f0882/svn/ook-wire-rope-122063-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [],
+      "total_options": null,
+      "rating": 4.54,
+      "total_reviews": 258,
+      "price": 11.57,
+      "list_price": 11.57,
+      "price_per_unit": 0.12,
+      "unit_of_measure": "each",
+      "units_per_case": 100,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": 607060,
+          "tags": [
+            "BMSM"
+          ],
+          "tiers": [
+            {
+              "min_quantity": 5,
+              "reward_value": 5,
+              "reward_type": "PERCNTOFF"
+            },
+            {
+              "min_quantity": 10,
+              "reward_value": 10,
+              "reward_type": "PERCNTOFF"
+            }
+          ]
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Hardware",
+        "Chains & Ropes",
+        "Wire Rope"
+      ],
+      "department": "Wire Rope",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 87,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 11,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 202,
+      "key_features": [
+        {
+          "name": "Product Length (ft.)",
+          "value": "100 ft"
+        },
+        {
+          "name": "Working Load Limit (lbs.)",
+          "value": "100"
+        },
+        {
+          "name": "Strand Construction",
+          "value": "4x20"
+        },
+        {
+          "name": "Features",
+          "value": "Abrasion Resistant"
+        },
+        {
+          "name": "Package Quantity",
+          "value": "1"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "9 ft. 50 lbs. Smooth High Carbon Steel Piano Wire",
+      "brand": "OOK",
+      "id": "301955147",
+      "url": "https://www.homedepot.com/p/OOK-9-ft-50-lbs-Smooth-High-Carbon-Steel-Piano-Wire-534279/301955147",
+      "model_no": "534279",
+      "upc": "049223595412",
+      "retail_id": "1002543137",
+      "product_type": "MERCHANDISE",
+      "parent_id": "301955147",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/934dfe65-1873-4166-93e7-52620865e5aa/svn/ook-wire-rope-534279-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/934dfe65-1873-4166-93e7-52620865e5aa/svn/ook-wire-rope-534279-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [],
+      "total_options": null,
+      "rating": 3.83,
+      "total_reviews": 78,
+      "price": 5.47,
+      "list_price": 5.47,
+      "price_per_unit": 0.61,
+      "unit_of_measure": "each",
+      "units_per_case": 9,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Hardware",
+        "Chains & Ropes",
+        "Wire Rope"
+      ],
+      "department": "Wire Rope",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 120,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 22,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 57,
+      "key_features": [
+        {
+          "name": "Product Length (ft.)",
+          "value": "9 ft"
+        },
+        {
+          "name": "Working Load Limit (lbs.)",
+          "value": "50"
+        },
+        {
+          "name": "Strand Construction",
+          "value": "1x7"
+        },
+        {
+          "name": "Features",
+          "value": "Abrasion Resistant"
+        },
+        {
+          "name": "Package Quantity",
+          "value": "1"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "1000 ft. 12/2 Solid Romex SIMpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202316226",
+      "url": "https://www.homedepot.com/p/Southwire-1000-ft-12-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28828201/202316226",
+      "model_no": "28828201",
+      "upc": "032886263064",
+      "retail_id": "163325",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202316226",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/606b51b3-6d64-4b49-892f-11742010041f/svn/southwire-nm-wires-28828201-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/4ac9ffca-1919-451b-9606-9a6cb4ec812c/svn/southwire-nm-wires-28828201-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/606b51b3-6d64-4b49-892f-11742010041f/svn/southwire-nm-wires-28828201-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/4ac9ffca-1919-451b-9606-9a6cb4ec812c/svn/southwire-nm-wires-28828201-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316226",
+          "label": "Yellow",
+          "value": "66e01048-958f-4ba8-a4fc-9a628c42b543",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/66/66e01048-958f-4ba8-a4fc-9a628c42b543_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-1000-ft-12-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28828201/202316226",
+          "is_selected": true
+        }
+      ],
+      "total_options": 6,
+      "rating": 4.67,
+      "total_reviews": 2180,
+      "price": 788.76,
+      "list_price": 788.76,
+      "price_per_unit": 0.79,
+      "unit_of_measure": "each",
+      "units_per_case": 1000,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 49,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 35,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 35,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "GU,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 3083,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "1000 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "20"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "170 ft. 9-Gauge Galvanized Steel Coil Smooth Wire",
+      "brand": "FARMGARD",
+      "id": "206741174",
+      "url": "https://www.homedepot.com/p/FARMGARD-170-ft-9-Gauge-Galvanized-Steel-Coil-Smooth-Wire-317527A/206741174",
+      "model_no": "317527A",
+      "upc": "099713009431",
+      "retail_id": "1001692499",
+      "product_type": "MERCHANDISE",
+      "parent_id": "206741174",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/f92667ab-4c77-4f00-a1a0-9ce9a1879fd6/svn/farmgard-electric-fence-wire-317527a-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/f0ac2a30-414f-4744-94ef-337b228f23ea/svn/farmgard-electric-fence-wire-317527a-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/f92667ab-4c77-4f00-a1a0-9ce9a1879fd6/svn/farmgard-electric-fence-wire-317527a-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/f0ac2a30-414f-4744-94ef-337b228f23ea/svn/farmgard-electric-fence-wire-317527a-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [],
+      "total_options": null,
+      "rating": 4.53,
+      "total_reviews": 108,
+      "price": 39.99,
+      "list_price": 39.99,
+      "price_per_unit": null,
+      "unit_of_measure": "each",
+      "units_per_case": 0,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Lumber & Composites",
+        "Fencing & Gates",
+        "Electric Fencing",
+        "Electric Fence Wire"
+      ],
+      "department": "Electric Fence Wire",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "pickup",
+          "service_type": "boss",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": null,
+          "delivery_timeline": null,
+          "inventory": {
+            "quantity": 0,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-22",
+          "delivery_end_date": "2026-05-26",
+          "delivery_timeline": "later",
+          "inventory": {
+            "quantity": 596,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "bestseller",
+          "label": "Best Seller"
+        },
+        {
+          "type": "top rated",
+          "label": "Top Rated"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 174,
+      "key_features": null,
+      "fuel_type_options": null
+    },
+    {
+      "name": "250 ft. 10/2 Solid Romex SIMpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202316274",
+      "url": "https://www.homedepot.com/p/Southwire-250-ft-10-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28829055/202316274",
+      "model_no": "28829055",
+      "upc": "032886163104",
+      "retail_id": "268860",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202316274",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/5883c9e1-06bb-47ac-893a-b19b2b41c336/svn/southwire-nm-wires-28829055-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/0f3b6cd6-70f7-46a0-af55-b23a7dc8e547/svn/southwire-nm-wires-28829055-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/5883c9e1-06bb-47ac-893a-b19b2b41c336/svn/southwire-nm-wires-28829055-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/0f3b6cd6-70f7-46a0-af55-b23a7dc8e547/svn/southwire-nm-wires-28829055-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316274",
+          "label": "Orange",
+          "value": "9a6422bb-114e-48fa-8d0f-b8e727bdd687",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/9a/9a6422bb-114e-48fa-8d0f-b8e727bdd687_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-250-ft-10-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28829055/202316274",
+          "is_selected": true
+        }
+      ],
+      "total_options": 6,
+      "rating": 4.63,
+      "total_reviews": 515,
+      "price": 308,
+      "list_price": 308,
+      "price_per_unit": 1.23,
+      "unit_of_measure": "each",
+      "units_per_case": 250,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 46,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 17,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "GU,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 1536,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "250 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "Not Specified"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "1,000 ft. 14/2 Solid Romex SIMpull CU NM-B W/G Wire",
+      "brand": "Southwire",
+      "id": "202316473",
+      "url": "https://www.homedepot.com/p/Southwire-1-000-ft-14-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28827401/202316473",
+      "model_no": "28827401",
+      "upc": "032886263019",
+      "retail_id": "633674",
+      "product_type": "MERCHANDISE",
+      "parent_id": "202316473",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/ca166ac1-0ac4-44d4-8e70-c36d401e40ae/svn/southwire-nm-wires-28827401-64_1000.jpg",
+        "https://images.thdstatic.com/productImages/f68ffd21-28bb-4602-8a3a-9453aca017fa/svn/southwire-nm-wires-28827401-e4_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/ca166ac1-0ac4-44d4-8e70-c36d401e40ae/svn/southwire-nm-wires-28827401-64_65.jpg",
+          "type": "PRIMARY"
+        },
+        {
+          "url": "https://images.thdstatic.com/productImages/f68ffd21-28bb-4602-8a3a-9453aca017fa/svn/southwire-nm-wires-28827401-e4_65.jpg",
+          "type": "SECONDARY"
+        }
+      ],
+      "variants": [
+        {
+          "id": "202316473",
+          "label": "White",
+          "value": "345aeaa2-38b0-419e-bb94-540ac88fff6f",
+          "swatch_image": "https://images.thdstatic.com/catalog/swatchImages/35/34/345aeaa2-38b0-419e-bb94-540ac88fff6f_35.jpg",
+          "url": "https://www.homedepot.com/p/Southwire-1-000-ft-14-2-Solid-Romex-SIMpull-CU-NM-B-W-G-Wire-28827401/202316473",
+          "is_selected": true
+        }
+      ],
+      "total_options": 5,
+      "rating": 4.7,
+      "total_reviews": 2304,
+      "price": 440.22,
+      "list_price": 440.22,
+      "price_per_unit": 0.44,
+      "unit_of_measure": "each",
+      "units_per_case": 1000,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Building Wires",
+        "NM Wires"
+      ],
+      "department": "NM Wires",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 102,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 35,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 47,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "GU,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [],
+      "returnable": "90-Day",
+      "quantity_limit": 3,
+      "has_subscription": false,
+      "favorites_count": 1346,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "1000 ft"
+        },
+        {
+          "name": "Stranded or Solid",
+          "value": "Solid"
+        },
+        {
+          "name": "Max Amps",
+          "value": "15"
+        },
+        {
+          "name": "Features",
+          "value": "Jacketed"
+        },
+        {
+          "name": "Features",
+          "value": "Heat Resistant"
+        }
+      ],
+      "fuel_type_options": null
+    },
+    {
+      "name": "12/2 x 250 ft. Solid MC Lite Cable",
+      "brand": "AFC Cable Systems",
+      "id": "205015271",
+      "url": "https://www.homedepot.com/p/AFC-Cable-Systems-12-2-x-250-ft-Solid-MC-Lite-Cable-2104S42-AFC/205015271",
+      "model_no": "2104S42-AFC",
+      "upc": "077680272973",
+      "retail_id": "744716",
+      "product_type": "MERCHANDISE",
+      "parent_id": "205015271",
+      "is_primary_sku": false,
+      "thumbnails": [
+        "https://images.thdstatic.com/productImages/8ba042f2-69ea-4221-8dce-e72c3a8f0460/svn/afc-cable-systems-armored-cables-2104s42-afc-64_1000.jpg"
+      ],
+      "images": [
+        {
+          "url": "https://images.thdstatic.com/productImages/8ba042f2-69ea-4221-8dce-e72c3a8f0460/svn/afc-cable-systems-armored-cables-2104s42-afc-64_65.jpg",
+          "type": "PRIMARY"
+        }
+      ],
+      "variants": [],
+      "total_options": null,
+      "rating": 4.64,
+      "total_reviews": 127,
+      "price": 232.2,
+      "list_price": 232.2,
+      "price_per_unit": 0.93,
+      "unit_of_measure": "each",
+      "units_per_case": 250,
+      "bulk_pricing": null,
+      "discount_campaign": null,
+      "clearance": null,
+      "conditional_promotions": [
+        {
+          "promotion_id": null,
+          "tags": null,
+          "tiers": []
+        }
+      ],
+      "currency": "USD",
+      "currency_symbol": "$",
+      "highlights": [],
+      "specifications": null,
+      "categories": [
+        "Electrical",
+        "Wire",
+        "Armored Cables"
+      ],
+      "department": "Armored Cables",
+      "breadcrumbs": [],
+      "collection": null,
+      "availability": "Shared",
+      "discontinued": false,
+      "backordered": false,
+      "in_stock": true,
+      "fulfillment_options": [
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "sth",
+          "fulfillable": true,
+          "has_free_shipping": true,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 0,
+          "delivery_start_date": "2026-05-16",
+          "delivery_end_date": "2026-05-16",
+          "delivery_timeline": "tomorrow",
+          "inventory": {
+            "quantity": 96,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        },
+        {
+          "fulfillment_type": "delivery",
+          "service_type": "express delivery",
+          "fulfillable": true,
+          "has_free_shipping": false,
+          "free_delivery_threshold": null,
+          "delivery_charge": null,
+          "total_charge": 2.99,
+          "delivery_start_date": "2026-05-15",
+          "delivery_end_date": "2026-05-15",
+          "delivery_timeline": "today",
+          "inventory": {
+            "quantity": 19,
+            "in_stock": true,
+            "out_of_stock": false,
+            "limited_quantity": false
+          },
+          "store_id": "8119",
+          "store_name": null,
+          "curbside_pickup": null
+        }
+      ],
+      "excluded_ship_states": "AK,GU,HI,PR,VI",
+      "is_sponsored": null,
+      "retailer_badges": [
+        {
+          "type": "bestseller",
+          "label": "Best Seller"
+        }
+      ],
+      "returnable": "90-Day",
+      "quantity_limit": 0,
+      "has_subscription": false,
+      "favorites_count": 584,
+      "key_features": [
+        {
+          "name": "Total Wire Length (ft.)",
+          "value": "250 ft"
+        },
+        {
+          "name": "Max Amps",
+          "value": "20"
+        },
+        {
+          "name": "Conductor Material",
+          "value": "Copper"
+        },
+        {
+          "name": "Indoor/Outdoor",
+          "value": "Indoor"
+        },
+        {
+          "name": "Gauge",
+          "value": "12"
+        }
+      ],
+      "fuel_type_options": null
+    }
+  ],
+  "credits_used": 2.5,
+  "remaining_credits": 97.5
+}

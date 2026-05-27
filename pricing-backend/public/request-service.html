@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Request service</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #0b1f3a;
+        color: #e8eeff;
+      }
+      body {
+        padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+          max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      }
+      main {
+        width: 100%;
+        max-width: 560px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 1.45rem;
+        font-weight: 800;
+        margin: 0 0 8px;
+        line-height: 1.25;
+      }
+      .sub,
+      .hint {
+        font-size: 0.95rem;
+        color: #94a8d6;
+        line-height: 1.45;
+      }
+      .sub {
+        margin-bottom: 22px;
+      }
+      .hint {
+        margin-top: 16px;
+      }
+      .err {
+        background: rgba(248, 113, 113, 0.12);
+        border: 1px solid rgba(248, 113, 113, 0.45);
+        color: #fecaca;
+        padding: 12px 14px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        font-size: 0.95rem;
+        line-height: 1.45;
+      }
+      .err[hidden],
+      .panel[hidden] {
+        display: none;
+      }
+      .ok-panel {
+        text-align: center;
+        padding: 28px 8px;
+      }
+      .ok-panel h1 {
+        color: #86efac;
+      }
+      label {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #94a8d6;
+        margin: 14px 0 6px;
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 1rem;
+        border-radius: 12px;
+        border: 1px solid #3d5a8a;
+        background: #102c55;
+        color: #fff;
+      }
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+      .priority-row {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .prio {
+        border: 1px solid #3d5a8a;
+        border-radius: 12px;
+        padding: 12px 14px;
+        background: #102c55;
+        cursor: pointer;
+      }
+      .prio input {
+        margin-right: 8px;
+      }
+      .prio.selected {
+        border-color: #60a5fa;
+        background: rgba(96, 165, 250, 0.15);
+      }
+      .prio.emergency.selected {
+        border-color: #f87171;
+        background: rgba(248, 113, 113, 0.18);
+      }
+      .photos {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .thumb {
+        width: 72px;
+        height: 72px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #3d5a8a;
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        margin-top: 18px;
+        padding: 14px 16px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        border: none;
+        border-radius: 12px;
+        background: #3b82f6;
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: wait;
+      }
+      .btn-secondary {
+        background: transparent;
+        border: 1px solid #3d5a8a;
+        color: #c7d6f5;
+        margin-top: 10px;
+      }
+      .company {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #94a8d6;
+        margin-bottom: 12px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div id="pageErr" class="err" hidden></div>
+
+      <div id="confirmPanel" class="panel ok-panel" hidden>
+        <h1>Request sent</h1>
+        <p class="sub" id="confirmMsg">Your service request has been sent. The contractor will follow up soon.</p>
+        <p class="hint">You can close this page.</p>
+      </div>
+
+      <div id="formPanel" class="panel" hidden>
+        <p class="company" id="companyLine" hidden></p>
+        <h1>Request service call</h1>
+        <p class="sub" id="introLine">Tell us what you need. Add photos if helpful.</p>
+
+        <div id="formErr" class="err" hidden></div>
+
+        <form id="form" novalidate>
+          <label for="customerName">Your name</label>
+          <input id="customerName" name="customerName" autocomplete="name" placeholder="Full name" />
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="Best number to reach you" />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="name@email.com" />
+
+          <label for="serviceAddress">Service address</label>
+          <input id="serviceAddress" name="serviceAddress" autocomplete="street-address" placeholder="Street, city, or job site" />
+
+          <label for="bestTime">Best time to contact (optional)</label>
+          <input id="bestTime" name="bestTime" placeholder="e.g. Weekday mornings" />
+
+          <label>How soon do you need help?</label>
+          <div class="priority-row" id="priorityRow">
+            <label class="prio selected" data-priority="normal">
+              <input type="radio" name="priority" value="normal" checked />
+              Normal — can be scheduled
+            </label>
+            <label class="prio" data-priority="urgent">
+              <input type="radio" name="priority" value="urgent" />
+              Urgent — soon as possible
+            </label>
+            <label class="prio emergency" data-priority="emergency">
+              <input type="radio" name="priority" value="emergency" />
+              Emergency — safety / no heat / major leak
+            </label>
+          </div>
+
+          <label for="description">Describe the problem</label>
+          <textarea id="description" name="description" placeholder="What needs service or repair?" required></textarea>
+
+          <label for="photos">Photos (optional, up to 8)</label>
+          <input id="photos" type="file" accept="image/*" capture="environment" multiple />
+          <div class="photos" id="photoPreview"></div>
+
+          <button type="submit" class="btn" id="submitBtn">Send request</button>
+        </form>
+      </div>
+    </main>
+    <script>
+      (function () {
+        function parseTokenFromPath() {
+          var parts = window.location.pathname.replace(/\/+$/, "").split("/").filter(Boolean);
+          if (parts.length >= 2 && (parts[0] === "r" || parts[0] === "request-service")) {
+            return decodeURIComponent(parts[1] || "").trim();
+          }
+          return "";
+        }
+
+        var params = new URLSearchParams(window.location.search);
+        var contractorToken = parseTokenFromPath() || (params.get("token") || "").trim();
+        var companyName = (params.get("companyName") || params.get("company") || "").trim();
+
+        var pageErr = document.getElementById("pageErr");
+        var formPanel = document.getElementById("formPanel");
+        var confirmPanel = document.getElementById("confirmPanel");
+        var formErr = document.getElementById("formErr");
+        var companyLine = document.getElementById("companyLine");
+        var photoPreview = document.getElementById("photoPreview");
+        var submitBtn = document.getElementById("submitBtn");
+        var photoFiles = [];
+
+        function showPageErr(msg) {
+          pageErr.textContent = msg;
+          pageErr.hidden = false;
+        }
+
+        function showFormErr(msg) {
+          formErr.textContent = msg;
+          formErr.hidden = false;
+        }
+
+        function clearFormErr() {
+          formErr.hidden = true;
+          formErr.textContent = "";
+        }
+
+        if (!contractorToken) {
+          showPageErr(
+            "This link is missing a contractor code. Ask your contractor to send a new Request Service link from their Ideal Solutions app.",
+          );
+          return;
+        }
+
+        formPanel.hidden = false;
+        if (companyName) {
+          companyLine.textContent = companyName;
+          companyLine.hidden = false;
+        }
+
+        document.querySelectorAll(".prio").forEach(function (el) {
+          el.addEventListener("click", function () {
+            document.querySelectorAll(".prio").forEach(function (p) {
+              p.classList.remove("selected");
+            });
+            el.classList.add("selected");
+            var input = el.querySelector('input[type="radio"]');
+            if (input) input.checked = true;
+          });
+        });
+
+        document.getElementById("photos").addEventListener("change", function (ev) {
+          var files = ev.target.files;
+          if (!files) return;
+          photoFiles = Array.prototype.slice.call(files, 0, 8);
+          photoPreview.innerHTML = "";
+          photoFiles.forEach(function (file) {
+            var img = document.createElement("img");
+            img.className = "thumb";
+            img.alt = "Photo";
+            img.src = URL.createObjectURL(file);
+            photoPreview.appendChild(img);
+          });
+        });
+
+        function readFileAsDataUrl(file) {
+          return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function () {
+              resolve(String(reader.result || ""));
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        }
+
+        function validatePayload(body) {
+          var hasName = (body.customerName || "").trim();
+          var hasPhone = (body.phone || "").trim();
+          var hasEmail = (body.email || "").trim();
+          if (!hasName && !hasPhone && !hasEmail) {
+            return "Enter at least your name, phone, or email.";
+          }
+          if (!(body.description || "").trim()) {
+            return "Describe the service needed.";
+          }
+          return null;
+        }
+
+        document.getElementById("form").addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          clearFormErr();
+
+          var priorityEl = document.querySelector('input[name="priority"]:checked');
+          var priority = priorityEl ? priorityEl.value : "normal";
+
+          var body = {
+            contractorToken: contractorToken,
+            companyName: companyName,
+            customerName: document.getElementById("customerName").value.trim(),
+            phone: document.getElementById("phone").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            serviceAddress: document.getElementById("serviceAddress").value.trim(),
+            bestTimeToContact: document.getElementById("bestTime").value.trim(),
+            description: document.getElementById("description").value.trim(),
+            priority: priority,
+            photos: [],
+          };
+
+          var err = validatePayload(body);
+          if (err) {
+            showFormErr(err);
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Sending…";
+
+          var photoPromises = photoFiles.map(function (file) {
+            return readFileAsDataUrl(file).then(function (dataUrl) {
+              return {
+                mimeType: file.type || "image/jpeg",
+                data: dataUrl,
+              };
+            });
+          });
+
+          Promise.all(photoPromises)
+            .then(function (photos) {
+              body.photos = photos;
+              return fetch("/api/service-requests/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+              });
+            })
+            .then(function (res) {
+              return res.json().then(function (json) {
+                return { ok: res.ok, json: json };
+              });
+            })
+            .then(function (result) {
+              if (!result.ok || !result.json.ok) {
+                throw new Error((result.json && result.json.error) || "Could not send request. Try again.");
+              }
+              formPanel.hidden = true;
+              confirmPanel.hidden = false;
+              var msg = result.json.message || "Your service request has been sent.";
+              document.getElementById("confirmMsg").textContent = msg;
+              window.scrollTo(0, 0);
+            })
+            .catch(function (e) {
+              showFormErr(e && e.message ? e.message : "Could not send request. Check your connection and try again.");
+            })
+            .finally(function () {
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Send request";
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>

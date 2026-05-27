@@ -1,0 +1,54 @@
+---
+import { BRAND_NAME, BRAND_TAGLINE, BRAND_LOGO_SRC, NAV_LINKS } from "../data/site";
+import StoreButtons from "./StoreButtons.astro";
+import WaitlistForm from "./WaitlistForm.astro";
+---
+
+<footer class="border-t border-brand-metal/40 bg-brand-surface mt-16">
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+      <div>
+        <img
+          src={BRAND_LOGO_SRC}
+          alt=""
+          width="56"
+          height="56"
+          class="h-14 w-14 object-contain mb-3"
+        />
+        <p class="font-display text-2xl text-white">{BRAND_NAME}</p>
+        <p class="mt-1 text-sm text-brand-muted">{BRAND_TAGLINE}</p>
+      </div>
+      <div>
+        <p class="font-semibold text-white mb-3">Explore</p>
+        <ul class="space-y-2 text-sm text-brand-muted">
+          {NAV_LINKS.map((link) => (
+            <li>
+              <a href={link.href} class="hover:text-white transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a href="/privacy" class="hover:text-white transition-colors">Privacy</a>
+          </li>
+          <li>
+            <a href="/terms" class="hover:text-white transition-colors">Terms</a>
+          </li>
+        </ul>
+      </div>
+      <div id="waitlist">
+        <p class="font-semibold text-white mb-2">Get notified at launch</p>
+        <p class="text-sm text-brand-muted mb-4">
+          iOS and Android coming soon. Join the waitlist for early access.
+        </p>
+        <WaitlistForm compact />
+        <div class="mt-6">
+          <StoreButtons />
+        </div>
+      </div>
+    </div>
+    <p class="mt-10 pt-6 border-t border-brand-metal/30 text-center text-xs text-brand-muted">
+      © {new Date().getFullYear()} Ideal Solutions. All rights reserved.
+    </p>
+  </div>
+</footer>
