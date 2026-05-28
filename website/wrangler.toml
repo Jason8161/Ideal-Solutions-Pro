@@ -1,0 +1,4 @@
+# Used when Cloudflare root directory is `website/`
+name = "ideal-solutions-pro"
+compatibility_date = "2024-04-01"
+pages_build_output_dir = "dist"
