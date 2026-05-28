@@ -29,12 +29,12 @@ const formId = compact ? "waitlist-footer" : "waitlist-hero";
         required
         placeholder="you@company.com"
         autocomplete="email"
-        class="flex-1 rounded-lg border border-brand-metal/50 bg-brand-bg px-4 py-2.5 text-sm text-white placeholder:text-brand-muted focus:border-brand-highlight focus:outline-none focus:ring-1 focus:ring-brand-highlight"
+        class="input-app flex-1 w-full"
       />
       <button
         type="submit"
         class:list={[
-          "rounded-lg bg-brand-highlight px-5 py-2.5 text-sm font-semibold text-brand-bg hover:brightness-110 transition shrink-0",
+          "btn-app shrink-0",
           compact && "w-full sm:w-auto",
         ]}
       >
@@ -42,7 +42,7 @@ const formId = compact ? "waitlist-footer" : "waitlist-hero";
       </button>
     </form>
   ) : (
-    <div class="rounded-lg border border-brand-metal/40 bg-brand-bg/50 px-4 py-3 text-sm text-brand-muted">
+    <div class="panel-app rounded-lg px-4 py-3 text-sm text-white/75">
       <p>
         Set <code class="text-brand-highlight">PUBLIC_WAITLIST_FORM_ACTION</code> to your Formspree
         URL to enable the waitlist form.

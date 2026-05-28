@@ -1,0 +1,39 @@
+---
+import { AI_ADDON_PACKS, AI_ADDONS_SECTION } from "../../data/pricingPage";
+---
+
+<section id="ai-addons" class="py-16 scroll-mt-24" aria-labelledby="ai-addons-heading">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 id="ai-addons-heading" class="font-display text-3xl sm:text-4xl text-white">
+        {AI_ADDONS_SECTION.title}
+      </h2>
+      <p class="mt-3 text-white text-sm leading-relaxed">{AI_ADDONS_SECTION.subtitle}</p>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {AI_ADDON_PACKS.map((pack) => (
+        <article
+          class="pricing-ai-addon-card metal-border panel-app rounded-xl p-5 flex flex-col text-center transition duration-300"
+          data-ai-addon-id={pack.id}
+          data-rc-product-id={pack.revenueCatProductId}
+        >
+          <h3 class="font-display text-lg text-white">{pack.label}</h3>
+          <p class="mt-2 text-2xl font-semibold text-white">{pack.priceLabel}</p>
+          <p class="mt-2 text-xs text-white flex-1">
+            {pack.monthlyCredits.toLocaleString()} extra AI requests per billing period
+          </p>
+          <button
+            type="button"
+            class="btn-app-outline mt-4 w-full py-2.5 text-sm text-white cursor-default"
+            disabled
+            title="Available in-app after launch"
+            data-rc-product-id={pack.revenueCatProductId}
+          >
+            In-app purchase
+          </button>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

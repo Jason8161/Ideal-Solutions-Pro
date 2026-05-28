@@ -11,11 +11,11 @@ const href = legalDocumentPath(doc.slug);
 
 <a
   href={href}
-  class="legal-card group flex flex-col rounded-xl metal-border bg-brand-surface p-6 h-full transition duration-300 hover:border-brand-legal/60 hover:shadow-[0_0_28px_rgba(59,130,246,0.22)]"
+  class="legal-card group flex flex-col rounded-xl metal-border panel-app p-6 h-full transition duration-300 hover:border-brand-copper/50 copper-glow"
 >
   <div class="flex items-start justify-between gap-3 mb-3">
     <span
-      class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-brand-legal/40 bg-brand-legal/10 text-brand-legal transition group-hover:shadow-[0_0_16px_rgba(59,130,246,0.35)]"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/25 panel-app-strong text-white transition"
       aria-hidden="true"
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
@@ -25,17 +25,17 @@ const href = legalDocumentPath(doc.slug);
           clip-rule="evenodd"></path>
       </svg>
     </span>
-    <span class="text-[10px] uppercase tracking-wider text-brand-muted shrink-0">
+    <span class="text-[10px] uppercase tracking-wider text-white/60 shrink-0">
       v{doc.version}
     </span>
   </div>
-  <h2 class="font-display text-xl text-white group-hover:text-brand-legal-light transition-colors">
+  <h2 class="font-display text-xl text-white group-hover:text-brand-copper transition-colors">
     {doc.title}
   </h2>
-  <p class="mt-2 text-sm text-brand-muted flex-1">{doc.description}</p>
-  <p class="mt-3 text-xs text-brand-muted">Last updated: {doc.lastUpdated}</p>
+  <p class="mt-2 text-sm text-white/75 flex-1">{doc.description}</p>
+  <p class="mt-3 text-xs text-white/60">Last updated: {doc.lastUpdated}</p>
   <span
-    class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-brand-legal group-hover:text-brand-legal-light transition"
+    class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-white group-hover:text-brand-copper transition"
   >
     View Document
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">

@@ -19,7 +19,7 @@ const blocks = content.split(/\n\n+/).map((b) => b.trim()).filter(Boolean);
               .filter((l) => l.startsWith("•"))
               .map((line) => (
                 <li class="flex gap-2">
-                  <span class="text-brand-legal shrink-0" aria-hidden="true">
+                  <span class="text-brand-copper shrink-0" aria-hidden="true">
                     •
                   </span>
                   <span>{line.replace(/^•\s*/, "")}</span>

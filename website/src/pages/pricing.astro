@@ -3,315 +3,152 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import PricingTierCard from "../components/pricing/PricingTierCard.astro";
 import PricingFaq from "../components/pricing/PricingFaq.astro";
 import PricingFloatingCta from "../components/pricing/PricingFloatingCta.astro";
+import PricingLocalStorage from "../components/pricing/PricingLocalStorage.astro";
+import PricingAiAddons from "../components/pricing/PricingAiAddons.astro";
 import {
   PRICING_HERO,
   FREE_TRIAL,
   PRICING_TIERS,
-  STORAGE_PROVIDERS,
-  AI_ADDONS,
-  STORAGE_ADDONS,
-  WHY_ISPRO,
   COMPARISON_ROWS,
   PRICING_LEGAL_LINKS,
 } from "../data/pricingPage";
 
 const metaDescription =
-  "Ideal Solutions Pro pricing — 7-day free trial, Side Hustle, Boss Man, Super Boss Man, and Enterprise plans for contractors. AI limits, storage, and employee tiers explained.";
+  "Ideal Solutions Pro pricing — 7-day free trial (5 AI requests), Side Hustle $9.99, Boss Man $19.99, Super Boss Man $49.99, Enterprise $99.99. Local-first storage, AI add-ons, and crew plans.";
 ---
 
 <BaseLayout title="Pricing" description={metaDescription}>
-  <!-- SECTION 1: Hero -->
-  <section class="pricing-hero gradient-hero-pricing relative overflow-hidden border-b border-brand-legal/20">
-    <div class="absolute inset-0 pricing-hero-glow pointer-events-none" aria-hidden="true"></div>
+  <div class="pricing-page text-white">
+  <section class="page-section-hero relative overflow-hidden">
     <div class="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 text-center">
-      <p class="text-xs font-semibold uppercase tracking-widest text-brand-legal-light mb-3 animate-fade-in">
-        Contractor SaaS · No enterprise bloat
+      <p class="text-xs font-semibold uppercase tracking-widest text-white mb-3">
+        Contractor SaaS · Local-first · No enterprise bloat
       </p>
       <h1 class="font-display text-4xl sm:text-5xl md:text-6xl text-white leading-tight max-w-4xl mx-auto">
         {PRICING_HERO.title}
       </h1>
-      <p class="mt-5 text-lg text-brand-muted max-w-2xl mx-auto leading-relaxed">
+      <p class="mt-5 text-lg text-white max-w-2xl mx-auto leading-relaxed">
         {PRICING_HERO.subtitle}
       </p>
       <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
         <a
-          href="/#waitlist"
-          class="w-full sm:w-auto rounded-lg bg-brand-legal px-8 py-3.5 text-sm font-semibold text-white hover:bg-brand-legal-light transition shadow-[0_0_28px_rgba(59,130,246,0.4)]"
+          href={FREE_TRIAL.ctaHref}
+          class="btn-app w-full sm:w-auto px-8 py-3.5"
+          data-cta="trial"
         >
-          Start Free Trial
+          {FREE_TRIAL.ctaLabel}
         </a>
-        <a
-          href="#compare-plans"
-          class="w-full sm:w-auto rounded-lg border border-brand-legal/60 px-8 py-3.5 text-sm font-semibold text-brand-legal-light hover:bg-brand-legal/10 transition hover:shadow-[0_0_20px_rgba(59,130,246,0.25)]"
-        >
+        <a href="#pricing-plans" class="btn-app-outline w-full sm:w-auto px-8 py-3.5">
           Compare Plans
         </a>
       </div>
-
-      <!-- Monthly / yearly toggle placeholder -->
-      <div
-        class="mt-10 inline-flex items-center gap-2 rounded-full metal-border bg-brand-surface/80 p-1"
-        role="group"
-        aria-label="Billing period"
-      >
-        <button
-          type="button"
-          class="pricing-billing-toggle is-active rounded-full px-4 py-1.5 text-xs font-semibold transition"
-          data-billing="monthly"
-          aria-pressed="true"
-        >
-          Monthly
-        </button>
-        <button
-          type="button"
-          class="pricing-billing-toggle rounded-full px-4 py-1.5 text-xs font-semibold text-brand-muted transition relative"
-          data-billing="yearly"
-          aria-pressed="false"
-          disabled
-          title="Annual billing coming soon"
-        >
-          Yearly
-          <span class="ml-1 rounded bg-brand-muted/20 px-1.5 py-0.5 text-[9px] uppercase">Soon</span>
-        </button>
-      </div>
     </div>
   </section>
 
-  <!-- SECTION 2: Free Trial -->
-  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-    <div
-      class="rounded-xl border border-brand-legal/40 bg-gradient-to-br from-brand-legal/15 to-brand-surface p-6 sm:p-8 shadow-[0_0_40px_rgba(59,130,246,0.12)]"
-    >
-      <h2 class="font-display text-2xl sm:text-3xl text-white">{FREE_TRIAL.title}</h2>
-      <div class="mt-6 grid gap-8 md:grid-cols-2">
-        <ul class="space-y-2 text-sm text-gray-200">
-          {FREE_TRIAL.highlights.map((h) => (
+  <section id="free-trial" class="mx-auto max-w-6xl px-4 py-12 sm:px-6 scroll-mt-24">
+    <div class="panel-app-strong metal-border copper-glow rounded-xl p-6 sm:p-8">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <h2 class="font-display text-2xl sm:text-3xl text-white">{FREE_TRIAL.title}</h2>
+        <a href={FREE_TRIAL.ctaHref} class="btn-app shrink-0 text-center sm:px-6" data-cta="trial">
+          {FREE_TRIAL.ctaLabel}
+        </a>
+      </div>
+      <ul class="mt-6 grid gap-2 sm:grid-cols-2 text-sm text-white">
+        {FREE_TRIAL.highlights.map((h) => (
+          <li class="flex gap-2">
+            <span class="text-white shrink-0" aria-hidden="true">✓</span>
+            {h}
+          </li>
+        ))}
+      </ul>
+      <div class="mt-6 border-t border-white/15 pt-6">
+        <p class="text-xs font-semibold uppercase tracking-wide text-white mb-2">
+          Trial limits
+        </p>
+        <ul class="space-y-1.5 text-sm text-white">
+          {FREE_TRIAL.limits.map((l) => (
             <li class="flex gap-2">
-              <span class="text-brand-legal">✓</span>
-              {h}
+              <span aria-hidden="true">•</span>
+              {l}
             </li>
           ))}
         </ul>
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-brand-legal-light mb-2">
-            Trial limits
-          </p>
-          <ul class="space-y-1.5 text-sm text-brand-muted">
-            {FREE_TRIAL.limits.map((l) => (
-              <li>• {l}</li>
-            ))}
-          </ul>
-        </div>
       </div>
-      <p class="mt-6 text-xs text-brand-muted italic border-t border-brand-metal/30 pt-4">
-        {FREE_TRIAL.disclaimer}
-      </p>
+      <p class="mt-6 text-xs text-white italic">{FREE_TRIAL.disclaimer}</p>
     </div>
   </section>
 
-  <!-- SECTION 3: Pricing Cards -->
-  <section id="compare-plans" class="mx-auto max-w-6xl px-4 py-12 sm:px-6 scroll-mt-24">
-    <h2 class="font-display text-3xl text-white text-center mb-2">Choose your plan</h2>
-    <p class="text-center text-brand-muted text-sm mb-10 max-w-xl mx-auto">
-      Subscriptions via App Store / Google Play (RevenueCat).
+  <section id="pricing-plans" class="mx-auto max-w-6xl px-4 py-12 sm:px-6 scroll-mt-24">
+    <h2 class="font-display text-3xl text-white text-center mb-2">Monthly plans</h2>
+    <p class="text-center text-white text-sm mb-10 max-w-xl mx-auto">
+      Subscribe in the app via Apple App Store or Google Play. RevenueCat-ready product IDs on each
+      plan card.
     </p>
     <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
       {PRICING_TIERS.map((tier) => <PricingTierCard tier={tier} />)}
     </div>
-    <p class="mt-8 text-center text-xs text-brand-muted">
-      <!-- RevenueCat integration placeholder -->
-      <span class="inline-flex items-center gap-1 rounded border border-brand-metal/40 px-2 py-1">
-        RevenueCat product IDs configured at launch
-      </span>
+  </section>
+
+  <PricingLocalStorage />
+
+  <PricingAiAddons />
+
+  <section id="feature-comparison" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 scroll-mt-24">
+    <h2 class="font-display text-3xl text-white text-center mb-2">Feature comparison</h2>
+    <p class="text-center text-white text-sm mb-8 max-w-lg mx-auto">
+      Pick the tier that matches how you run jobs today — upgrade anytime as your crew grows.
     </p>
-  </section>
-
-  <!-- SECTION 4: Add-ons -->
-  <section class="bg-brand-accent/40 border-y border-brand-legal/15 py-16">
-    <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="font-display text-3xl text-white text-center">Customize Your Setup</h2>
-      <p class="mt-3 text-center text-brand-muted max-w-2xl mx-auto text-sm">
-        Use your own storage provider or purchase additional app storage and AI capacity.
-      </p>
-      <div class="mt-10 grid gap-6 md:grid-cols-3">
-        <div class="metal-border rounded-xl bg-brand-surface p-6 md:col-span-1">
-          <h3 class="font-display text-lg text-brand-legal-light">Supported storage</h3>
-          <ul class="mt-4 space-y-2 text-sm text-brand-muted">
-            {STORAGE_PROVIDERS.map((p) => (
-              <li class="flex gap-2">
-                <span class="text-brand-legal">◆</span>
-                {p}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div class="metal-border rounded-xl bg-brand-surface p-6">
-          <h3 class="font-display text-lg text-brand-legal-light">AI add-ons</h3>
-          <ul class="mt-4 space-y-2 text-sm text-brand-muted">
-            {AI_ADDONS.map((a) => (
-              <li class="flex gap-2">
-                <span class="text-brand-legal">◆</span>
-                {a}
-              </li>
-            ))}
-          </ul>
-          <span class="mt-4 inline-block text-[10px] uppercase text-brand-muted border border-brand-metal/40 rounded px-2 py-0.5">
-            In-app purchase · Coming Soon
-          </span>
-        </div>
-        <div class="metal-border rounded-xl bg-brand-surface p-6">
-          <h3 class="font-display text-lg text-brand-legal-light">Storage add-ons</h3>
-          <ul class="mt-4 space-y-2 text-sm text-brand-muted">
-            {STORAGE_ADDONS.map((s) => (
-              <li class="flex gap-2">
-                <span class="text-brand-legal">◆</span>
-                {s}
-              </li>
-            ))}
-          </ul>
-          <span class="mt-4 inline-block text-[10px] uppercase text-brand-muted border border-brand-metal/40 rounded px-2 py-0.5">
-            Tiered packs · Coming Soon
-          </span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 5: Why + Comparison -->
-  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-    <h2 class="font-display text-3xl text-white text-center mb-8">Why Ideal Solutions Pro</h2>
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-14">
-      {WHY_ISPRO.map((item) => (
-        <div class="metal-border rounded-lg bg-brand-surface px-4 py-3 text-sm text-gray-200 text-center hover:border-brand-legal/40 transition">
-          {item}
-        </div>
-      ))}
-    </div>
-
-    <h3 class="font-display text-2xl text-white text-center mb-6">Feature comparison</h3>
-    <div class="overflow-x-auto rounded-xl metal-border">
-      <table class="w-full min-w-[640px] text-sm text-left">
+    <div class="overflow-x-auto rounded-xl metal-border panel-app">
+      <table class="w-full min-w-[720px] text-sm text-left">
         <thead>
-          <tr class="border-b border-brand-metal/40 bg-brand-surface">
-            <th class="px-4 py-3 text-brand-muted font-medium">Feature</th>
+          <tr class="border-b border-white/15">
+            <th class="px-4 py-3 text-white font-medium">Feature</th>
             <th class="px-4 py-3 text-white font-display">Side Hustle</th>
-            <th class="px-4 py-3 text-brand-legal-light font-display">Boss Man</th>
+            <th class="px-4 py-3 text-white font-display">Boss Man</th>
             <th class="px-4 py-3 text-white font-display">Super Boss</th>
             <th class="px-4 py-3 text-white font-display">Enterprise</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-brand-metal/20">
+        <tbody class="divide-y divide-white/10">
           {COMPARISON_ROWS.map((row) => (
-            <tr class="hover:bg-brand-legal/5 transition">
-              <td class="px-4 py-3 text-brand-muted">{row.label}</td>
-              <td class="px-4 py-3 text-gray-200">{row.sideHustle}</td>
-              <td class="px-4 py-3 text-gray-200">{row.bossMan}</td>
-              <td class="px-4 py-3 text-gray-200">{row.superBossMan}</td>
-              <td class="px-4 py-3 text-gray-200">{row.enterprise}</td>
+            <tr class="hover:bg-white/5 transition">
+              <td class="px-4 py-3 text-white">{row.label}</td>
+              <td class="px-4 py-3 text-white">{row.sideHustle}</td>
+              <td class="px-4 py-3 text-white">{row.bossMan}</td>
+              <td class="px-4 py-3 text-white">{row.superBossMan}</td>
+              <td class="px-4 py-3 text-white">{row.enterprise}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-    <p class="mt-3 text-xs text-brand-muted text-center">* 10 GB included when not using external storage.</p>
   </section>
 
-  <!-- SECTION 6: FAQ -->
   <section class="py-16 border-t border-brand-metal/30">
     <PricingFaq />
   </section>
 
-  <!-- SECTION 7: Legal -->
-  <section class="mx-auto max-w-4xl px-4 py-12 sm:px-6 pb-20 text-center border-t border-brand-metal/30">
+  <section class="mx-auto max-w-4xl px-4 py-12 sm:px-6 pb-24 text-center border-t border-brand-metal/30">
     <h2 class="font-display text-xl text-white mb-4">Important notices</h2>
-    <p class="text-xs text-brand-muted leading-relaxed mb-3">
-      AI-generated responses may contain inaccuracies. Users are responsible for independently verifying
-      estimates, calculations, code compliance, and business decisions.
+    <p class="text-xs text-white leading-relaxed mb-3">
+      AI-generated responses may contain inaccuracies. Users are responsible for independently
+      verifying estimates, calculations, code compliance, and business decisions.
     </p>
-    <p class="text-xs text-brand-muted leading-relaxed mb-6">
-      Employee GPS tracking features require proper employee consent and compliance with applicable laws.
+    <p class="text-xs text-white leading-relaxed mb-6">
+      Employee GPS tracking requires proper employee consent and compliance with applicable laws.
     </p>
     <nav class="flex flex-wrap justify-center gap-4 text-sm" aria-label="Legal links">
       {PRICING_LEGAL_LINKS.map((link) => (
-        <a href={link.href} class="text-brand-legal-light hover:text-white hover:underline transition">
+        <a href={link.href} class="text-white hover:underline transition">
           {link.label}
         </a>
       ))}
     </nav>
-    <p class="mt-8 text-xs text-brand-muted">
+    <p class="mt-8 text-xs text-white">
       Prices shown in USD. Final billing through Apple App Store or Google Play may vary by region.
     </p>
   </section>
 
   <PricingFloatingCta />
+  </div>
 </BaseLayout>
-
-<script>
-  document.querySelectorAll<HTMLButtonElement>(".pricing-billing-toggle:not([disabled])").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".pricing-billing-toggle").forEach((b) => {
-        b.classList.remove("is-active", "bg-brand-legal", "text-white");
-        b.setAttribute("aria-pressed", "false");
-      });
-      btn.classList.add("is-active", "bg-brand-legal", "text-white");
-      btn.setAttribute("aria-pressed", "true");
-    });
-  });
-</script>
-
-<style>
-  .gradient-hero-pricing {
-    background-color: var(--color-brand-bg);
-    background-image:
-      linear-gradient(
-        165deg,
-        rgba(29, 78, 216, 0.28) 0%,
-        rgba(18, 17, 16, 0.92) 45%,
-        var(--color-brand-bg) 100%
-      ),
-      url("/images/hero-background.png");
-    background-size: cover;
-    background-position: center;
-  }
-
-  .pricing-hero-glow {
-    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(59, 130, 246, 0.2), transparent 70%);
-  }
-
-  .pricing-tier-card:hover {
-    border-color: rgba(59, 130, 246, 0.45);
-    box-shadow:
-      0 0 32px rgba(59, 130, 246, 0.18),
-      inset 0 1px 0 rgba(96, 165, 250, 0.1);
-  }
-
-  .pricing-tier-card--popular {
-    box-shadow: 0 0 36px rgba(59, 130, 246, 0.22);
-  }
-
-  .pricing-billing-toggle.is-active {
-    background-color: var(--color-brand-legal);
-    color: white;
-  }
-
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.6s ease-out;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animate-fade-in {
-      animation: none;
-    }
-  }
-</style>

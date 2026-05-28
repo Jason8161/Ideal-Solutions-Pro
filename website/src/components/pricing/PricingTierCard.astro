@@ -10,62 +10,48 @@ const { tier } = Astro.props;
 
 <article
   class:list={[
-    "pricing-tier-card group relative flex flex-col rounded-xl metal-border bg-brand-surface p-6 h-full transition duration-300",
-    tier.mostPopular && "pricing-tier-card--popular ring-2 ring-brand-legal/70",
+    "pricing-tier-card metal-border panel-app group relative flex flex-col rounded-xl p-6 h-full",
+    tier.mostPopular && "pricing-tier-card--popular ring-2 ring-brand-copper/60",
   ]}
+  data-tier-id={tier.id}
+  data-rc-product-id={tier.revenueCatProductId}
+  data-rc-entitlement-id={tier.revenueCatEntitlementId}
 >
   {tier.mostPopular && (
     <span
-      class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-legal px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-[0_0_16px_rgba(59,130,246,0.5)]"
+      class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full panel-app-strong border border-white/30 px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
     >
       Most Popular
     </span>
   )}
-  {tier.revenueCatPlaceholder === "Coming Soon" && (
-    <span
-      class="absolute top-4 right-4 rounded-md border border-brand-muted/40 bg-brand-bg px-2 py-0.5 text-[10px] uppercase text-brand-muted"
-    >
-      Coming Soon
-    </span>
-  )}
 
-  <h3 class="font-display text-2xl text-white pr-16">{tier.name}</h3>
-  <p class="mt-2 text-3xl font-semibold text-brand-legal-light">{tier.priceLabel}</p>
-  <p class="mt-2 text-sm text-brand-muted">{tier.tagline}</p>
+  <h3 class="font-display text-2xl text-white">{tier.name}</h3>
+  <p class="mt-2 text-3xl font-semibold text-white">{tier.priceLabel}</p>
+  <p class="mt-2 text-sm text-white leading-relaxed">{tier.tagline}</p>
 
-  <ul class="mt-6 space-y-2 text-sm text-gray-300 flex-1">
+  <ul class="mt-6 space-y-2 text-sm text-white flex-1">
     {tier.features.map((f) => (
       <li class="flex gap-2">
-        <span class="text-brand-legal shrink-0" aria-hidden="true">✓</span>
+        <span class="text-white shrink-0" aria-hidden="true">✓</span>
         <span>{f}</span>
       </li>
     ))}
   </ul>
 
   {
-    tier.restrictions && tier.restrictions.length > 0 && (
-      <ul class="mt-4 space-y-1 text-xs text-brand-muted border-t border-brand-metal/30 pt-4">
-        {tier.restrictions.map((r) => (
-          <li>• {r}</li>
-        ))}
-      </ul>
-    )
-  }
-
-  {
-    tier.onboardingNote && (
-      <p class="mt-3 text-xs text-brand-muted italic">{tier.onboardingNote}</p>
+    tier.employeeNote && (
+      <p class="mt-4 text-xs text-white border-t border-white/15 pt-4 leading-relaxed">
+        {tier.employeeNote}
+      </p>
     )
   }
 
   <a
     href={tier.ctaHref}
-    class:list={[
-      "mt-6 block w-full rounded-lg py-3 text-center text-sm font-semibold transition duration-300",
-      tier.mostPopular
-        ? "bg-brand-legal text-white hover:bg-brand-legal-light shadow-[0_0_20px_rgba(59,130,246,0.35)]"
-        : "border border-brand-legal/50 text-brand-legal-light hover:bg-brand-legal/15 hover:shadow-[0_0_16px_rgba(59,130,246,0.25)]",
-    ]}
+    class:list={["mt-6 block w-full text-center py-3", tier.mostPopular ? "btn-app" : "btn-app-outline"]}
+    data-tier-id={tier.id}
+    data-rc-product-id={tier.revenueCatProductId}
+    data-rc-entitlement-id={tier.revenueCatEntitlementId}
   >
     {tier.ctaLabel}
   </a>

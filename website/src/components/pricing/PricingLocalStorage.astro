@@ -1,0 +1,64 @@
+---
+import { LOCAL_FIRST_STORAGE } from "../../data/pricingPage";
+---
+
+<section
+  id="local-first-storage"
+  class="border-y border-brand-metal/30 py-16 scroll-mt-24"
+  aria-labelledby="local-storage-heading"
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="text-center max-w-3xl mx-auto">
+      <p class="text-xs font-semibold uppercase tracking-widest text-white mb-2">
+        Your data, your device
+      </p>
+      <h2 id="local-storage-heading" class="font-display text-3xl sm:text-4xl text-white">
+        {LOCAL_FIRST_STORAGE.title}
+      </h2>
+      <p class="mt-4 text-white leading-relaxed">{LOCAL_FIRST_STORAGE.subtitle}</p>
+    </div>
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-2">
+      <div class="panel-app metal-border rounded-xl p-6 sm:p-8">
+        <h3 class="font-display text-xl text-white mb-4">We do not host in our cloud</h3>
+        <ul class="space-y-2 text-sm text-white">
+          {LOCAL_FIRST_STORAGE.doesNotHost.map((item) => (
+            <li class="flex gap-2">
+              <span class="text-white shrink-0" aria-hidden="true">✕</span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="panel-app metal-border rounded-xl p-6 sm:p-8">
+        <h3 class="font-display text-xl text-white mb-4">Instead</h3>
+        <ul class="space-y-2 text-sm text-white">
+          {LOCAL_FIRST_STORAGE.instead.map((item) => (
+            <li class="flex gap-2">
+              <span class="text-white shrink-0" aria-hidden="true">✓</span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-10 panel-app metal-border rounded-xl p-6 sm:p-8 text-center copper-glow">
+      <p class="text-sm font-semibold uppercase tracking-wide text-white mb-4">
+        Recommended backup providers
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        {LOCAL_FIRST_STORAGE.providers.map((p) => (
+          <span
+            class="rounded-lg border border-brand-bronze/40 panel-app-strong px-4 py-2 text-sm font-medium text-white"
+          >
+            {p}
+          </span>
+        ))}
+      </div>
+      <p class="mt-6 text-sm text-white max-w-2xl mx-auto leading-relaxed">
+        {LOCAL_FIRST_STORAGE.affordabilityNote}
+      </p>
+    </div>
+  </div>
+</section>

@@ -10,19 +10,19 @@ import { PRICING_FAQ } from "../../data/pricingPage";
     {
       PRICING_FAQ.map((item, i) => (
         <details
-          class="pricing-faq-item metal-border rounded-lg bg-brand-surface/80 overflow-hidden group"
+          class="pricing-faq-item metal-border panel-app rounded-lg overflow-hidden group"
           data-faq-index={i}
         >
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-white font-medium hover:bg-brand-legal/5 transition">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-white font-medium hover:bg-white/10 transition">
             <span>{item.question}</span>
             <span
-              class="text-brand-legal text-xl leading-none transition group-open:rotate-45"
+              class="text-white text-xl leading-none transition group-open:rotate-45"
               aria-hidden="true"
             >
               +
             </span>
           </summary>
-          <div class="px-5 pb-4 text-sm text-brand-muted leading-relaxed border-t border-brand-metal/20">
+          <div class="px-5 pb-4 text-sm text-white leading-relaxed border-t border-white/15">
             {item.answer}
           </div>
         </details>

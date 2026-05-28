@@ -7,7 +7,7 @@ import { HOME_HIGHLIGHTS } from "../data/features";
 ---
 
 <BaseLayout>
-  <section class="gradient-hero border-b border-brand-bronze/30">
+  <section class="page-section-hero">
     <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:py-28">
       <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
         <div>
@@ -47,7 +47,7 @@ import { HOME_HIGHLIGHTS } from "../data/features";
         </div>
         <div
           id="waitlist"
-          class="rounded-xl metal-border bg-brand-surface/90 p-6 sm:p-8 backdrop-blur-sm copper-glow"
+          class="rounded-xl metal-border panel-app-strong p-6 sm:p-8 copper-glow"
         >
           <h2 class="font-display text-2xl text-white">Join the launch waitlist</h2>
           <p class="mt-2 text-sm text-brand-muted">
@@ -71,7 +71,7 @@ import { HOME_HIGHLIGHTS } from "../data/features";
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {
         HOME_HIGHLIGHTS.map((item) => (
-          <div class="rounded-xl metal-border bg-brand-surface p-6 hover:border-brand-copper/50 transition">
+          <div class="rounded-xl metal-border panel-app p-6 hover:border-brand-copper/50 transition">
             <h3 class="font-display text-xl text-white">{item.title}</h3>
             <p class="mt-2 text-sm text-brand-muted">{item.body}</p>
           </div>
@@ -85,16 +85,13 @@ import { HOME_HIGHLIGHTS } from "../data/features";
     </p>
   </section>
 
-  <section class="bg-brand-accent/50 border-y border-brand-bronze/25">
-    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 text-center">
+  <section class="border-y border-brand-bronze/25 py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 text-center">
       <h2 class="font-display text-3xl text-white">Plans that grow with your business</h2>
-      <p class="mt-3 text-brand-muted">
+      <p class="mt-3 text-white/75">
         Start with a 7-day free trial, then choose Side Hustle, Boss Man, Super Boss Man, or Enterprise.
       </p>
-      <a
-        href="/pricing"
-        class="mt-6 inline-block rounded-lg bg-brand-copper px-6 py-3 text-sm font-semibold text-brand-bg hover:brightness-110 transition"
-      >
+      <a href="/pricing" class="btn-app mt-6 inline-flex px-6 py-3">
         View pricing
       </a>
     </div>
