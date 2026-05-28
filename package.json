@@ -1,0 +1,8 @@
+{
+  "name": "ideal-solutions-pro",
+  "private": true,
+  "scripts": {
+    "build:website": "cd website && npm ci && npm run build",
+    "deploy:cloudflare": "npm run build:website && npx wrangler deploy"
+  }
+}

@@ -1,0 +1,7 @@
+# Cloudflare Workers static assets — serves Astro build from website/dist
+# Build on CI first: cd website && npm ci && npm run build
+name = "ideal-solutions-pro"
+compatibility_date = "2024-04-01"
+
+[assets]
+directory = "./website/dist"

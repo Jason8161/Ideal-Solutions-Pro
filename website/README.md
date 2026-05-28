@@ -45,15 +45,30 @@ Output directory: `dist/`
 ## Deploy on Cloudflare Pages
 
 1. Push this repo to GitHub (or GitLab).
-2. In [Cloudflare Dashboard](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-3. Configure the build:
+2. In [Cloudflare Dashboard](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Connect to Git**.
 
-   | Setting | Value |
-   |---------|--------|
-   | Root directory | *(repo root)* |
-   | Build command | `cd website && npm ci && npm run build` |
-   | Build output directory | `website/dist` |
-   | Node version | 22 |
+### Option A — Pages (recommended)
+
+| Setting | Value |
+|---------|--------|
+| Project type | **Pages** (not Workers-only) |
+| Root directory | *(repo root)* |
+| Build command | `cd website && npm ci && npm run build` |
+| Build output directory | `website/dist` |
+| Deploy command | *(leave empty)* |
+| Node version | `22` (`NODE_VERSION` env var) |
+
+### Option B — Workers + Wrangler (if deploy command is `npx wrangler deploy`)
+
+Repo includes root `wrangler.toml` pointing at `website/dist`.
+
+| Setting | Value |
+|---------|--------|
+| Build command | `npm run build:website` |
+| Deploy command | `npx wrangler deploy` |
+| Node version | `22` |
+
+**Do not** use deploy-only without a build step — Wrangler will fail with “Could not detect static files”.
 
 4. **Environment variables** (Production):
 
