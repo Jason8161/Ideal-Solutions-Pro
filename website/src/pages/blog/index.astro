@@ -18,7 +18,7 @@ const posts = (await getCollection("blog"))
             <a href={`/blog/${post.id}`} class="group block">
               <time
                 datetime={post.data.pubDate.toISOString()}
-                class="text-xs text-brand-muted"
+                class="text-xs text-white"
               >
                 {post.data.pubDate.toLocaleDateString("en-US", {
                   year: "numeric",
@@ -26,17 +26,17 @@ const posts = (await getCollection("blog"))
                   day: "numeric",
                 })}
               </time>
-              <h2 class="mt-1 font-display text-2xl text-white group-hover:text-brand-highlight transition">
+              <h2 class="mt-1 font-display text-2xl text-white transition">
                 {post.data.title}
               </h2>
-              <p class="mt-2 text-sm text-brand-muted">{post.data.description}</p>
+              <p class="mt-2 text-sm text-white">{post.data.description}</p>
             </a>
           </li>
         ))
       }
     </ul>
     {posts.length === 0 && (
-      <p class="text-brand-muted">No posts yet.</p>
+      <p class="text-white">No posts yet.</p>
     )}
   </section>
 </BaseLayout>

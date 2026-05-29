@@ -11,7 +11,7 @@ const { tier } = Astro.props;
 <article
   class:list={[
     "pricing-tier-card metal-border panel-app group relative flex flex-col rounded-xl p-6 h-full",
-    tier.mostPopular && "pricing-tier-card--popular ring-2 ring-brand-copper/60",
+    tier.mostPopular && "pricing-tier-card--popular ring-2 ring-white/40",
   ]}
   data-tier-id={tier.id}
   data-rc-product-id={tier.revenueCatProductId}

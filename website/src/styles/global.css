@@ -31,6 +31,40 @@ body.app-site {
   background-color: var(--color-brand-bg);
 }
 
+/* Sitewide: all copy white (no copper/muted body text on metal background) */
+.app-site :where(
+  p,
+  li,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  span,
+  td,
+  th,
+  summary,
+  label,
+  a,
+  button,
+  dt,
+  dd,
+  figcaption,
+  small,
+  strong,
+  em,
+  code,
+  time
+) {
+  color: #ffffff;
+}
+
+.app-site a:hover,
+.app-site summary:hover {
+  color: #ffffff;
+}
+
 body.app-site::before {
   content: "";
   position: fixed;
@@ -168,16 +202,7 @@ body.app-site::after {
 .legal-nav-link:hover,
 .legal-nav-link.is-active {
   color: #ffffff;
-  text-shadow: 0 0 12px rgba(211, 131, 69, 0.45);
-}
-
-/* Pricing page — all copy solid white */
-.pricing-page {
-  color: #ffffff;
-}
-
-.pricing-page :where(p, li, h1, h2, h3, h4, span, td, th, summary, a, button) {
-  color: #ffffff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
 }
 
 .pricing-tier-card {

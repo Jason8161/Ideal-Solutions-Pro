@@ -25,12 +25,12 @@ const { feature, reversed = false } = Astro.props;
     />
     <div class="absolute inset-x-0 bottom-0 gradient-card-overlay p-4 pt-16">
       <p class="font-display text-2xl text-white">{feature.headline}</p>
-      <p class="text-sm text-white/85">{feature.subline}</p>
+      <p class="text-sm text-white">{feature.subline}</p>
     </div>
   </div>
   <div>
     <h2 class="font-display text-3xl text-white mb-3">{feature.headline}</h2>
-    <p class="text-brand-highlight text-sm font-medium mb-4">{feature.subline}</p>
-    <p class="text-brand-muted leading-relaxed">{feature.description}</p>
+    <p class="text-white text-sm font-medium mb-4">{feature.subline}</p>
+    <p class="text-white leading-relaxed">{feature.description}</p>
   </div>
 </article>

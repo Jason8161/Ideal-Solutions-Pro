@@ -16,11 +16,11 @@ import WaitlistForm from "./WaitlistForm.astro";
           class="h-14 w-14 object-contain mb-3"
         />
         <p class="font-display text-2xl text-white">{BRAND_NAME}</p>
-        <p class="mt-1 text-sm text-brand-muted">{BRAND_TAGLINE}</p>
+        <p class="mt-1 text-sm text-white">{BRAND_TAGLINE}</p>
       </div>
       <div>
         <p class="font-semibold text-white mb-3">Explore</p>
-        <ul class="space-y-2 text-sm text-brand-muted">
+        <ul class="space-y-2 text-sm text-white">
           {NAV_LINKS.map((link) => (
             <li>
               <a href={link.href} class="hover:text-white transition-colors">
@@ -38,7 +38,7 @@ import WaitlistForm from "./WaitlistForm.astro";
       </div>
       <div id="waitlist">
         <p class="font-semibold text-white mb-2">Get notified at launch</p>
-        <p class="text-sm text-brand-muted mb-4">
+        <p class="text-sm text-white mb-4">
           iOS and Android coming soon. Join the waitlist for early access.
         </p>
         <WaitlistForm compact />
@@ -47,7 +47,7 @@ import WaitlistForm from "./WaitlistForm.astro";
         </div>
       </div>
     </div>
-    <p class="mt-10 pt-6 border-t border-brand-metal/30 text-center text-xs text-brand-muted">
+    <p class="mt-10 pt-6 border-t border-brand-metal/30 text-center text-xs text-white">
       © {new Date().getFullYear()} Ideal Solutions. All rights reserved.
     </p>
   </div>
