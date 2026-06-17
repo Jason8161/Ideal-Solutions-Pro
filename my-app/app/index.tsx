@@ -186,6 +186,10 @@ export default function Page() {
   const homeGridRows = buildHomeGridRows();
   const gridInnerWidth = contentWidth ?? buttonWidth;
 
+  if (!coldSplashDone) {
+    return <View style={themed.splashPlaceholder} />;
+  }
+
   return (
     <View style={themed.root}>
       <View style={themed.homeMenuSection}>
@@ -475,6 +479,10 @@ function HomeMenuTile({
 
 function makeStyles(colors: ColorScheme, footerScrollInset: number) {
   return StyleSheet.create({
+    splashPlaceholder: {
+      flex: 1,
+      backgroundColor: "transparent",
+    },
     root: {
       flex: 1,
       backgroundColor: "transparent",

@@ -29,7 +29,7 @@ function AppChromeBody({ children }: PropsWithChildren) {
   const onOnboardingRoute = pathname.startsWith("/onboarding");
   const onHome = pathname === "/" || pathname === "";
 
-  const showHomeFooter = !onAuthScreen && !onOnboardingRoute;
+  const showHomeFooter = !onAuthScreen && !onOnboardingRoute && !showColdSplash;
   const showColdSplash = !onAuthScreen && onHome && !coldSplashDone && !legalGateComplete;
   const skipKeyboardAvoiding = onAuthScreen || onOnboardingRoute;
 
@@ -62,8 +62,8 @@ function AppChromeBody({ children }: PropsWithChildren) {
           {body}
         </KeyboardAvoidingView>
       )}
-      {showColdSplash ? <HomeColdSplashOverlay /> : null}
       {showHomeFooter ? <HomeFooterBar /> : null}
+      {showColdSplash ? <HomeColdSplashOverlay /> : null}
     </View>
   );
 }

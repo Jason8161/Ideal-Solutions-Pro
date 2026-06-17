@@ -44,7 +44,7 @@ import { BUTTON_MIN_HEIGHT } from "@/lib/theme/appTypography";
 
 /** Guest trial interest tier when the user picks Employee Access (not a paid plan). */
 const EMPLOYEE_TRIAL_INTEREST_TIER: SubscriptionTierId = "side_hustle";
-const TRIAL_START_TIMEOUT_MS = 10_000;
+const TRIAL_START_TIMEOUT_MS = 15_000;
 
 type TrialPickerSelection = SubscriptionTierId | "employee";
 

@@ -17,8 +17,12 @@ import {
 import { normalizeSubscriptionTierId, type SubscriptionTierId } from "./tiers";
 
 const STORAGE_KEY = "ideal_pro_trial_v2";
-const TRIAL_DEVICE_ID_TIMEOUT_MS = 5_000;
-const TRIAL_REMOTE_CHECK_TIMEOUT_MS = 8_000;
+const TRIAL_DEVICE_ID_TIMEOUT_MS = 3_000;
+const TRIAL_REMOTE_CHECK_TIMEOUT_MS = 5_000;
+
+function isGuestTrialStart(input: StartTrialInput): boolean {
+  return !input.userId && !input.email && !input.appleId && !input.googleId;
+}
 
 export type { ProTrialRecord, ProTrialState };
 
@@ -84,20 +88,23 @@ export async function startProTrial(input: StartTrialInput): Promise<StartTrialR
     () => `local-${Date.now()}`,
   );
 
-  const eligibility = await withPromiseTimeout(
-    checkTrialEligibilityRemote({
-      userId: input.userId,
-      deviceId,
-      email: input.email,
-      appleId: input.appleId,
-      googleId: input.googleId,
-    }),
-    TRIAL_REMOTE_CHECK_TIMEOUT_MS,
-  ).catch((): TrialEligibilityResult => ({
-    ok: false,
-    reason: "network",
-    message: "Could not verify trial eligibility. Check your connection and try again.",
-  }));
+  const guestTrial = isGuestTrialStart(input);
+  const eligibility: TrialEligibilityResult = guestTrial
+    ? { ok: true }
+    : await withPromiseTimeout(
+        checkTrialEligibilityRemote({
+          userId: input.userId,
+          deviceId,
+          email: input.email,
+          appleId: input.appleId,
+          googleId: input.googleId,
+        }),
+        TRIAL_REMOTE_CHECK_TIMEOUT_MS,
+      ).catch((): TrialEligibilityResult => ({
+        ok: false,
+        reason: "network",
+        message: "Could not verify trial eligibility. Check your connection and try again.",
+      }));
 
   if (!eligibility.ok) {
     if (eligibility.reason === "account_used") {
@@ -126,8 +133,16 @@ export async function startProTrial(input: StartTrialInput): Promise<StartTrialR
     googleId: input.googleId,
   };
 
-  await saveProTrialRecord(record);
-  await markTrialStartedRemote(record);
+  try {
+    await saveProTrialRecord(record);
+  } catch {
+    return {
+      ok: false,
+      reason: "remote_error",
+      message: "Could not save your trial on this device. Please try again.",
+    };
+  }
+  void markTrialStartedRemote(record);
 
   return { ok: true, state: computeTrialState(record, new Date(), false) };
 }

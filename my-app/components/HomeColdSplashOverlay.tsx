@@ -1,11 +1,9 @@
 import { Image } from "expo-image";
 import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { FOOTER_BAR_HEIGHT } from "@/components/FormScrollView";
 import { useBrandingImageStageDimensions } from "@/lib/brandingImageLayout";
-import { COLD_SPLASH_LOGO_MS, useHomeBoot } from "@/lib/homeBoot";
+import { COLD_SPLASH_LOGO_MS, SPLASH_BACKGROUND_COLOR, useHomeBoot } from "@/lib/homeBoot";
 import { COLD_SPLASH_APP_LOGO, COLD_SPLASH_HERO_IMAGE } from "@/lib/splashBackgroundImage";
 
 type SplashPhase = "logo" | "wire";
@@ -14,9 +12,7 @@ type SplashPhase = "logo" | "wire";
 export function HomeColdSplashOverlay() {
   const [phase, setPhase] = useState<SplashPhase>("logo");
   const { splashLogoUri } = useHomeBoot();
-  const insets = useSafeAreaInsets();
   const stage = useBrandingImageStageDimensions();
-  const footerReserve = FOOTER_BAR_HEIGHT + Math.max(insets.bottom, 10) + 10;
 
   const logoSource = useMemo(
     () => (splashLogoUri ? { uri: splashLogoUri } : COLD_SPLASH_APP_LOGO),
@@ -29,13 +25,8 @@ export function HomeColdSplashOverlay() {
   }, []);
 
   return (
-    <View
-      style={[styles.overlay, { bottom: footerReserve }]}
-      pointerEvents="box-none"
-      accessibilityViewIsModal
-    >
-      {/* Transparent overlay — root `AppConstructionBackdrop` shows the metal wallpaper through. */}
-      <View style={[styles.imageStage, { width: stage.width, height: stage.height }]} pointerEvents="auto">
+    <View style={styles.overlay} pointerEvents="auto" accessibilityViewIsModal>
+      <View style={[styles.imageStage, { width: stage.width, height: stage.height }]}>
         <Image
           source={phase === "logo" ? logoSource : COLD_SPLASH_HERO_IMAGE}
           style={styles.stageImage}
@@ -54,12 +45,10 @@ export function HomeColdSplashOverlay() {
 
 const styles = StyleSheet.create({
   overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "transparent",
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: SPLASH_BACKGROUND_COLOR,
     zIndex: 30,
+    elevation: 30,
     alignItems: "center",
     justifyContent: "center",
   },
