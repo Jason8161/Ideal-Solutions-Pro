@@ -5,6 +5,21 @@
 **/.expo
 **/.expo/**
 
+# Local static export / review artifacts (never needed on EAS workers)
+.expo-export-test
+.expo-export-test/
+.expo-export-test-build34
+.expo-export-test-build34/
+.expo-export-ipad-test
+.expo-export-ipad-test/
+.expo-export-ios-review
+.expo-export-ios-review/
+.expo-export-*/
+.expo-export-*/**
+
+dist-test-export/
+dist-test-export/**
+
 # Generated native projects (must be produced on EAS, not uploaded from Windows)
 android
 android/
@@ -22,8 +37,17 @@ node_modules/.cache/
 
 # Build outputs
 dist/
+dist/**
 web-build/
 
-# OS / editor
+# Dev-only asset staging (sync scripts write here; app bundles assets/images/ instead)
+assets/home-buttons/
+assets/home-buttons/**
+assets/images/_backup-home-tiles/
+assets/images/_backup-home-tiles/**
+
+# Logs and editor cruft
+*.log
+expo-lan.log
 .DS_Store
 Thumbs.db
