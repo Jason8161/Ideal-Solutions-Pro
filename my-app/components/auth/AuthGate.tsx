@@ -9,26 +9,15 @@ import {
   peekAuthScreenNavigationAllowed,
 } from "@/lib/auth/authNavigationIntent";
 import { AUTH_LOGIN_HREF, isAuthRoute } from "@/lib/auth/authPaths";
-import { isGuestTrialAccessActive } from "@/lib/auth/guestTrialAuth";
+import { hasGuestTrialProgress, isGuestTrialAccessActive } from "@/lib/auth/guestTrialAuth";
 import { useLaunchGateBypass } from "@/lib/launchGate";
 import { useLegalGateSessionComplete } from "@/lib/legal/useLegalGateSessionComplete";
-import {
-  isTrialHomeNavigationPending,
-  isTrialNavigationLocked,
-  isTrialOnboardingComplete,
-  useTrialGateState,
-} from "@/lib/subscriptions/trialGateState";
 
-/** Auth session only — tier picker routing is imperative (useInitialOnboardingRoute). */
+/** Auth session only — cold-start routing lives in AppStartupGate. */
 export function AuthGate({ children }: PropsWithChildren) {
   const pathname = usePathname() ?? "";
   const { isLoading, isAuthenticated } = useAuth();
-  const {
-    proTrial,
-    loading: subLoading,
-    requiresAccountLinking,
-  } = useSubscription();
-  const { trialStarted, suppressRedirects } = useTrialGateState(proTrial);
+  const { proTrial, loading: subLoading, requiresAccountLinking } = useSubscription();
   const legalGateComplete = useLegalGateSessionComplete();
   const launchGateBypass = useLaunchGateBypass();
   const initialGatePassedRef = useRef(false);
@@ -37,9 +26,9 @@ export function AuthGate({ children }: PropsWithChildren) {
   const onOnboarding = pathname.startsWith("/onboarding");
   const onAuthScreen = isAuthRoute(pathname);
   const guestTrialActive = isGuestTrialAccessActive(proTrial);
+  const trialStarted = hasGuestTrialProgress(proTrial);
   const gateReady = !isLoading && !subLoading;
   const deferNavigation = !launchGateBypass && !legalGateComplete;
-  const navigationLocked = isTrialNavigationLocked();
 
   useEffect(() => {
     if (!onAuthScreen) {
@@ -66,7 +55,7 @@ export function AuthGate({ children }: PropsWithChildren) {
     );
   }
 
-  if (deferNavigation || suppressRedirects || isTrialHomeNavigationPending() || navigationLocked) {
+  if (deferNavigation) {
     return <>{children}</>;
   }
 
@@ -74,7 +63,7 @@ export function AuthGate({ children }: PropsWithChildren) {
     const authSegment = pathname.replace(/^\//, "").split("/")[0] ?? "";
     const isLoginOrSignup = authSegment === "login" || authSegment === "signup";
 
-    if (isLoginOrSignup && !guestTrialActive && !trialStarted && !isTrialOnboardingComplete()) {
+    if (isLoginOrSignup && !guestTrialActive && !trialStarted) {
       if (!authScreenAllowedRef.current) {
         if (peekAuthScreenNavigationAllowed()) {
           authScreenAllowedRef.current = true;

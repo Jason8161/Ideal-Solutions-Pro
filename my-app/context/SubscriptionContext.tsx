@@ -1,6 +1,5 @@
-import Constants from "expo-constants";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { AppState, Platform } from "react-native";
+import { AppState, InteractionManager, Platform } from "react-native";
 
 import {
   detectRuntimeTestFlight,
@@ -27,10 +26,16 @@ import {
   type ResolvedFreeAccessOverride,
 } from "@/lib/subscription/freeAccessOverride";
 import { checkAiQuota, loadMonthlyAiUsage, type AiQuotaCheck, type MonthlyAiUsageSnapshot } from "@/lib/subscription/aiQuotaBridge";
+import { hasGuestTrialProgress } from "@/lib/auth/guestTrialAuth";
 import {
   getProTrialState,
+  linkProTrialToUser,
   type ProTrialState,
 } from "@/lib/subscription/trialStorage";
+import {
+  isTrialNavigationLocked,
+  shouldSuppressTrialRefresh,
+} from "@/lib/subscriptions/trialGateState";
 import {
   DEFAULT_SUBSCRIPTION_DEV_OVERRIDE,
   isDevActiveTierOverride,
@@ -39,14 +44,39 @@ import {
   subscriptionPlansForPicker,
   type SubscriptionDevOverride,
 } from "@/lib/subscriptionDevOverride";
-import { syncHomeSubscriptionTier } from "@/lib/homeBoot";
+import { syncHomeSubscriptionTier, useHomeBoot } from "@/lib/homeBoot";
+import {
+  configurePurchases,
+  getCustomerInfo,
+  getOfferingsWithTimeout,
+  getRevenueCatApiKey,
+  hasIdealSolutionsPro,
+  highestTierFromEntitlements,
+  isValidPurchasePackage,
+  loginRevenueCatUser,
+  presentCustomerCenter,
+  presentPaywall,
+  probePurchasesUiAvailable,
+  purchasePackage,
+  purchaseProPackage,
+  restorePurchases,
+  REVENUECAT_INIT_DELAY_MS,
+  type ProBillingPeriod,
+} from "@/lib/revenuecat";
+import {
+  formatRevenueCatConfigureWarning,
+  isRevenueCatNonBlockingConfigureMessage,
+  purchasesErrorMessage,
+} from "@/lib/revenuecat/errors";
 import {
   getSubscriptionsTestingNotice,
   isSubscriptionGatingDisabled,
   SUBSCRIPTIONS_TESTING_NOTICE,
 } from "@/lib/subscriptionTesting";
+import { hasRealPaidSubscription } from "@/lib/auth/subscriptionAccountLinking";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { companyProfileFromPartial, loadCompanyProfile } from "@/lib/profileStorage";
+import { waitForLegalGateSessionComplete } from "@/lib/legal/legalGateSession";
 
 type SubscriptionContextValue = {
   loading: boolean;
@@ -79,6 +109,8 @@ type SubscriptionContextValue = {
   isDevSimulating: boolean;
   isBetaFullAccess: boolean;
   isTestingUnlocked: boolean;
+  /** RevenueCat paid tier on device without an app account — show login to link billing. */
+  requiresAccountLinking: boolean;
   subscriptionsTestingNotice: string | null;
   pickerPlans: SubscriptionPlan[];
   testFlightDetectionDone: boolean;
@@ -86,76 +118,35 @@ type SubscriptionContextValue = {
   errorMessage: string | null;
   /** Pass `{ silent: true }` to refresh without blocking gates (e.g. home focus). */
   refresh: (options?: { silent?: boolean }) => Promise<void>;
+  /** Optimistic guest-trial update after local trial start — avoids gate races before RevenueCat refresh. */
+  applyGuestTrialState: (state: ProTrialState) => void;
   purchaseDefault: () => Promise<{ ok: boolean; message?: string }>;
-  purchaseTier: (tierId: SubscriptionTierId) => Promise<{ ok: boolean; message?: string }>;
-  restore: () => Promise<{ ok: boolean; message?: string }>;
+  purchaseTier: (tierId: SubscriptionTierId) => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
+  restore: () => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
+  purchaseProBilling: (period: ProBillingPeriod) => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
+  showPaywall: () => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
+  showCustomerCenter: () => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
+  hasIdealSolutionsProEntitlement: boolean;
+  isPaywallAvailable: boolean;
   devOverride: SubscriptionDevOverride | null;
   setDevOverride: (override: SubscriptionDevOverride) => Promise<void>;
 };
 
 const SubscriptionContext = createContext<SubscriptionContextValue | undefined>(undefined);
 
-function getLegacyEntitlementId(): string {
-  return (Constants.expoConfig?.extra as { entitlementId?: string } | undefined)?.entitlementId ?? "pro";
-}
-
-function highestTierFromEntitlements(active: Record<string, unknown>): SubscriptionTierId | null {
-  let best: SubscriptionTierId | null = null;
-  let bestRank = -1;
-
-  for (const plan of SUBSCRIPTION_PLANS) {
-    if (!plan.revenueCatEntitlementId) continue;
-    if (active[plan.revenueCatEntitlementId]) {
-      const rank = tierRank(plan.id);
-      if (rank > bestRank) {
-        bestRank = rank;
-        best = plan.id;
-      }
-    }
-  }
-
-  const legacy = getLegacyEntitlementId();
-  if (active[legacy]) {
-    const bossRank = tierRank("boss_man");
-    if (bossRank > bestRank) {
-      return "boss_man";
-    }
-  }
-
-  const legacyIds = ["ideal_solutions_pro", "ideal_starter", "ideal_boss", "ideal_pro"];
-  for (const id of legacyIds) {
-    if (active[id]) {
-      const mapped =
-        id === "ideal_starter"
-          ? "side_hustle"
-          : id === "ideal_boss"
-            ? "super_boss_man"
-            : "boss_man";
-      const rank = tierRank(mapped);
-      if (rank > bestRank) {
-        bestRank = rank;
-        best = mapped;
-      }
-    }
-  }
-
-  return best;
-}
-
-type PurchasesModule = typeof import("react-native-purchases").default;
-
-function getPurchases(): PurchasesModule | null {
-  if (Platform.OS === "web") return null;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require("react-native-purchases").default as PurchasesModule;
-  } catch {
-    return null;
-  }
+async function subscriptionErrorForGuestTrial(
+  message: string | null,
+  userId?: string | null,
+): Promise<string | null> {
+  if (!message || userId) return message;
+  const trial = await getProTrialState(false);
+  if (trial.isActive) return null;
+  return message;
 }
 
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
-  const { session } = useAuth();
+  const { session, profile } = useAuth();
+  const { coldSplashDone } = useHomeBoot();
   const [loading, setLoading] = useState(true);
   const [isConfigured, setIsConfigured] = useState(false);
   const [storeTier, setStoreTier] = useState<SubscriptionTierId | null>(null);
@@ -170,7 +161,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     aiLimit: 5,
     aiExhausted: false,
     trialUsed: false,
-    isLocked: true,
+    isLocked: false,
   });
   const [monthlyAiUsage, setMonthlyAiUsage] = useState<MonthlyAiUsageSnapshot>({
     monthKey: "",
@@ -183,8 +174,10 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     __DEV__ ? DEFAULT_SUBSCRIPTION_DEV_OVERRIDE : null,
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [hasIdealSolutionsProEntitlement, setHasIdealSolutionsProEntitlement] = useState(false);
   const [runtimeTestFlight, setRuntimeTestFlight] = useState(false);
   const [testFlightDetectionDone, setTestFlightDetectionDone] = useState(Platform.OS === "web");
+  const [isPaywallAvailable, setIsPaywallAvailable] = useState(false);
 
   const loadDevOverride = useCallback(async () => {
     if (!__DEV__) {
@@ -227,6 +220,14 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   );
 
   const hasPaidEntitlement = resolvedAccess.hasPaidEntitlement;
+  const requiresAccountLinking = useMemo(
+    () =>
+      !session?.userId &&
+      !isTestingUnlocked &&
+      !isBetaFullAccess &&
+      Boolean(storeTier && isPaidSubscriptionTier(storeTier)),
+    [session?.userId, isTestingUnlocked, isBetaFullAccess, storeTier],
+  );
   const subscriptionLocked = resolvedAccess.subscriptionLocked;
   const activeTier = resolvedAccess.activeTier;
   const accessSource = resolvedAccess.source;
@@ -282,31 +283,34 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
       let fromStore: SubscriptionTierId | null = null;
       let storeError = false;
+      let proEntitlement = false;
       if (Platform.OS !== "web") {
-        const Purchases = getPurchases();
-        if (Purchases) {
-          try {
-            const info = await Purchases.getCustomerInfo();
+        try {
+          const info = await getCustomerInfo();
+          if (info) {
             fromStore = highestTierFromEntitlements(info.entitlements.active);
             if (fromStore) fromStore = normalizeSubscriptionTierId(fromStore);
-          } catch {
-            storeError = true;
-            fromStore = null;
+            proEntitlement = hasIdealSolutionsPro(info);
           }
+        } catch {
+          storeError = true;
+          fromStore = null;
         }
       }
 
       const uid = userId ?? accessUserId;
       const overrideRow = uid ? await fetchFreeAccessOverrideForUser(uid) : null;
 
-      const paid =
-        isSubscriptionGatingDisabled() ||
-        resolveIsBetaFullAccess(runtimeTestFlight) ||
-        (fromStore !== null && isPaidSubscriptionTier(fromStore)) ||
-        isPaidSubscriptionTier(profileTierValue) ||
-        (overrideRow?.isActive ?? false);
+      const paidForTrialState = hasRealPaidSubscription({
+        storeTier: fromStore,
+        profileTier: profileTierValue,
+        freeAccessActive: overrideRow?.isActive ?? false,
+      });
 
-      const [trial, usage] = await Promise.all([getProTrialState(paid), loadMonthlyAiUsage()]);
+      const [trial, usage] = await Promise.all([
+        getProTrialState(paidForTrialState),
+        loadMonthlyAiUsage(),
+      ]);
 
       if (__DEV__) {
         setDevOverrideState(loadedDev);
@@ -316,10 +320,25 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       }
       setProfileTier(profileTierValue);
       setStoreTier(fromStore);
+      setHasIdealSolutionsProEntitlement(proEntitlement);
+      const uidForErrors = userId ?? accessUserId;
       if (!storeError) {
         setErrorMessage(null);
+      } else {
+        const msg = "Subscription services could not refresh. Restart the app or try again later.";
+        setErrorMessage(await subscriptionErrorForGuestTrial(msg, uidForErrors));
       }
-      setProTrial(trial);
+      setProTrial((prev) => {
+        const preserveDuringTrialStart = shouldSuppressTrialRefresh() || isTrialNavigationLocked();
+        if (preserveDuringTrialStart) {
+          if (hasGuestTrialProgress(prev)) return prev;
+          if (hasGuestTrialProgress(trial)) return trial;
+        }
+        if (hasGuestTrialProgress(prev) && !hasGuestTrialProgress(trial)) {
+          return prev;
+        }
+        return trial;
+      });
       setMonthlyAiUsage(usage);
       setFreeAccessOverride(overrideRow);
 
@@ -379,96 +398,213 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     let cancelled = false;
 
-    async function init() {
-      await loadDevOverride();
-      await loadProfileTier();
-
-      if (isSubscriptionGatingDisabled()) {
-        setIsConfigured(false);
-        setErrorMessage(null);
-        setStoreTier(null);
-        await syncHomeSubscriptionTier("enterprise_boss_man");
-        if (!cancelled) setLoading(false);
-        return;
-      }
-
-      if (Platform.OS === "web") {
-        setLoading(false);
-        setErrorMessage("In-app purchases run on iOS/Android builds (use a dev client with native modules).");
-        return;
-      }
-
-      const extra = Constants.expoConfig?.extra as
-        | { revenueCatAppleApiKey?: string; revenueCatGoogleApiKey?: string }
-        | undefined;
-      const apiKey =
-        Platform.OS === "ios"
-          ? extra?.revenueCatAppleApiKey
-          : Platform.OS === "android"
-            ? extra?.revenueCatGoogleApiKey
-            : "";
-
-      if (!apiKey) {
-        setIsConfigured(false);
-        setErrorMessage(
-          "Add EXPO_PUBLIC_RC_APPLE_KEY and EXPO_PUBLIC_RC_GOOGLE_KEY for RevenueCat, then rebuild a dev client.",
-        );
-        setLoading(false);
-        return;
-      }
-
-      const Purchases = getPurchases();
-      if (!Purchases) {
-        setIsConfigured(false);
-        setErrorMessage("RevenueCat native module is not available in this build.");
-        setLoading(false);
-        return;
-      }
-
+    async function loadBaseline() {
       try {
-        Purchases.setLogLevel(Purchases.LOG_LEVEL.WARN);
-        Purchases.configure({ apiKey });
-        if (!cancelled) setIsConfigured(true);
-        await readCustomerInfo(session?.userId ?? null);
+        await loadDevOverride();
+        await loadProfileTier();
+        const trial = await getProTrialState(false);
+        if (!cancelled) {
+          setProTrial((prev) => {
+            const preserveDuringTrialStart = shouldSuppressTrialRefresh() || isTrialNavigationLocked();
+            if (preserveDuringTrialStart) {
+              if (hasGuestTrialProgress(prev)) return prev;
+              if (hasGuestTrialProgress(trial)) return trial;
+            }
+            if (hasGuestTrialProgress(prev) && !hasGuestTrialProgress(trial)) {
+              return prev;
+            }
+            return trial;
+          });
+        }
+
+        if (isSubscriptionGatingDisabled()) {
+          setIsConfigured(false);
+          setErrorMessage(null);
+          setStoreTier(null);
+          await syncHomeSubscriptionTier("enterprise_boss_man");
+        } else if (Platform.OS === "web") {
+          const msg = "In-app purchases run on iOS/Android builds (use a dev client with native modules).";
+          setErrorMessage(await subscriptionErrorForGuestTrial(msg, null));
+        }
       } catch {
         if (!cancelled) {
-          setIsConfigured(false);
-          setErrorMessage("RevenueCat failed to configure. Use a dev build with native modules.");
+          const msg = "Subscription services could not start. Restart the app or try again later.";
+          setErrorMessage(await subscriptionErrorForGuestTrial(msg, null));
         }
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
 
-    void init();
+    void loadBaseline();
 
-    const sub = AppState.addEventListener("change", (state) => {
+    return () => {
+      cancelled = true;
+    };
+  }, [loadDevOverride, loadProfileTier]);
+
+  useEffect(() => {
+    if (!coldSplashDone) return;
+    if (isSubscriptionGatingDisabled() || Platform.OS === "web") return;
+
+    let cancelled = false;
+    let initTimer: ReturnType<typeof setTimeout> | null = null;
+    let interactionHandle: { cancel: () => void } | null = null;
+    let appStateSub: { remove: () => void } | null = null;
+
+    async function initRevenueCat() {
+      try {
+        const apiKey = getRevenueCatApiKey();
+        if (!apiKey.trim()) {
+          if (!cancelled) {
+            setIsConfigured(false);
+            const msg =
+              "Add EXPO_PUBLIC_REVENUECAT_API_KEY (or EXPO_PUBLIC_RC_APPLE_KEY / EXPO_PUBLIC_RC_GOOGLE_KEY), then rebuild a dev client.";
+            setErrorMessage(await subscriptionErrorForGuestTrial(msg, null));
+          }
+          try {
+            await readCustomerInfo(null);
+          } catch {
+            /* guest trial without RevenueCat */
+          }
+          return;
+        }
+
+        await waitForLegalGateSessionComplete();
+
+        const configured = await configurePurchases();
+        if (!configured.ok) {
+          if (!cancelled) {
+            setIsConfigured(false);
+            setIsPaywallAvailable(false);
+            if (isRevenueCatNonBlockingConfigureMessage(configured.message)) {
+              setErrorMessage(
+                await subscriptionErrorForGuestTrial(
+                  formatRevenueCatConfigureWarning(configured.message),
+                  null,
+                ),
+              );
+            } else {
+              setErrorMessage(await subscriptionErrorForGuestTrial(configured.message, null));
+            }
+          }
+          try {
+            await readCustomerInfo(null);
+          } catch {
+            /* local trial/profile still drive gates */
+          }
+          return;
+        }
+
+        if (!cancelled) {
+          setIsConfigured(true);
+          setIsPaywallAvailable(probePurchasesUiAvailable());
+        }
+        try {
+          await readCustomerInfo(null);
+        } catch (error) {
+          if (!cancelled) {
+            const msg = purchasesErrorMessage(error, "RevenueCat configured but could not load customer info.");
+            const formatted = isRevenueCatNonBlockingConfigureMessage(msg)
+              ? formatRevenueCatConfigureWarning(msg)
+              : msg;
+            setErrorMessage(await subscriptionErrorForGuestTrial(formatted, null));
+          }
+        }
+      } catch {
+        if (!cancelled) {
+          setIsConfigured(false);
+          const msg = "Subscription services could not start. Restart the app or try again later.";
+          setErrorMessage(await subscriptionErrorForGuestTrial(msg, null));
+        }
+        try {
+          await readCustomerInfo(null);
+        } catch {
+          /* local trial/profile still drive gates */
+        }
+      }
+    }
+
+    interactionHandle = InteractionManager.runAfterInteractions(() => {
+      initTimer = setTimeout(() => {
+        void initRevenueCat();
+      }, REVENUECAT_INIT_DELAY_MS);
+    });
+
+    appStateSub = AppState.addEventListener("change", (state) => {
       if (state === "active") void readCustomerInfo();
     });
 
     return () => {
       cancelled = true;
-      sub.remove();
+      interactionHandle?.cancel();
+      if (initTimer) clearTimeout(initTimer);
+      appStateSub?.remove();
     };
-  }, [loadDevOverride, loadProfileTier, readCustomerInfo, session?.userId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- deferred RC init after cold splash only
+  }, [coldSplashDone, readCustomerInfo]);
 
   useEffect(() => {
     if (!testFlightDetectionDone) return;
     void readCustomerInfo(session?.userId ?? null);
   }, [testFlightDetectionDone, runtimeTestFlight, readCustomerInfo, session?.userId]);
 
+  useEffect(() => {
+    const userId = session?.userId;
+    if (!userId || !isConfigured || isSubscriptionGatingDisabled() || Platform.OS === "web") return;
+
+    let cancelled = false;
+    void (async () => {
+      await loginRevenueCatUser(userId).catch(() => {
+        /* non-blocking — guest trial and local gates do not depend on RevenueCat login */
+      });
+      if (cancelled) return;
+      const linkResult = await linkProTrialToUser({
+        userId,
+        email: profile?.email,
+      });
+      if (cancelled) return;
+      if (!linkResult.ok && linkResult.reason === "account_used") {
+        setErrorMessage(await subscriptionErrorForGuestTrial(linkResult.message, userId));
+      }
+      await readCustomerInfo(userId);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.userId, profile?.email, readCustomerInfo, isConfigured]);
+
   const refresh = useCallback(
     async (options?: { silent?: boolean }) => {
-      if (!options?.silent) {
+      const suppressLoading =
+        options?.silent ||
+        isTrialNavigationLocked() ||
+        shouldSuppressTrialRefresh();
+      if (!suppressLoading) {
+        console.warn("[NAV] SubscriptionContext.refresh — setLoading(true)");
         setLoading(true);
+      } else {
+        console.warn("[NAV] SubscriptionContext.refresh — silent (trial nav window)");
       }
-      await readCustomerInfo(session?.userId ?? null);
-      if (!options?.silent) {
-        setLoading(false);
+      try {
+        await readCustomerInfo(session?.userId ?? null);
+      } finally {
+        if (!suppressLoading) {
+          setLoading(false);
+        }
       }
     },
     [readCustomerInfo, session?.userId],
   );
+
+  const applyGuestTrialState = useCallback((state: ProTrialState) => {
+    setProTrial(state);
+    setErrorMessage(null);
+    if (state.isActive && state.interestTier) {
+      void syncHomeSubscriptionTier(normalizeSubscriptionTierId(state.interestTier));
+    }
+  }, []);
 
   const purchaseTier = useCallback(
     async (tierId: SubscriptionTierId) => {
@@ -489,34 +625,60 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       if (Platform.OS === "web") {
         return { ok: false, message: "Purchases are not available on web." };
       }
-      const Purchases = getPurchases();
-      if (!Purchases) {
-        return { ok: false, message: "Purchases require a native iOS or Android build." };
-      }
       try {
-        const offerings = await Purchases.getOfferings();
-        const packages = offerings.current?.availablePackages ?? [];
-        const productId = plan.revenueCatProductId;
-        const packageId = plan.revenueCatPackageId;
-        const pkg =
-          packages.find((p) => p.identifier === packageId) ??
-          packages.find((p) => p.product.identifier === productId);
+        const offerings = await getOfferingsWithTimeout();
+        if (!offerings.ok) {
+          return { ok: false, message: offerings.message };
+        }
 
-        if (!pkg) {
+        const productId = plan.revenueCatProductId ?? "";
+        const packageId = plan.revenueCatPackageId ?? "";
+        const pkg =
+          offerings.packages.find((p) => p.identifier === packageId) ??
+          offerings.packages.find((p) => p.product.identifier === productId);
+
+        if (!isValidPurchasePackage(pkg)) {
           return {
             ok: false,
-            message: `No RevenueCat package for ${plan.name}. Add product ${productId ?? ""} to the default offering.`,
+            message: `No RevenueCat package for ${plan.name}. Add product ${productId} to the default offering.`,
           };
         }
-        await Purchases.purchasePackage(pkg);
-        await readCustomerInfo();
-        return { ok: true };
+
+        if (__DEV__) {
+          console.log("[RevenueCat] package selected", pkg.identifier);
+        }
+
+        const purchaseResult = await purchasePackage(pkg);
+        if (purchaseResult.ok) {
+          await readCustomerInfo();
+        }
+        return purchaseResult;
       } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : "Purchase failed.";
-        return { ok: false, message: msg };
+        return { ok: false, message: purchasesErrorMessage(e, "Purchase failed.") };
       }
     },
     [devOverride, readCustomerInfo],
+  );
+
+  const purchaseProBilling = useCallback(
+    async (period: ProBillingPeriod) => {
+      if (isSubscriptionGatingDisabled()) {
+        return { ok: false, message: SUBSCRIPTIONS_TESTING_NOTICE };
+      }
+      if (__DEV__ && isDevActiveTierOverride(devOverride)) {
+        return {
+          ok: false,
+          message:
+            "Dev simulation is overriding the active plan. Set “None (use RevenueCat)” or turn off simulation to test real purchases.",
+        };
+      }
+      const result = await purchaseProPackage(period);
+      if (result.ok) {
+        await readCustomerInfo();
+      }
+      return result;
+    },
+    [devOverride, readCustomerInfo, session?.userId],
   );
 
   const purchaseDefault = useCallback(async () => purchaseTier("boss_man"), [purchaseTier]);
@@ -525,19 +687,33 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     if (isSubscriptionGatingDisabled()) {
       return { ok: false, message: SUBSCRIPTIONS_TESTING_NOTICE };
     }
-    if (Platform.OS === "web") return { ok: false, message: "Restore is not available on web." };
-    const Purchases = getPurchases();
-    if (!Purchases) {
-      return { ok: false, message: "Restore requires a native iOS or Android build." };
-    }
-    try {
-      await Purchases.restorePurchases();
+    const result = await restorePurchases();
+    if (result.ok) {
       await readCustomerInfo();
-      return { ok: true };
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "Restore failed.";
-      return { ok: false, message: msg };
     }
+    return result;
+  }, [readCustomerInfo, session?.userId]);
+
+  const showPaywall = useCallback(async () => {
+    if (isSubscriptionGatingDisabled()) {
+      return { ok: false, message: SUBSCRIPTIONS_TESTING_NOTICE };
+    }
+    const result = await presentPaywall();
+    if (result.ok) {
+      await readCustomerInfo();
+    }
+    return result;
+  }, [readCustomerInfo, session?.userId]);
+
+  const showCustomerCenter = useCallback(async () => {
+    if (isSubscriptionGatingDisabled()) {
+      return { ok: false, message: SUBSCRIPTIONS_TESTING_NOTICE };
+    }
+    const result = await presentCustomerCenter();
+    if (result.ok) {
+      await readCustomerInfo();
+    }
+    return result;
   }, [readCustomerInfo]);
 
   const value = useMemo(
@@ -566,13 +742,20 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       isDevSimulating,
       isBetaFullAccess,
       isTestingUnlocked,
+      requiresAccountLinking,
       subscriptionsTestingNotice,
       pickerPlans,
       errorMessage,
       refresh,
+      applyGuestTrialState,
       purchaseDefault,
       purchaseTier,
+      purchaseProBilling,
       restore,
+      showPaywall,
+      showCustomerCenter,
+      hasIdealSolutionsProEntitlement,
+      isPaywallAvailable,
       devOverride: __DEV__ ? devOverride : null,
       setDevOverride,
     }),
@@ -599,13 +782,20 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       isDevSimulating,
       isBetaFullAccess,
       isTestingUnlocked,
+      requiresAccountLinking,
       subscriptionsTestingNotice,
       pickerPlans,
       errorMessage,
       refresh,
+      applyGuestTrialState,
       purchaseDefault,
       purchaseTier,
+      purchaseProBilling,
       restore,
+      showPaywall,
+      showCustomerCenter,
+      hasIdealSolutionsProEntitlement,
+      isPaywallAvailable,
       devOverride,
       setDevOverride,
     ],

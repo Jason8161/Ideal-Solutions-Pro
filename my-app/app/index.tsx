@@ -32,13 +32,13 @@ import {
   type HomeTileImageKey,
 } from "@/lib/homeMenuItems";
 import { useSubscription } from "@/context/SubscriptionContext";
-import { ensureHomeBoot, refreshHomeProfile, useHomeBoot } from "@/lib/homeBoot";
+import { ensureHomeBoot, refreshHomeProfile, SPLASH_BACKGROUND_COLOR, useHomeBoot } from "@/lib/homeBoot";
 import {
   buildHomeGridRows,
   homeMenuItemRoute,
   isMaterialSearchMenuKey,
 } from "@/lib/homeNavigation";
-import { shouldSuppressTrialGateRedirects } from "@/lib/subscriptions/trialGateState";
+import { shouldSuppressTrialRefresh } from "@/lib/subscriptions/trialGateState";
 import {
   homeJobFolderHrefForTier,
   promptUpgradeForHomeTileWhenReady,
@@ -157,7 +157,7 @@ export default function Page() {
   useFocusEffect(
     useCallback(() => {
       if (!profileHydrated) return;
-      if (shouldSuppressTrialGateRedirects()) return;
+      if (shouldSuppressTrialRefresh()) return;
       let cancelled = false;
       void (async () => {
         await refreshSubscription({ silent: true });
@@ -481,7 +481,7 @@ function makeStyles(colors: ColorScheme, footerScrollInset: number) {
   return StyleSheet.create({
     splashPlaceholder: {
       flex: 1,
-      backgroundColor: "transparent",
+      backgroundColor: SPLASH_BACKGROUND_COLOR,
     },
     root: {
       flex: 1,

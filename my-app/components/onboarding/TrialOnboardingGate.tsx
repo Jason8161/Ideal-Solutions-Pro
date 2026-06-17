@@ -9,18 +9,14 @@ import {
   isEmployeeRoute,
   isTrialOnboardingExemptRoute,
 } from "@/lib/auth/authPaths";
+import { hasGuestTrialProgress } from "@/lib/auth/guestTrialAuth";
 import { loadEmployeeSession } from "@/lib/employeeSession";
 import { useLaunchGateBypass } from "@/lib/launchGate";
 import { useLegalGateSessionComplete } from "@/lib/legal/useLegalGateSessionComplete";
-import {
-  isTrialHomeNavigationPending,
-  isTrialNavigationLocked,
-  useTrialGateState,
-} from "@/lib/subscriptions/trialGateState";
 
 const UPGRADE_HREF = "/upgrade" as Href;
 
-/** Blocks /upgrade when subscription locked after trial expiry. Tier picker uses imperative routing. */
+/** Blocks /upgrade when subscription locked after trial expiry. Cold-start routing lives in AppStartupGate. */
 export function TrialOnboardingGate({ children }: PropsWithChildren) {
   const pathname = usePathname() ?? "";
   const legalGateComplete = useLegalGateSessionComplete();
@@ -33,7 +29,6 @@ export function TrialOnboardingGate({ children }: PropsWithChildren) {
     subscriptionLocked,
     proTrial,
   } = useSubscription();
-  const { trialNeverStarted, suppressRedirects } = useTrialGateState(proTrial);
   const [employeeActive, setEmployeeActive] = useState(false);
   const [employeeChecked, setEmployeeChecked] = useState(false);
 
@@ -61,15 +56,15 @@ export function TrialOnboardingGate({ children }: PropsWithChildren) {
   const onAuth = isAuthRoute(pathname);
   const onEmployeeRoute = isEmployeeRoute(pathname);
   const employeeSubscriptionExempt = employeeActive && onEmployeeRoute;
+  const trialNeverStarted = !hasGuestTrialProgress(proTrial);
 
   if (onOnboarding) {
     return children;
   }
 
   const deferNavigation = !launchGateBypass && !legalGateComplete;
-  const navigationLocked = isTrialNavigationLocked();
 
-  if (deferNavigation || suppressRedirects || isTrialHomeNavigationPending() || navigationLocked) {
+  if (deferNavigation) {
     return children;
   }
 

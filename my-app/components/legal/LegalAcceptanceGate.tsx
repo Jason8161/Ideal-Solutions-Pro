@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from "react";
 import {
   Alert,
@@ -17,9 +16,8 @@ import { LegalAgreementFlow } from "@/components/legal/LegalAgreementFlow";
 import { LegalDarkOverlay } from "@/components/legal/LegalDarkOverlay";
 import { LegalIntroScreen } from "@/components/legal/LegalIntroScreen";
 import { useAppTheme } from "@/context/ThemeContext";
-import { ONBOARDING_TIER_TRIAL_HREF } from "@/lib/auth/authPaths";
 import { hexToRgba } from "@/lib/colorSchemeStorage";
-import { skipHomeColdSplash, useHomeBoot } from "@/lib/homeBoot";
+import { useHomeBoot } from "@/lib/homeBoot";
 import { acceptAllLegalStuffDocuments } from "@/lib/legal/legalAcceptanceStorage";
 import { loadLegalGateState, type LegalGateStep } from "@/lib/legal/legalGate";
 import { finalizeLegalGateSession } from "@/lib/legal/legalGateSession";
@@ -27,12 +25,7 @@ import { useResponsiveTypography } from "@/lib/layout/responsiveTypography";
 import { shouldSkipLegalGate } from "@/lib/legal/legalGatePolicy";
 import { loadLegalIntroSeen, markLegalIntroSeen } from "@/lib/legal/legalIntroStorage";
 import { syncLegalAcceptanceToSupabase } from "@/lib/legal/syncLegalAcceptance";
-import { markInitialOnboardingRouteHandled } from "@/lib/subscriptions/trialGateState";
-import { loadProTrialRecord } from "@/lib/subscriptions/trialStorage";
-
 const LEGAL_GATE_HYDRATE_TIMEOUT_MS = 10_000;
-
-let legalGateRoutedToTierTrial = false;
 
 type GateState = {
   hydrated: boolean;
@@ -44,7 +37,6 @@ type GateState = {
 
 export function LegalAcceptanceGate({ children }: PropsWithChildren) {
   const skipGate = shouldSkipLegalGate();
-  const router = useRouter();
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
@@ -106,20 +98,9 @@ export function LegalAcceptanceGate({ children }: PropsWithChildren) {
     return gate;
   }, []);
 
-  /** After legal is satisfied, send fresh installs to the tier picker (subscription choice). */
-  const routeToTierTrialIfNeeded = useCallback(async () => {
-    if (legalGateRoutedToTierTrial) return;
-    const record = await loadProTrialRecord();
-    if (record?.trialStartDate) return;
-    legalGateRoutedToTierTrial = true;
-    skipHomeColdSplash();
-    router.replace(ONBOARDING_TIER_TRIAL_HREF);
-    markInitialOnboardingRouteHandled();
-  }, [router]);
-
   useEffect(() => {
     if (skipGate) {
-      void finalizeLegalGateSession().then(() => routeToTierTrialIfNeeded());
+      void finalizeLegalGateSession();
       return;
     }
 
@@ -147,14 +128,14 @@ export function LegalAcceptanceGate({ children }: PropsWithChildren) {
       cancelled = true;
       clearTimeout(hydrateTimeout);
     };
-  }, [refresh, routeToTierTrialIfNeeded, skipGate]);
+  }, [refresh, skipGate]);
 
   useEffect(() => {
     if (skipGate || !state.hydrated) return;
     if (state.step === null) {
-      void finalizeLegalGateSession().then(() => routeToTierTrialIfNeeded());
+      void finalizeLegalGateSession();
     }
-  }, [skipGate, state.hydrated, state.step, routeToTierTrialIfNeeded]);
+  }, [skipGate, state.hydrated, state.step]);
 
   const showGate = coldSplashDone && state.hydrated && state.step !== null;
 
@@ -208,12 +189,9 @@ export function LegalAcceptanceGate({ children }: PropsWithChildren) {
       return;
     }
     await syncLegalAcceptanceToSupabase();
-    const gate = await refresh();
+    await refresh();
     await finalizeLegalGateSession();
-    if (gate.step === null) {
-      await routeToTierTrialIfNeeded();
-    }
-  }, [refresh, routeToTierTrialIfNeeded]);
+  }, [refresh]);
 
   if (skipGate || !coldSplashDone || !state.hydrated) {
     return <>{children}</>;

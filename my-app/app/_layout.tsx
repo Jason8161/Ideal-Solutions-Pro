@@ -17,8 +17,8 @@ import { LegalAcceptanceGate } from "@/components/legal/LegalAcceptanceGate";
 import { EmployeeRouteGuard } from "@/lib/employeeRouteGuard";
 import { DisplaySettingsProvider } from "@/context/DisplaySettingsContext";
 import { AuthGate } from "@/components/auth/AuthGate";
+import { AppStartupGate } from "@/components/AppStartupGate";
 import { TrialOnboardingGate } from "@/components/onboarding/TrialOnboardingGate";
-import { useInitialOnboardingRoute } from "@/lib/subscriptions/useInitialOnboardingRoute";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { ScaleProvider } from "@/context/ScaleContext";
@@ -44,12 +44,6 @@ function RootNativeSplashDismissal() {
     }
   }, [coldSplashDone, onHome]);
 
-  return null;
-}
-
-/** One-shot cold-start navigation to tier-trial — never uses reactive Redirect. */
-function InitialOnboardingRouteHandler() {
-  useInitialOnboardingRoute();
   return null;
 }
 
@@ -86,12 +80,13 @@ export default function RootLayout() {
               <AuthProvider>
                 <LegalAcceptanceGate>
                   <SubscriptionProvider>
-                    <InitialOnboardingRouteHandler />
-                    <AuthGate>
-                      <TrialOnboardingGate>
-                        <RootShell />
-                      </TrialOnboardingGate>
-                    </AuthGate>
+                    <AppStartupGate>
+                      <AuthGate>
+                        <TrialOnboardingGate>
+                          <RootShell />
+                        </TrialOnboardingGate>
+                      </AuthGate>
+                    </AppStartupGate>
                   </SubscriptionProvider>
                 </LegalAcceptanceGate>
               </AuthProvider>

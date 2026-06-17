@@ -18,7 +18,7 @@ import { useAppTheme } from "@/context/ThemeContext";
 import type { ColorScheme } from "@/lib/colorSchemeStorage";
 import { useFormContentWidth } from "@/lib/layout/formContentWidth";
 import { useSubscription } from "@/context/SubscriptionContext";
-import { withPromiseTimeout } from "@/lib/async/withPromiseTimeout";
+import { skipHomeColdSplash } from "@/lib/homeBoot";
 import {
   LOCAL_ONLY_DISCLAIMER,
   PLAN_PICKER_FAIR_USE_NOTE,
@@ -31,7 +31,6 @@ import {
 import { startProTrial, loadProTrialRecord } from "@/lib/subscriptions/trialStorage";
 import {
   lockTrialNavigation,
-  markTrialHomeNavigationCommitted,
   markTrialJustStarted,
   markTrialStarting,
   primeTrialStorageCache,
@@ -39,12 +38,10 @@ import {
   TRIAL_NAVIGATION_UNLOCK_MS,
   unlockTrialNavigation,
 } from "@/lib/subscriptions/trialGateState";
-import { skipHomeColdSplash } from "@/lib/homeBoot";
 import { BUTTON_MIN_HEIGHT } from "@/lib/theme/appTypography";
 
 /** Guest trial interest tier when the user picks Employee Access (not a paid plan). */
 const EMPLOYEE_TRIAL_INTEREST_TIER: SubscriptionTierId = "side_hustle";
-const TRIAL_START_TIMEOUT_MS = 15_000;
 
 type TrialPickerSelection = SubscriptionTierId | "employee";
 
@@ -67,13 +64,10 @@ export default function TierTrialOnboardingScreen() {
     setActionError(null);
 
     lockTrialNavigation();
-    if (__DEV__) {
-      console.warn("[TRIAL_NAV] lockTrialNavigation on Start free trial");
-    }
+    console.warn("[NAV] tier-trial: lockTrialNavigation on Start free trial");
 
     if (isTestingUnlocked || isBetaFullAccess) {
       skipHomeColdSplash();
-      markTrialHomeNavigationCommitted();
       await navigateAfterTrialState("/");
       unlockTrialNavigation(TRIAL_NAVIGATION_UNLOCK_MS);
       return;
@@ -85,15 +79,7 @@ export default function TierTrialOnboardingScreen() {
     setBusy(true);
     markTrialStarting();
     try {
-      const result = await withPromiseTimeout(
-        startProTrial({ interestTier }),
-        TRIAL_START_TIMEOUT_MS,
-        "Trial start timed out",
-      ).catch(() => ({
-        ok: false as const,
-        reason: "remote_error" as const,
-        message: "Starting your trial took too long. Please try again.",
-      }));
+      const result = await startProTrial({ interestTier });
 
       if (!result.ok) {
         resetTrialOnboardingSession();
@@ -112,13 +98,10 @@ export default function TierTrialOnboardingScreen() {
       markTrialJustStarted();
       skipHomeColdSplash();
       applyGuestTrialState(result.state);
-      markTrialHomeNavigationCommitted();
 
       await navigateAfterTrialState(destination);
       unlockTrialNavigation(TRIAL_NAVIGATION_UNLOCK_MS);
-      if (__DEV__) {
-        console.warn("[TRIAL_NAV] trial started — router.replace once, unlock in 3s");
-      }
+      console.warn("[NAV] tier-trial: trial started — router.replace once");
     } catch {
       resetTrialOnboardingSession();
       setActionError("Could not start your trial. Please try again.");
@@ -134,9 +117,7 @@ export default function TierTrialOnboardingScreen() {
         requestAnimationFrame(() => resolve());
       });
     });
-    if (__DEV__) {
-      console.warn(`[TRIAL_NAV] router.replace → ${href}`);
-    }
+    console.warn(`[NAV] tier-trial: router.replace → ${href}`);
     router.replace(href);
   }
 
