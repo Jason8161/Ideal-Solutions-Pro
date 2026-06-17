@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "stop:metro": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/stop-metro.ps1",
+    "start:dev-client": "npx expo start --dev-client",
     "start:lan": "expo start -c --host lan",
     "start:phone": "npm run stop:metro && expo start -c --host lan",
     "start": "node ./scripts/echo-beta-env.js && expo start",
@@ -21,10 +22,11 @@
     "generate:home-tile-presets": "node ./scripts/generate-distinct-home-tile-presets.mjs",
     "generate:payment-brand-glyphs": "node ./scripts/generate-payment-app-brand-glyphs.mjs",
     "fetch:supplier-logos": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/fetch-supplier-logos.ps1",
+    "setup:ai": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/setup-ai-assistance.ps1",
     "eas:build:ios": "cross-env EAS_NO_VCS=1 eas build --profile production --platform ios",
     "eas:build:android": "cross-env EAS_NO_VCS=1 eas build --profile production --platform android",
     "eas:build:all": "npm run eas:prepare && cross-env EAS_NO_VCS=1 eas build --profile production --platform all",
-    "eas:build:development:ios": "cross-env EAS_NO_VCS=1 eas build --profile development --platform ios",
+    "eas:build:development:ios": "cross-env EAS_NO_VCS=1 eas build --profile development-device --platform ios",
     "eas:build:development:android": "cross-env EAS_NO_VCS=1 eas build --profile development --platform android",
     "eas:build:preview:ios": "cross-env EAS_NO_VCS=1 eas build --profile preview --platform ios",
     "eas:build:preview:android": "cross-env EAS_NO_VCS=1 eas build --profile preview --platform android",
@@ -35,7 +37,8 @@
     "eas:build:employee-android": "cross-env EAS_NO_VCS=1 eas build --profile employee-android --platform android",
     "eas:submit:ios": "cross-env EAS_NO_VCS=1 eas submit --platform ios --profile production",
     "eas:submit:android": "cross-env EAS_NO_VCS=1 eas submit --platform android --profile production",
-    "start:employee": "cross-env APP_VARIANT=employee EXPO_PUBLIC_APP_VARIANT=employee expo start"
+    "start:employee": "cross-env APP_VARIANT=employee EXPO_PUBLIC_APP_VARIANT=employee expo start",
+    "check:invite-messages": "node ./scripts/check-invite-messages.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/bebas-neue": "^0.4.1",
