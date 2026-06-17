@@ -644,9 +644,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           };
         }
 
-        if (__DEV__) {
-          console.log("[RevenueCat] package selected", pkg.identifier);
-        }
+        console.warn("[RevenueCat] package selected", pkg.identifier);
 
         const purchaseResult = await purchasePackage(pkg);
         if (purchaseResult.ok) {

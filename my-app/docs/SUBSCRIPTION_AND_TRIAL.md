@@ -17,24 +17,42 @@
 
 Product IDs: `docs/REVENUECAT_PRODUCTS.md`
 
-## 7-day trial
+## Guest trial (no app account)
 
-1. User signs in with **Apple**, **Google**, or **verified email** (`trialPolicy.authSatisfiesTrialRequirement`).
-2. User picks an **interest tier** on `/onboarding/tier-trial`.
-3. Trial grants **full feature access to that tier** for 7 days.
-4. **5 AI requests total** (no monthly reset) — hard stop at 5.
-5. No cloud storage (same local-only policy).
+1. User accepts legal documents (`LegalAcceptanceGate`).
+2. User picks an **interest tier** on `/onboarding/tier-trial` — **no app sign-in required**.
+3. **Start free trial** runs a RevenueCat `purchasePackage` for the chosen tier’s monthly SKU (App Store / Play intro trial). RevenueCat uses an **anonymous App User ID** until the user signs in.
+4. Trial grants **full feature access to that tier** for 7 days (store intro offer + in-app gates).
+5. **5 AI requests total** during trial (no monthly reset) — hard stop at 5 unless a paid entitlement is active.
+6. No cloud storage (same local-only policy).
 
-On trial expiry **or** 5 AI used: `subscriptionLocked` → `/upgrade`. Local data is preserved.
+**Employee access** from the tier picker still uses the local device trial marker (`startProTrial`) and routes to `/employee/join` — no store purchase on that path.
+
+On trial expiry **or** 5 AI used (without an active store subscription): `subscriptionLocked` → `/upgrade`. Local data is preserved.
+
+## Subscribe (account required)
+
+1. User chooses a paid plan (Settings → Subscription or upgrade flow).
+2. App prompts **Create account** or **Sign in** before store checkout.
+3. On sign-in, `linkProTrialToUser` attaches the device trial to `userId`.
+4. RevenueCat anonymous customer is merged via `Purchases.logIn(userId)` (see below).
+5. Purchase completes through RevenueCat / App Store / Play.
 
 ## Trial safeguards
 
 Tracked locally and (when configured) in Supabase `trial_records`:
 
-- `userId`, `deviceId`, `email`, `appleId`, `googleId`
+- `deviceId` (primary for guest trials), then `userId` after link
+- `email`, `appleId`, `googleId` when available
 - `interest_tier`, `trial_start_date`, `trial_used`, `ai_requests_used`
 
-One trial per verified account and one per device (`lib/subscriptions/trialStorage.ts`, `supabaseTrial.ts` stubs).
+One trial per device and one per verified account (`lib/subscriptions/trialStorage.ts`, `supabaseTrial.ts` stubs).
+
+## RevenueCat anonymous ID
+
+- `Purchases.configure()` creates an **anonymous** RevenueCat app user id for onboarding trial purchases and pre-account subscriptions.
+- When the user creates an account, `loginRevenueCatUser` calls `Purchases.logIn(appUserId)` to alias the anonymous customer to the app user id (entitlements transfer per RevenueCat rules).
+- `logoutRevenueCatUser` (`Purchases.logOut()`) runs on sign-out so the next guest session gets a fresh anonymous id.
 
 ## AI add-ons
 
@@ -52,8 +70,9 @@ Usage UI: **Settings → AI usage** (75% warning, block at limit).
 |--------|------|
 | `lib/subscriptions/tiers.ts` | Plans, limits, RevenueCat IDs |
 | `lib/subscriptions/trialPolicy.ts` | Trial state machine |
-| `lib/subscriptions/trialStorage.ts` | Local trial + start API |
+| `lib/subscriptions/trialStorage.ts` | Local trial, guest start, account link |
 | `lib/subscriptions/aiQuota.ts` | Monthly + trial AI quotas |
 | `context/SubscriptionContext.tsx` | RevenueCat, effective tier, quota |
 | `lib/subscription/featureAccess.ts` | Feature gates |
+| `components/auth/AuthGate.tsx` | Guest trial + public route access |
 | `components/onboarding/TrialOnboardingGate.tsx` | Onboarding + upgrade routing |

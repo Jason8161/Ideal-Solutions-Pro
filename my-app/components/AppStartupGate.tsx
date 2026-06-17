@@ -1,5 +1,6 @@
 import { usePathname, useRouter, type Href } from "expo-router";
 import { useEffect, useRef, type PropsWithChildren } from "react";
+import { Platform } from "react-native";
 
 import { isAuthRoute, ONBOARDING_TIER_TRIAL_HREF } from "@/lib/auth/authPaths";
 import { useHomeBoot } from "@/lib/homeBoot";
@@ -10,8 +11,15 @@ import {
 } from "@/lib/legal/legalGateSession";
 import { shouldSkipLegalGate } from "@/lib/legal/legalGatePolicy";
 import { loadLegalIntroSeen } from "@/lib/legal/legalIntroStorage";
-import { isTrialNavigationLocked } from "@/lib/subscriptions/trialGateState";
+import {
+  configurePurchases,
+  getCustomerInfo,
+  highestTierFromEntitlements,
+} from "@/lib/revenuecat";
+import { isSubscriptionGatingDisabled } from "@/lib/subscriptionTesting";
+import { getCachedHasStorageTrial, isTrialNavigationLocked } from "@/lib/subscriptions/trialGateState";
 import { loadProTrialRecord } from "@/lib/subscriptions/trialStorage";
+import { isPaidSubscriptionTier } from "@/lib/subscriptions/tiers";
 
 const HOME_HREF = "/" as Href;
 
@@ -34,7 +42,25 @@ async function readStartupRouteState(): Promise<{ legalAccepted: boolean; trialS
   }
 
   const trialRecord = await loadProTrialRecord();
-  const trialStarted = Boolean(trialRecord?.trialStartDate);
+  let trialStarted = Boolean(trialRecord?.trialStartDate);
+
+  if (!trialStarted && getCachedHasStorageTrial()) {
+    trialStarted = true;
+  }
+
+  if (!trialStarted && !isSubscriptionGatingDisabled() && Platform.OS !== "web") {
+    try {
+      await configurePurchases();
+      const info = await getCustomerInfo();
+      const tier = info ? highestTierFromEntitlements(info.entitlements.active) : null;
+      if (tier && isPaidSubscriptionTier(tier)) {
+        trialStarted = true;
+        console.warn("[RevenueCat] AppStartupGate: active entitlement — onboarding complete", tier);
+      }
+    } catch {
+      /* local trial / profile still drive gates */
+    }
+  }
 
   return { legalAccepted, trialStarted };
 }

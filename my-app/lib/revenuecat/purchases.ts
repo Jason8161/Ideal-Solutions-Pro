@@ -2,7 +2,9 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 import type { CustomerInfo, PurchasesPackage } from "react-native-purchases";
 
+import { withPromiseTimeout } from "@/lib/async/withPromiseTimeout";
 import {
+  getSubscriptionPlan,
   normalizeSubscriptionTierId,
   SUBSCRIPTION_PLANS,
   tierRank,
@@ -17,12 +19,45 @@ import {
   PRO_STORE_PRODUCT_IDS,
   type ProBillingPeriod,
 } from "./constants";
-import { isPurchaseCancelledError, purchasesErrorMessage } from "./errors";
+import {
+  isInvalidRevenueCatCredentialsMessage,
+  isPurchaseCancelledError,
+  purchasesErrorMessage,
+  revenueCatInvalidCredentialsMessage,
+} from "./errors";
+import { shouldSkipRevenueCatOnLaunch } from "./launchPolicy";
 
 export type PurchasesModule = typeof import("react-native-purchases").default;
 export type PurchasesUiModule = typeof import("react-native-purchases-ui").default;
 
 export type RevenueCatResult = { ok: true } | { ok: false; message: string; cancelled?: boolean };
+
+let purchasesConfigured = false;
+let purchasesUiAvailableCache: boolean | null = null;
+
+export const CUSTOMER_INFO_TIMEOUT_MS = 8_000;
+export const OFFERINGS_TIMEOUT_MS = 10_000;
+export const PURCHASE_ACTION_TIMEOUT_MS = 10_000;
+
+function rcLog(message: string, detail?: unknown): void {
+  if (detail !== undefined) {
+    console.warn(message, detail);
+  } else {
+    console.warn(message);
+  }
+}
+
+export function isRevenueCatSandboxApiKey(apiKey: string): boolean {
+  return apiKey.trim().startsWith("test_");
+}
+
+function isValidRevenueCatApiKey(apiKey: string): boolean {
+  const trimmed = apiKey.trim();
+  if (!trimmed) return false;
+  if (Platform.OS === "ios") return trimmed.startsWith("appl_") || trimmed.startsWith("test_");
+  if (Platform.OS === "android") return trimmed.startsWith("goog_") || trimmed.startsWith("test_");
+  return trimmed.length > 0;
+}
 
 function readExtra(): {
   revenueCatApiKey?: string;
@@ -73,11 +108,30 @@ export function getPurchasesUi(): PurchasesUiModule | null {
   }
 }
 
+/** Lazy — never call during first React render (native module load can crash cold start). */
 export function isPurchasesUiAvailable(): boolean {
-  return getPurchasesUi() !== null;
+  if (purchasesUiAvailableCache !== null) return purchasesUiAvailableCache;
+  return false;
+}
+
+/** Call only after {@link configurePurchases} succeeds — loading UI before configure can crash iOS cold start. */
+export function probePurchasesUiAvailable(): boolean {
+  if (purchasesUiAvailableCache !== null) return purchasesUiAvailableCache;
+  if (!purchasesConfigured) return false;
+  purchasesUiAvailableCache = getPurchasesUi() !== null;
+  return purchasesUiAvailableCache;
 }
 
 export async function configurePurchases(): Promise<{ ok: true } | { ok: false; message: string }> {
+  if (purchasesConfigured) {
+    return { ok: true };
+  }
+  if (shouldSkipRevenueCatOnLaunch()) {
+    return {
+      ok: false,
+      message: "RevenueCat skipped on launch (EXPO_PUBLIC_SKIP_RC_ON_LAUNCH). Rebuild without the flag to test purchases.",
+    };
+  }
   if (isSubscriptionGatingDisabled()) {
     return { ok: false, message: "Subscriptions are disabled for testing." };
   }
@@ -86,7 +140,7 @@ export async function configurePurchases(): Promise<{ ok: true } | { ok: false; 
   }
 
   const apiKey = getRevenueCatApiKey();
-  if (!apiKey) {
+  if (!isValidRevenueCatApiKey(apiKey)) {
     return {
       ok: false,
       message:
@@ -100,24 +154,60 @@ export async function configurePurchases(): Promise<{ ok: true } | { ok: false; 
   }
 
   try {
-    Purchases.setLogLevel(Purchases.LOG_LEVEL.WARN);
+    try {
+      Purchases.setLogLevel(Purchases.LOG_LEVEL.WARN);
+    } catch {
+      /* non-fatal */
+    }
     Purchases.configure({ apiKey });
+    purchasesConfigured = true;
+    probePurchasesUiAvailable();
+    rcLog("[RevenueCat] configured", { platform: Platform.OS, sandbox: isRevenueCatSandboxApiKey(apiKey) });
     return { ok: true };
   } catch (error) {
-    return {
-      ok: false,
-      message: purchasesErrorMessage(error, "RevenueCat failed to configure. Use a dev build with native modules."),
-    };
+    const raw = purchasesErrorMessage(error, "RevenueCat failed to configure. Use a dev build with native modules.");
+    const message = isInvalidRevenueCatCredentialsMessage(raw)
+      ? revenueCatInvalidCredentialsMessage()
+      : raw;
+    return { ok: false, message };
   }
 }
 
 export async function getCustomerInfo(): Promise<CustomerInfo | null> {
   const Purchases = getPurchases();
-  if (!Purchases) return null;
+  if (!Purchases || !purchasesConfigured) return null;
   try {
-    return await Purchases.getCustomerInfo();
+    return await withPromiseTimeout(Purchases.getCustomerInfo(), CUSTOMER_INFO_TIMEOUT_MS);
   } catch {
     return null;
+  }
+}
+
+/** Links RevenueCat anonymous customer to app user id after sign-in / subscribe. */
+export async function loginRevenueCatUser(appUserId: string): Promise<RevenueCatResult> {
+  if (isSubscriptionGatingDisabled()) {
+    return { ok: false, message: "Subscriptions are disabled for testing." };
+  }
+  const Purchases = getPurchases();
+  if (!Purchases) {
+    return { ok: false, message: "RevenueCat requires a native iOS or Android build." };
+  }
+  try {
+    await Purchases.logIn(appUserId);
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, message: purchasesErrorMessage(error, "Could not link store account.") };
+  }
+}
+
+/** Returns to anonymous RevenueCat user after sign-out (keeps device entitlements until next logIn). */
+export async function logoutRevenueCatUser(): Promise<void> {
+  const Purchases = getPurchases();
+  if (!Purchases) return;
+  try {
+    await Purchases.logOut();
+  } catch {
+    /* already anonymous */
   }
 }
 
@@ -199,13 +289,65 @@ function findPackage(
   return packages.find((p) => p.product.identifier === productId);
 }
 
-export async function findProPackage(period: ProBillingPeriod): Promise<PurchasesPackage | null> {
+export function isValidPurchasePackage(pkg: PurchasesPackage | null | undefined): pkg is PurchasesPackage {
+  return Boolean(pkg?.identifier && pkg.product?.identifier);
+}
+
+export type OfferingsLoadResult =
+  | { ok: true; packages: PurchasesPackage[] }
+  | { ok: false; message: string };
+
+export async function getOfferingsWithTimeout(): Promise<OfferingsLoadResult> {
   const Purchases = getPurchases();
-  if (!Purchases) return null;
-  const offerings = await Purchases.getOfferings();
-  const packages = offerings.current?.availablePackages ?? [];
+  if (!Purchases || !purchasesConfigured) {
+    return {
+      ok: false,
+      message: "Billing is not ready yet. Wait a moment and try again, or tap Refresh status.",
+    };
+  }
+
+  try {
+    rcLog("[RevenueCat] offerings loading…");
+    const offerings = await withPromiseTimeout(
+      Purchases.getOfferings(),
+      OFFERINGS_TIMEOUT_MS,
+      "RevenueCat offerings timed out",
+    );
+    const packages = offerings.current?.availablePackages ?? [];
+    rcLog("[RevenueCat] offerings loaded", packages.map((p) => p.identifier));
+    return { ok: true, packages };
+  } catch (error) {
+    const timedOut = error instanceof Error && error.message.includes("timed out");
+    const message = timedOut
+      ? "Could not load subscription plans (timed out). Check your connection and try again."
+      : purchasesErrorMessage(error, "Could not load subscription plans.");
+    rcLog("[RevenueCat] offerings failed", message);
+    return { ok: false, message };
+  }
+}
+
+export async function findTierPackage(tierId: SubscriptionTierId): Promise<PurchasesPackage | null> {
+  const plan = getSubscriptionPlan(tierId);
+  if (!plan.isPaid) return null;
+
+  const offerings = await getOfferingsWithTimeout();
+  if (!offerings.ok) return null;
+
+  const productId = plan.revenueCatProductId ?? "";
+  const packageId = plan.revenueCatPackageId ?? "";
+  const identifiers = packageId ? [packageId] : [];
+  return findPackage(offerings.packages, identifiers, productId) ?? null;
+}
+
+export async function findProPackage(period: ProBillingPeriod): Promise<PurchasesPackage | null> {
+  const offerings = await getOfferingsWithTimeout();
+  if (!offerings.ok) return null;
   return (
-    findPackage(packages, PRO_PACKAGE_IDENTIFIERS[period], PRO_STORE_PRODUCT_IDS[period]) ?? null
+    findPackage(
+      offerings.packages,
+      PRO_PACKAGE_IDENTIFIERS[period],
+      PRO_STORE_PRODUCT_IDS[period],
+    ) ?? null
   );
 }
 
@@ -213,29 +355,54 @@ export async function purchasePackage(pkg: PurchasesPackage): Promise<RevenueCat
   if (isSubscriptionGatingDisabled()) {
     return { ok: false, message: "Subscriptions are disabled for testing." };
   }
+  if (!isValidPurchasePackage(pkg)) {
+    return { ok: false, message: "Subscription plan is not available. Try again or contact support." };
+  }
   const Purchases = getPurchases();
   if (!Purchases) {
     return { ok: false, message: "Purchases require a native iOS or Android build." };
   }
   try {
-    await Purchases.purchasePackage(pkg);
+    rcLog("[RevenueCat] purchase started", pkg.identifier);
+    await withPromiseTimeout(
+      Purchases.purchasePackage(pkg),
+      PURCHASE_ACTION_TIMEOUT_MS,
+      "Purchase timed out",
+    );
+    rcLog("[RevenueCat] purchase success", pkg.identifier);
     return { ok: true };
   } catch (error) {
     if (isPurchaseCancelledError(error)) {
+      rcLog("[RevenueCat] purchase cancelled", pkg.identifier);
       return { ok: false, message: "Purchase cancelled.", cancelled: true };
     }
-    return { ok: false, message: purchasesErrorMessage(error, "Purchase failed.") };
+    const timedOut = error instanceof Error && error.message.includes("timed out");
+    const message = timedOut
+      ? "Purchase timed out. Check your connection and try again."
+      : purchasesErrorMessage(error, "Purchase failed.");
+    rcLog("[RevenueCat] purchase failed", message);
+    return { ok: false, message };
   }
 }
 
 export async function purchaseProPackage(period: ProBillingPeriod): Promise<RevenueCatResult> {
-  const pkg = await findProPackage(period);
-  if (!pkg) {
+  const offerings = await getOfferingsWithTimeout();
+  if (!offerings.ok) {
+    return { ok: false, message: offerings.message };
+  }
+
+  const pkg = findPackage(
+    offerings.packages,
+    PRO_PACKAGE_IDENTIFIERS[period],
+    PRO_STORE_PRODUCT_IDS[period],
+  );
+  if (!isValidPurchasePackage(pkg)) {
     return {
       ok: false,
       message: `No RevenueCat package for Ideal Solutions Pro (${period}). Add ${PRO_STORE_PRODUCT_IDS[period]} to the default offering.`,
     };
   }
+  rcLog("[RevenueCat] package selected", pkg.identifier);
   return purchasePackage(pkg);
 }
 
@@ -251,13 +418,25 @@ export async function restorePurchases(): Promise<RevenueCatResult> {
     return { ok: false, message: "Restore requires a native iOS or Android build." };
   }
   try {
-    await Purchases.restorePurchases();
+    rcLog("[RevenueCat] restore started");
+    await withPromiseTimeout(
+      Purchases.restorePurchases(),
+      PURCHASE_ACTION_TIMEOUT_MS,
+      "Restore timed out",
+    );
+    rcLog("[RevenueCat] restore success");
     return { ok: true };
   } catch (error) {
     if (isPurchaseCancelledError(error)) {
+      rcLog("[RevenueCat] restore cancelled");
       return { ok: false, message: "Restore cancelled.", cancelled: true };
     }
-    return { ok: false, message: purchasesErrorMessage(error, "Restore failed.") };
+    const timedOut = error instanceof Error && error.message.includes("timed out");
+    const message = timedOut
+      ? "Restore timed out. Check your connection and try again."
+      : purchasesErrorMessage(error, "Restore failed.");
+    rcLog("[RevenueCat] restore failed", message);
+    return { ok: false, message };
   }
 }
 
