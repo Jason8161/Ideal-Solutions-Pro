@@ -55,7 +55,8 @@ export function computeTrialState(
     aiLimit,
     aiExhausted: false,
     trialUsed: false,
-    isLocked: !hasPaidSubscription,
+    /** No trial started yet — not locked; onboarding starts the guest trial. */
+    isLocked: false,
   };
 
   if (hasPaidSubscription) {
@@ -101,6 +102,7 @@ export function trialEffectiveTier(
 
 export type VerifiedAuthMethod = "apple" | "google" | "email";
 
+/** Required before store purchase / account-linked trial — not for guest trial start. */
 export function authSatisfiesTrialRequirement(input: {
   emailVerified?: boolean;
   appleId?: string | null;
@@ -111,4 +113,8 @@ export function authSatisfiesTrialRequirement(input: {
   if (input.googleId?.trim()) return { ok: true, method: "google" };
   if (input.emailVerified && input.hasPasswordAccount) return { ok: true, method: "email" };
   return { ok: false, method: null };
+}
+
+export function isGuestTrialRecord(record: ProTrialRecord | null | undefined): boolean {
+  return Boolean(record?.trialStartDate && !record.userId);
 }

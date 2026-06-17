@@ -1,10 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { withPromiseTimeout } from "@/lib/async/withPromiseTimeout";
 import { getDeviceInstallId } from "./deviceId";
 import {
   checkTrialEligibilityRemote,
   markTrialStartedRemote,
   recordTrialAiUsageRemote,
+  type TrialEligibilityResult,
 } from "./supabaseTrial";
 import {
   computeTrialState,
@@ -15,6 +17,8 @@ import {
 import { normalizeSubscriptionTierId, type SubscriptionTierId } from "./tiers";
 
 const STORAGE_KEY = "ideal_pro_trial_v2";
+const TRIAL_DEVICE_ID_TIMEOUT_MS = 5_000;
+const TRIAL_REMOTE_CHECK_TIMEOUT_MS = 8_000;
 
 export type { ProTrialRecord, ProTrialState };
 
@@ -44,7 +48,8 @@ export async function getProTrialState(
 
 export type StartTrialInput = {
   interestTier: SubscriptionTierId;
-  userId: string;
+  /** Linked at subscribe / sign-in; guest trials are device-only until then. */
+  userId?: string;
   email?: string;
   appleId?: string;
   googleId?: string;
@@ -54,6 +59,10 @@ export type StartTrialResult =
   | { ok: true; state: ProTrialState }
   | { ok: false; reason: "invalid_tier" | "already_used" | "device_used" | "account_used" | "remote_error"; message: string };
 
+export type LinkTrialResult =
+  | { ok: true; linked: boolean }
+  | { ok: false; reason: "account_used" | "remote_error"; message: string };
+
 export async function startProTrial(input: StartTrialInput): Promise<StartTrialResult> {
   const tier = normalizeSubscriptionTierId(input.interestTier);
   if (!isValidTrialInterestTier(tier)) {
@@ -61,18 +70,34 @@ export async function startProTrial(input: StartTrialInput): Promise<StartTrialR
   }
 
   const existing = await loadProTrialRecord();
-  if (existing?.trialUsed) {
-    return { ok: false, reason: "already_used", message: "This device already used the free trial." };
+  if (existing?.trialStartDate) {
+    const existingState = computeTrialState(existing, new Date(), false);
+    if (existingState.isActive) {
+      return { ok: true, state: existingState };
+    }
+    if (existing.trialUsed || existingState.isExpired) {
+      return { ok: false, reason: "already_used", message: "This device already used the free trial." };
+    }
   }
 
-  const deviceId = await getDeviceInstallId();
-  const eligibility = await checkTrialEligibilityRemote({
-    userId: input.userId,
-    deviceId,
-    email: input.email,
-    appleId: input.appleId,
-    googleId: input.googleId,
-  });
+  const deviceId = await withPromiseTimeout(getDeviceInstallId(), TRIAL_DEVICE_ID_TIMEOUT_MS).catch(
+    () => `local-${Date.now()}`,
+  );
+
+  const eligibility = await withPromiseTimeout(
+    checkTrialEligibilityRemote({
+      userId: input.userId,
+      deviceId,
+      email: input.email,
+      appleId: input.appleId,
+      googleId: input.googleId,
+    }),
+    TRIAL_REMOTE_CHECK_TIMEOUT_MS,
+  ).catch((): TrialEligibilityResult => ({
+    ok: false,
+    reason: "network",
+    message: "Could not verify trial eligibility. Check your connection and try again.",
+  }));
 
   if (!eligibility.ok) {
     if (eligibility.reason === "account_used") {
@@ -80,6 +105,9 @@ export async function startProTrial(input: StartTrialInput): Promise<StartTrialR
     }
     if (eligibility.reason === "device_used") {
       return { ok: false, reason: "device_used", message: "This device already used the free trial." };
+    }
+    if (eligibility.reason === "network") {
+      return { ok: false, reason: "remote_error", message: eligibility.message };
     }
     return { ok: false, reason: "remote_error", message: eligibility.message };
   }
@@ -91,8 +119,8 @@ export async function startProTrial(input: StartTrialInput): Promise<StartTrialR
     trialAcceptedAt: nowIso,
     aiRequestsUsed: 0,
     trialUsed: false,
-    userId: input.userId,
     deviceId,
+    userId: input.userId,
     email: input.email,
     appleId: input.appleId,
     googleId: input.googleId,
@@ -102,6 +130,55 @@ export async function startProTrial(input: StartTrialInput): Promise<StartTrialR
   await markTrialStartedRemote(record);
 
   return { ok: true, state: computeTrialState(record, new Date(), false) };
+}
+
+/** Attach a device guest trial to the signed-in account (subscribe / sign-in). */
+export async function linkProTrialToUser(input: {
+  userId: string;
+  email?: string;
+  appleId?: string;
+  googleId?: string;
+}): Promise<LinkTrialResult> {
+  const record = await loadProTrialRecord();
+  if (!record?.trialStartDate) {
+    return { ok: true, linked: false };
+  }
+  if (record.userId === input.userId) {
+    return { ok: true, linked: false };
+  }
+
+  const deviceId = record.deviceId ?? (await getDeviceInstallId());
+  if (!record.userId) {
+    const eligibility = await checkTrialEligibilityRemote({
+      userId: input.userId,
+      deviceId,
+      email: input.email ?? record.email,
+      appleId: input.appleId ?? record.appleId,
+      googleId: input.googleId ?? record.googleId,
+    });
+    if (!eligibility.ok) {
+      if (eligibility.reason === "account_used") {
+        return {
+          ok: false,
+          reason: "account_used",
+          message: "This account already used the free trial on another device.",
+        };
+      }
+      return { ok: false, reason: "remote_error", message: eligibility.message };
+    }
+  }
+
+  const next: ProTrialRecord = {
+    ...record,
+    userId: input.userId,
+    deviceId,
+    email: input.email ?? record.email,
+    appleId: input.appleId ?? record.appleId,
+    googleId: input.googleId ?? record.googleId,
+  };
+  await saveProTrialRecord(next);
+  await markTrialStartedRemote(next);
+  return { ok: true, linked: true };
 }
 
 export async function recordProTrialAiRequest(): Promise<ProTrialState> {

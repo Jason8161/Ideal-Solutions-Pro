@@ -9,7 +9,8 @@ import { isSupabaseConfigured } from "@/lib/supabase/client";
 export { isSupabaseConfigured } from "@/lib/supabase/client";
 
 export type TrialEligibilityInput = {
-  userId: string;
+  /** Optional until guest trial is linked at subscribe / sign-in. */
+  userId?: string;
   deviceId: string;
   email?: string;
   appleId?: string;
