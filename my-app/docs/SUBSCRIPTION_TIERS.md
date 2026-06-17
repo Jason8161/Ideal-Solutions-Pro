@@ -8,7 +8,7 @@ Contractor-focused plan names and feature gates. Store **product IDs are unchang
 |---------|--------|-------|-------------------|-------------|
 | `helper` | Helper Mode | Free (7-day trial) | — | — |
 | `side_job` | Side Job / DIY Mode | $9.99/mo | `ideal_starter_monthly` | `ideal_starter` |
-| `bossman` | Bossman Mode | $19.99/mo · $100/yr | `ideal_solutions_pro_monthly` / `ideal_solutions_pro_yearly` | `ideal_solutions_pro` |
+| `bossman` | Bossman Mode | $19.99/mo | `boss_man_monthly` | `ideal_solutions_pro` |
 | `super_bossman` | Super Bossman | $75/mo | `ideal_boss_monthly` | `ideal_boss` |
 
 ### Legacy ID migration (profile / dev overrides)

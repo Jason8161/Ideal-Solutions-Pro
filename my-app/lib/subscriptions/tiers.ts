@@ -167,7 +167,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     monthlyAiLimit: 100,
     revenueCatProductId: "boss_man_monthly",
     revenueCatPackageId: "boss_man_monthly",
-    revenueCatEntitlementId: "boss_man",
+    revenueCatEntitlementId: "ideal_solutions_pro",
   },
   {
     id: "super_boss_man",

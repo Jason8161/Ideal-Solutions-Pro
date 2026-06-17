@@ -51,9 +51,9 @@ import {
   getSubscriptionPlan,
   type SubscriptionTierId,
 } from "@/lib/subscriptionPlans";
-import { PRO_PRICE_LABELS, PURCHASE_ACTION_TIMEOUT_MS, type ProBillingPeriod } from "@/lib/revenuecat";
+import { PURCHASE_ACTION_TIMEOUT_MS } from "@/lib/revenuecat";
 import { packageDisclosureFromPackage, type PackageDisclosureInfo } from "@/lib/revenuecat/disclosure";
-import { findProPackage, findTierPackage } from "@/lib/revenuecat/purchases";
+import { findTierPackage } from "@/lib/revenuecat/purchases";
 
 function storeManageLabel(): string {  if (Platform.OS === "ios") return "Open App Store subscriptions";
   if (Platform.OS === "android") return "Open Play Store subscriptions";
@@ -106,7 +106,6 @@ export default function SubscribeScreen() {  const router = useRouter();
     errorMessage,
     refresh,
     purchaseTier,
-    purchaseProBilling,
     restore,
     showPaywall,
     showCustomerCenter,
@@ -114,7 +113,6 @@ export default function SubscribeScreen() {  const router = useRouter();
     isPaywallAvailable,
   } = useSubscription();
   const manageUrl = useMemo(() => manageSubscriptionsUrl(), []);
-  const [billingPeriod, setBillingPeriod] = useState<ProBillingPeriod>("monthly");
   const [actionBusy, setActionBusy] = useState(false);
   const [selectedId, setSelectedId] = useState<SubscriptionTierId>(
     activeTier === "locked" ? "boss_man" : activeTier,
@@ -122,10 +120,6 @@ export default function SubscribeScreen() {  const router = useRouter();
   const selectedPlan = getSubscriptionPlan(selectedId);
   const activePlan = getSubscriptionPlan(activeTier);
   const purchaseDisabled = loading || actionBusy || Platform.OS === "web" || isTestingUnlocked;
-  const proBillingLabel =
-    selectedId === "boss_man"
-      ? PRO_PRICE_LABELS[billingPeriod]
-      : selectedPlan.priceLabel;
   const betaDebug = getBetaAccessDebugInfo();
   const testFlightModuleValue = readIosTestFlightModuleValue();
   const subscribeRuntimeNotice = getSubscribeRuntimeNotice();
@@ -155,19 +149,15 @@ export default function SubscribeScreen() {  const router = useRouter();
 
     let cancelled = false;
     void (async () => {
-      const pkg =
-        selectedId === "boss_man"
-          ? await findProPackage(billingPeriod)
-          : await findTierPackage(selectedId);
+      const pkg = await findTierPackage(selectedId);
       if (cancelled) return;
-      setRcDisclosure(pkg ? packageDisclosureFromPackage(pkg, billingPeriod) : null);
+      setRcDisclosure(pkg ? packageDisclosureFromPackage(pkg) : null);
     })();
 
     return () => {
       cancelled = true;
     };
   }, [
-    billingPeriod,
     employeeAccessSelected,
     isConfigured,
     isTestingUnlocked,
@@ -178,8 +168,7 @@ export default function SubscribeScreen() {  const router = useRouter();
   function runPurchaseAction() {
     if (purchaseDisabled || actionBusy) return;
     setActionBusy(true);
-    const purchase =
-      selectedId === "boss_man" ? purchaseProBilling(billingPeriod) : purchaseTier(selectedId);
+    const purchase = purchaseTier(selectedId);
     void withPromiseTimeout(purchase, PURCHASE_ACTION_TIMEOUT_MS, "Purchase timed out")
       .then((r) => {
         handleSubscriptionAction("Subscribe", r, `${selectedPlan.name} is active.`);
@@ -408,36 +397,10 @@ export default function SubscribeScreen() {  const router = useRouter();
       {employeeAccessSelected ? null : (
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Subscribe</Text>
-        {selectedId === "boss_man" && selectedPlan.isPaid ? (
-          <View style={styles.billingToggle} accessibilityRole="tablist">
-            {(["monthly", "yearly"] as ProBillingPeriod[]).map((period) => {
-              const selected = billingPeriod === period;
-              return (
-                <Pressable
-                  key={period}
-                  accessibilityRole="tab"
-                  accessibilityState={{ selected }}
-                  onPress={() => setBillingPeriod(period)}
-                  style={({ pressed }) => [
-                    styles.billingOption,
-                    selected && styles.billingOptionSelected,
-                    pressed && styles.pressed,
-                  ]}
-                >
-                  <Text style={[styles.billingOptionText, selected && styles.billingOptionTextSelected]}>
-                    {period === "monthly" ? "Monthly" : "Yearly"} · {PRO_PRICE_LABELS[period]}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ) : null}
         {selectedPlan.isPaid ? (
           <>
             <SubscriptionPurchaseDisclosure
               plan={selectedPlan}
-              billingPeriod={billingPeriod}
-              proBillingLabel={proBillingLabel}
               rcPackageInfo={rcDisclosure}
             />
             <Pressable
@@ -452,7 +415,7 @@ export default function SubscribeScreen() {  const router = useRouter();
                 <ActivityIndicator color={colors.text} />
               ) : (
                 <Text style={styles.primaryText}>
-                  {isTestingUnlocked ? "Purchases disabled (testing)" : `Subscribe — ${proBillingLabel}`}
+                  {isTestingUnlocked ? "Purchases disabled (testing)" : `Subscribe — ${selectedPlan.priceLabel}`}
                 </Text>
               )}
             </Pressable>
@@ -662,31 +625,6 @@ function makeStyles(colors: ColorScheme, typo: ResponsiveTypography) {
       fontWeight: "600",
       color: colors.text,
       opacity: 0.8,
-    },
-    billingToggle: {
-      flexDirection: "row",
-      gap: 8,
-    },
-    billingOption: {
-      flex: 1,
-      ...secondaryBtn,
-      paddingVertical: 10,
-      borderWidth: 1,
-      borderColor: hexToRgba(colors.text, 0.15),
-    },
-    billingOptionSelected: {
-      borderColor: hexToRgba(colors.accent, 0.55),
-      backgroundColor: hexToRgba(colors.accent, 0.12),
-    },
-    billingOptionText: {
-      textAlign: "center",
-      fontSize: typo.hintFontSize,
-      fontWeight: "700",
-      color: colors.text,
-      opacity: 0.92,
-    },
-    billingOptionTextSelected: {
-      opacity: 1,
     },
     legalNote: {
       fontSize: typo.hintFontSize,

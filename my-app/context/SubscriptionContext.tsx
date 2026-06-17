@@ -47,8 +47,8 @@ import {
 import { syncHomeSubscriptionTier, useHomeBoot } from "@/lib/homeBoot";
 import {
   configurePurchases,
+  findTierPackage,
   getCustomerInfo,
-  getOfferingsWithTimeout,
   getRevenueCatApiKey,
   hasIdealSolutionsPro,
   highestTierFromEntitlements,
@@ -58,10 +58,8 @@ import {
   presentPaywall,
   probePurchasesUiAvailable,
   purchasePackage,
-  purchaseProPackage,
   restorePurchases,
   REVENUECAT_INIT_DELAY_MS,
-  type ProBillingPeriod,
 } from "@/lib/revenuecat";
 import {
   formatRevenueCatConfigureWarning,
@@ -123,7 +121,6 @@ type SubscriptionContextValue = {
   purchaseDefault: () => Promise<{ ok: boolean; message?: string }>;
   purchaseTier: (tierId: SubscriptionTierId) => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
   restore: () => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
-  purchaseProBilling: (period: ProBillingPeriod) => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
   showPaywall: () => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
   showCustomerCenter: () => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
   hasIdealSolutionsProEntitlement: boolean;
@@ -626,18 +623,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         return { ok: false, message: "Purchases are not available on web." };
       }
       try {
-        const offerings = await getOfferingsWithTimeout();
-        if (!offerings.ok) {
-          return { ok: false, message: offerings.message };
-        }
-
-        const productId = plan.revenueCatProductId ?? "";
-        const packageId = plan.revenueCatPackageId ?? "";
-        const pkg =
-          offerings.packages.find((p) => p.identifier === packageId) ??
-          offerings.packages.find((p) => p.product.identifier === productId);
-
+        const pkg = await findTierPackage(tierId);
         if (!isValidPurchasePackage(pkg)) {
+          const productId = plan.revenueCatProductId ?? "";
           return {
             ok: false,
             message: `No RevenueCat package for ${plan.name}. Add product ${productId} to the default offering.`,
@@ -656,27 +644,6 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       }
     },
     [devOverride, readCustomerInfo],
-  );
-
-  const purchaseProBilling = useCallback(
-    async (period: ProBillingPeriod) => {
-      if (isSubscriptionGatingDisabled()) {
-        return { ok: false, message: SUBSCRIPTIONS_TESTING_NOTICE };
-      }
-      if (__DEV__ && isDevActiveTierOverride(devOverride)) {
-        return {
-          ok: false,
-          message:
-            "Dev simulation is overriding the active plan. Set “None (use RevenueCat)” or turn off simulation to test real purchases.",
-        };
-      }
-      const result = await purchaseProPackage(period);
-      if (result.ok) {
-        await readCustomerInfo();
-      }
-      return result;
-    },
-    [devOverride, readCustomerInfo, session?.userId],
   );
 
   const purchaseDefault = useCallback(async () => purchaseTier("boss_man"), [purchaseTier]);
@@ -748,7 +715,6 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       applyGuestTrialState,
       purchaseDefault,
       purchaseTier,
-      purchaseProBilling,
       restore,
       showPaywall,
       showCustomerCenter,
@@ -788,7 +754,6 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       applyGuestTrialState,
       purchaseDefault,
       purchaseTier,
-      purchaseProBilling,
       restore,
       showPaywall,
       showCustomerCenter,

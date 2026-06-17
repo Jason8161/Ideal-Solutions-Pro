@@ -14,10 +14,9 @@ import { isSubscriptionGatingDisabled } from "@/lib/subscriptionTesting";
 
 import {
   IDEAL_SOLUTIONS_PRO_ENTITLEMENT,
+  LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS,
+  LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS,
   LEGACY_ENTITLEMENT_IDS,
-  PRO_PACKAGE_IDENTIFIERS,
-  PRO_STORE_PRODUCT_IDS,
-  type ProBillingPeriod,
 } from "./constants";
 import {
   isInvalidRevenueCatCredentialsMessage,
@@ -326,6 +325,15 @@ export async function getOfferingsWithTimeout(): Promise<OfferingsLoadResult> {
   }
 }
 
+function tierPackageIdentifiers(tierId: SubscriptionTierId, plan: ReturnType<typeof getSubscriptionPlan>): string[] {
+  const identifiers: string[] = [];
+  if (plan.revenueCatPackageId) identifiers.push(plan.revenueCatPackageId);
+  if (tierId === "boss_man") {
+    identifiers.push(...LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS, ...LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS);
+  }
+  return identifiers;
+}
+
 export async function findTierPackage(tierId: SubscriptionTierId): Promise<PurchasesPackage | null> {
   const plan = getSubscriptionPlan(tierId);
   if (!plan.isPaid) return null;
@@ -334,21 +342,8 @@ export async function findTierPackage(tierId: SubscriptionTierId): Promise<Purch
   if (!offerings.ok) return null;
 
   const productId = plan.revenueCatProductId ?? "";
-  const packageId = plan.revenueCatPackageId ?? "";
-  const identifiers = packageId ? [packageId] : [];
+  const identifiers = tierPackageIdentifiers(tierId, plan);
   return findPackage(offerings.packages, identifiers, productId) ?? null;
-}
-
-export async function findProPackage(period: ProBillingPeriod): Promise<PurchasesPackage | null> {
-  const offerings = await getOfferingsWithTimeout();
-  if (!offerings.ok) return null;
-  return (
-    findPackage(
-      offerings.packages,
-      PRO_PACKAGE_IDENTIFIERS[period],
-      PRO_STORE_PRODUCT_IDS[period],
-    ) ?? null
-  );
 }
 
 export async function purchasePackage(pkg: PurchasesPackage): Promise<RevenueCatResult> {
@@ -383,27 +378,6 @@ export async function purchasePackage(pkg: PurchasesPackage): Promise<RevenueCat
     rcLog("[RevenueCat] purchase failed", message);
     return { ok: false, message };
   }
-}
-
-export async function purchaseProPackage(period: ProBillingPeriod): Promise<RevenueCatResult> {
-  const offerings = await getOfferingsWithTimeout();
-  if (!offerings.ok) {
-    return { ok: false, message: offerings.message };
-  }
-
-  const pkg = findPackage(
-    offerings.packages,
-    PRO_PACKAGE_IDENTIFIERS[period],
-    PRO_STORE_PRODUCT_IDS[period],
-  );
-  if (!isValidPurchasePackage(pkg)) {
-    return {
-      ok: false,
-      message: `No RevenueCat package for Ideal Solutions Pro (${period}). Add ${PRO_STORE_PRODUCT_IDS[period]} to the default offering.`,
-    };
-  }
-  rcLog("[RevenueCat] package selected", pkg.identifier);
-  return purchasePackage(pkg);
 }
 
 export async function restorePurchases(): Promise<RevenueCatResult> {
