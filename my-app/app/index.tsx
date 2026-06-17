@@ -1,24 +1,19 @@
 "use no memo";
 
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Image } from "expo-image";
-import { Link, useFocusEffect, useRouter, type Href } from "expo-router";
+import { useFocusEffect, useRouter, type Href } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Linking,
   ScrollView,
   StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
-  type StyleProp,
-  type ViewStyle,
 } from "react-native";
-import { useScale } from "@/context/ScaleContext";
 import { useAppTheme } from "@/context/ThemeContext";
 import type { ColorScheme } from "@/lib/colorSchemeStorage";
 import { SocialMediaPickerModal } from "@/components/SocialMediaPickerModal";
+import { HomeMenuButton } from "@/components/home/HomeMenuButton";
+import { useFooterScrollInset } from "@/components/FormScrollView";
 import {
   ensureHomeTilesTextOnlyReset,
   loadHomeTileImageOverrides,
@@ -43,6 +38,7 @@ import {
   homeMenuItemRoute,
   isMaterialSearchMenuKey,
 } from "@/lib/homeNavigation";
+import { shouldSuppressTrialGateRedirects } from "@/lib/subscriptions/trialGateState";
 import {
   homeJobFolderHrefForTier,
   promptUpgradeForHomeTileWhenReady,
@@ -51,60 +47,41 @@ import {
 } from "@/lib/subscriptionGating";
 import type { SubscriptionTierId } from "@/lib/subscriptionPlans";
 import { OverdueInvoicesHomePrompt } from "@/components/invoices/OverdueInvoicesHomePrompt";
-
-/** Fallback vector glyph size when no bundled `image`. */
-const HOME_MENU_ICON_SIZE = 30;
-/** Rounded corners for home grid tiles (no stroke). */
-const HOME_MENU_TILE_BORDER_RADIUS = 14;
-/** Equal height for every home menu tile row. */
-const HOME_TILE_ROW_HEIGHT = 132;
+import {
+  HOME_MENU_HORIZONTAL_PADDING,
+  HOME_MENU_TILE_GAP,
+  useHomeContentWidth,
+  useHomeMenuButtonDimensions,
+} from "@/lib/layout/formContentWidth";
 
 function homeMenuTileShowsImage(item: HomeMenuItem, overrideUri?: string | null): boolean {
   return homeMenuItemShowsTileImage(item) && (item.image != null || !!overrideUri);
 }
 
-function homeMenuTileContentFit(item: HomeMenuItem, showsTileImage = false): "contain" | "cover" | "fill" {
-  if (item.tileContentFit != null) {
-    return item.tileContentFit;
-  }
-  return showsTileImage || item.image != null ? "fill" : "cover";
-}
-
-function homeMenuItemUsesContainAspectTile(item: HomeMenuItem, overrideUri?: string | null): boolean {
-  const showsImage = homeMenuTileShowsImage(item, overrideUri);
-  return homeMenuTileContentFit(item, showsImage) === "contain" && item.tileAspectRatio != null;
-}
-
-function homeMenuButtonStyles(
+function homeMenuButtonImage(
   item: HomeMenuItem,
-  themed: ReturnType<typeof makeStyles>,
   overrideUri?: string | null,
-): StyleProp<ViewStyle> {
-  const showImage = homeMenuTileShowsImage(item, overrideUri);
-  const styles: StyleProp<ViewStyle>[] = [
-    themed.menuButton,
-    showImage ? themed.menuButtonWithTileImage : null,
-  ];
-  if (showImage && homeMenuItemUsesContainAspectTile(item, overrideUri)) {
-    styles.push(themed.menuButtonContainTile);
-  }
-  return styles;
+): HomeMenuItem["image"] | { uri: string } | undefined {
+  if (!homeMenuTileShowsImage(item, overrideUri)) return undefined;
+  if (overrideUri) return { uri: overrideUri };
+  return item.image;
 }
 
 function openSubscriptionSettings(router: ReturnType<typeof useRouter>) {
   router.push(SUBSCRIPTION_SETTINGS_HREF as Href);
 }
 
-/** Same footprint as image-based {@link HomeMenuTile}; opens social picker; tile art matches other home buttons. */
 function SocialMediaHomeTile({
-  themed,
+  buttonWidth,
+  buttonHeight,
   accentColor,
   subscriptionTier,
   testFlightDetectionDone,
   onOpenPicker,
   overrideUri,
 }: {
-  themed: ReturnType<typeof makeStyles>;
+  buttonWidth: number;
+  buttonHeight: number;
   accentColor: string;
   subscriptionTier: SubscriptionTierId;
   testFlightDetectionDone: boolean;
@@ -116,12 +93,15 @@ function SocialMediaHomeTile({
   const tile = HOME_SOCIAL_MEDIA_TILE;
 
   return (
-    <TouchableOpacity
-      style={homeMenuButtonStyles(tile, themed, overrideUri)}
-      activeOpacity={0.85}
-      accessibilityRole="button"
+    <HomeMenuButton
+      width={buttonWidth}
+      height={buttonHeight}
       accessibilityLabel="Social media"
       accessibilityHint="Choose Facebook, TikTok, Instagram, YouTube, or more networks to open."
+      image={homeMenuButtonImage(tile, overrideUri)}
+      icon={tile.icon}
+      iconColor={accentColor}
+      imageMonochrome={tile.imageMonochrome}
       onPress={() =>
         promptUpgradeForHomeTileWhenReady(
           testFlightDetectionDone,
@@ -132,19 +112,19 @@ function SocialMediaHomeTile({
           featureAccessContext,
         )
       }
-    >
-      <HomeMenuGlyph item={tile} themed={themed} accentColor={accentColor} overrideUri={overrideUri} />
-    </TouchableOpacity>
+    />
   );
 }
 
 export default function Page() {
-  const { widthScale, heightScale } = useScale();
   const { colors } = useAppTheme();
-  const themed = useMemo(() => makeStyles(colors), [colors]);
+  const contentWidth = useHomeContentWidth();
+  const { width: buttonWidth, height: buttonHeight } = useHomeMenuButtonDimensions();
+  const footerScrollInset = useFooterScrollInset();
+  const themed = useMemo(() => makeStyles(colors, footerScrollInset), [colors, footerScrollInset]);
   const [socialPickerOpen, setSocialPickerOpen] = useState(false);
   const [tileOverrides, setTileOverrides] = useState<HomeTileImageOverrides>({});
-  const { coldSplashDone, profileHydrated, profileCompleted } = useHomeBoot();
+  const { coldSplashDone, profileHydrated } = useHomeBoot();
   const {
     activeTier: subscriptionTier,
     testFlightDetectionDone,
@@ -177,6 +157,7 @@ export default function Page() {
   useFocusEffect(
     useCallback(() => {
       if (!profileHydrated) return;
+      if (shouldSuppressTrialGateRedirects()) return;
       let cancelled = false;
       void (async () => {
         await refreshSubscription({ silent: true });
@@ -202,37 +183,30 @@ export default function Page() {
     void ensureHomeBoot();
   }, []);
 
-  if (!coldSplashDone) {
-    return <View style={themed.splashPlaceholder} />;
-  }
-
   const homeGridRows = buildHomeGridRows();
+  const gridInnerWidth = contentWidth ?? buttonWidth;
 
   return (
     <View style={themed.root}>
-      <View
-        style={[themed.homeMenuSection, { transform: [{ scaleX: widthScale }, { scaleY: heightScale }] }]}
-      >
+      <View style={themed.homeMenuSection}>
         <ScrollView
           style={themed.homeMenuScroll}
           contentContainerStyle={[themed.homeGridColumn, themed.homeGridScrollContent]}
           showsVerticalScrollIndicator
           keyboardShouldPersistTaps="handled"
         >
-          {!profileCompleted ? (
-            <Link href="/settings/user-info" asChild>
-              <TouchableOpacity style={themed.profileBanner} activeOpacity={0.85}>
-                <Text style={themed.profileBannerText}>Complete User info for full features</Text>
-              </TouchableOpacity>
-            </Link>
-          ) : null}
-          <OverdueInvoicesHomePrompt ready={profileHydrated && coldSplashDone} />
-          {homeGridRows.map((item) => (
-            <View key={item.key} style={themed.homeGridRow}>
-              <View style={themed.menuButtonCell}>
+          <View style={[themed.homeGridInner, { width: gridInnerWidth }]}>
+            <OverdueInvoicesHomePrompt ready={profileHydrated && coldSplashDone} />
+            {homeGridRows.map((item) => (
+              <View
+                key={item.key}
+                style={[themed.homeGridRow, { width: buttonWidth, height: buttonHeight }]}
+              >
+                {/* HOME_MENU_TILE_SIZING_VERSION: v3-fill-frame */}
                 {item.key === HOME_SOCIAL_MEDIA_TILE.key ? (
                   <SocialMediaHomeTile
-                    themed={themed}
+                    buttonWidth={buttonWidth}
+                    buttonHeight={buttonHeight}
                     accentColor={colors.accent}
                     subscriptionTier={subscriptionTier}
                     testFlightDetectionDone={testFlightDetectionDone}
@@ -242,7 +216,8 @@ export default function Page() {
                 ) : (
                   <HomeMenuTile
                     item={item}
-                    themed={themed}
+                    buttonWidth={buttonWidth}
+                    buttonHeight={buttonHeight}
                     accentColor={colors.accent}
                     subscriptionTier={subscriptionTier}
                     testFlightDetectionDone={testFlightDetectionDone}
@@ -250,8 +225,8 @@ export default function Page() {
                   />
                 )}
               </View>
-            </View>
-          ))}
+            ))}
+          </View>
         </ScrollView>
       </View>
       <SocialMediaPickerModal visible={socialPickerOpen} onClose={() => setSocialPickerOpen(false)} />
@@ -292,72 +267,18 @@ async function handleOpenAccountingFromHome(router: ReturnType<typeof useRouter>
   await openExternalUrl(url);
 }
 
-function HomeMenuGlyph({
-  item,
-  themed,
-  accentColor,
-  overrideUri,
-}: {
-  item: HomeMenuItem;
-  themed: ReturnType<typeof makeStyles>;
-  accentColor: string;
-  overrideUri?: string | null;
-}) {
-  if (homeMenuTileShowsImage(item, overrideUri)) {
-    const source = overrideUri ? { uri: overrideUri } : item.image;
-    if (source == null) {
-      return (
-        <View style={themed.menuButtonIconSlot}>
-          <MaterialCommunityIcons
-            name={item.icon}
-            size={HOME_MENU_ICON_SIZE}
-            color={accentColor}
-            accessibilityElementsHidden
-            importantForAccessibility="no-hide-descendants"
-          />
-        </View>
-      );
-    }
-
-    return (
-      <View style={themed.menuButtonTileImageSlot}>
-        <Image
-          source={source}
-          style={[
-            themed.menuButtonTileImageFill,
-            item.imageMonochrome === true ? { tintColor: accentColor } : null,
-          ]}
-          contentFit={homeMenuTileContentFit(item, true)}
-          accessibilityElementsHidden
-          importantForAccessibility="no-hide-descendants"
-        />
-      </View>
-    );
-  }
-
-  return (
-    <View style={themed.menuButtonIconSlot}>
-      <MaterialCommunityIcons
-        name={item.icon}
-        size={HOME_MENU_ICON_SIZE}
-        color={accentColor}
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-      />
-    </View>
-  );
-}
-
 function AccountingBillingHomeMenuTile({
   item,
-  themed,
+  buttonWidth,
+  buttonHeight,
   accentColor,
   subscriptionTier,
   testFlightDetectionDone,
   overrideUri,
 }: {
   item: HomeMenuItem;
-  themed: ReturnType<typeof makeStyles>;
+  buttonWidth: number;
+  buttonHeight: number;
   accentColor: string;
   subscriptionTier: SubscriptionTierId;
   testFlightDetectionDone: boolean;
@@ -366,12 +287,15 @@ function AccountingBillingHomeMenuTile({
   const router = useRouter();
   const { featureAccessContext } = useSubscription();
   return (
-    <TouchableOpacity
-      style={homeMenuButtonStyles(item, themed, overrideUri)}
-      activeOpacity={0.85}
-      accessibilityRole="button"
+    <HomeMenuButton
+      width={buttonWidth}
+      height={buttonHeight}
       accessibilityLabel={item.label}
       accessibilityHint="Opens your accounting app from Settings."
+      image={homeMenuButtonImage(item, overrideUri)}
+      icon={item.icon}
+      iconColor={accentColor}
+      imageMonochrome={item.imageMonochrome}
       onPress={() =>
         promptUpgradeForHomeTileWhenReady(
           testFlightDetectionDone,
@@ -382,22 +306,22 @@ function AccountingBillingHomeMenuTile({
           featureAccessContext,
         )
       }
-    >
-      <HomeMenuGlyph item={item} themed={themed} accentColor={accentColor} overrideUri={overrideUri} />
-    </TouchableOpacity>
+    />
   );
 }
 
 function JobFolderHomeMenuTile({
   item,
-  themed,
+  buttonWidth,
+  buttonHeight,
   accentColor,
   subscriptionTier,
   testFlightDetectionDone,
   overrideUri,
 }: {
   item: HomeMenuItem;
-  themed: ReturnType<typeof makeStyles>;
+  buttonWidth: number;
+  buttonHeight: number;
   accentColor: string;
   subscriptionTier: SubscriptionTierId;
   testFlightDetectionDone: boolean;
@@ -406,12 +330,15 @@ function JobFolderHomeMenuTile({
   const router = useRouter();
   const { featureAccessContext } = useSubscription();
   return (
-    <TouchableOpacity
-      style={homeMenuButtonStyles(item, themed, overrideUri)}
-      activeOpacity={0.85}
-      accessibilityRole="button"
+    <HomeMenuButton
+      width={buttonWidth}
+      height={buttonHeight}
       accessibilityLabel={item.label}
       accessibilityHint="Opens Job Folder."
+      image={homeMenuButtonImage(item, overrideUri)}
+      icon={item.icon}
+      iconColor={accentColor}
+      imageMonochrome={item.imageMonochrome}
       onPress={() =>
         promptUpgradeForHomeTileWhenReady(
           testFlightDetectionDone,
@@ -422,9 +349,7 @@ function JobFolderHomeMenuTile({
           featureAccessContext,
         )
       }
-    >
-      <HomeMenuGlyph item={item} themed={themed} accentColor={accentColor} overrideUri={overrideUri} />
-    </TouchableOpacity>
+    />
   );
 }
 
@@ -441,14 +366,16 @@ function isHomeMenuTileKey(key: string): key is HomeMenuTileKey {
 
 function HomeMenuTile({
   item,
-  themed,
+  buttonWidth,
+  buttonHeight,
   accentColor,
   subscriptionTier,
   testFlightDetectionDone,
   overrideUri,
 }: {
   item: HomeMenuItem;
-  themed: ReturnType<typeof makeStyles>;
+  buttonWidth: number;
+  buttonHeight: number;
   accentColor: string;
   subscriptionTier: SubscriptionTierId;
   testFlightDetectionDone: boolean;
@@ -459,16 +386,17 @@ function HomeMenuTile({
 
   if (isMaterialSearchMenuKey(item.key)) {
     return (
-      <TouchableOpacity
-        style={homeMenuButtonStyles(item, themed, overrideUri)}
-        activeOpacity={0.85}
-        accessibilityRole="button"
+      <HomeMenuButton
+        width={buttonWidth}
+        height={buttonHeight}
         accessibilityLabel={item.label}
         accessibilityHint="Open Supplier Hub"
+        image={homeMenuButtonImage(item, overrideUri)}
+        icon={item.icon}
+        iconColor={accentColor}
+        imageMonochrome={item.imageMonochrome}
         onPress={() => router.push("/materials-search" as Href)}
-      >
-        <HomeMenuGlyph item={item} themed={themed} accentColor={accentColor} overrideUri={overrideUri} />
-      </TouchableOpacity>
+      />
     );
   }
 
@@ -476,7 +404,8 @@ function HomeMenuTile({
     return (
       <JobFolderHomeMenuTile
         item={item}
-        themed={themed}
+        buttonWidth={buttonWidth}
+        buttonHeight={buttonHeight}
         accentColor={accentColor}
         subscriptionTier={subscriptionTier}
         testFlightDetectionDone={testFlightDetectionDone}
@@ -489,7 +418,8 @@ function HomeMenuTile({
     return (
       <AccountingBillingHomeMenuTile
         item={item}
-        themed={themed}
+        buttonWidth={buttonWidth}
+        buttonHeight={buttonHeight}
         accentColor={accentColor}
         subscriptionTier={subscriptionTier}
         testFlightDetectionDone={testFlightDetectionDone}
@@ -501,20 +431,29 @@ function HomeMenuTile({
   const route = homeMenuItemRoute(item);
   if (!route) {
     return (
-      <View style={homeMenuButtonStyles(item, themed, overrideUri)} accessibilityRole="button" accessibilityLabel={item.label}>
-        <HomeMenuGlyph item={item} themed={themed} accentColor={accentColor} overrideUri={overrideUri} />
-      </View>
+      <HomeMenuButton
+        width={buttonWidth}
+        height={buttonHeight}
+        accessibilityLabel={item.label}
+        image={homeMenuButtonImage(item, overrideUri)}
+        icon={item.icon}
+        iconColor={accentColor}
+        imageMonochrome={item.imageMonochrome}
+      />
     );
   }
 
   const tileKey = isHomeMenuTileKey(item.key) ? item.key : null;
 
   return (
-    <TouchableOpacity
-      style={homeMenuButtonStyles(item, themed, overrideUri)}
-      activeOpacity={0.85}
-      accessibilityRole="button"
+    <HomeMenuButton
+      width={buttonWidth}
+      height={buttonHeight}
       accessibilityLabel={`${item.label}, opens screen`}
+      image={homeMenuButtonImage(item, overrideUri)}
+      icon={item.icon}
+      iconColor={accentColor}
+      imageMonochrome={item.imageMonochrome}
       onPress={() => {
         const navigate = () => router.push(route);
         if (tileKey === null) {
@@ -530,99 +469,48 @@ function HomeMenuTile({
           featureAccessContext,
         );
       }}
-    >
-      <HomeMenuGlyph item={item} themed={themed} accentColor={accentColor} overrideUri={overrideUri} />
-    </TouchableOpacity>
+    />
   );
 }
 
-function makeStyles(colors: ColorScheme) {
+function makeStyles(colors: ColorScheme, footerScrollInset: number) {
   return StyleSheet.create({
     root: {
       flex: 1,
+      backgroundColor: "transparent",
     },
     homeMenuSection: {
       flex: 1,
       minHeight: 0,
       paddingTop: 12,
+      backgroundColor: "transparent",
     },
     homeMenuScroll: {
       flex: 1,
+      backgroundColor: "transparent",
     },
-    profileBanner: {
-      backgroundColor: colors.accent,
-      paddingVertical: 10,
-      paddingHorizontal: 14,
-      borderRadius: 10,
-      marginBottom: 10,
-    },
-    profileBannerText: {
-      color: colors.background,
-      fontSize: 14,
-      fontWeight: "700",
-      textAlign: "center",
+    homeGridInner: {
+      maxWidth: "100%",
+      flexDirection: "column",
+      gap: HOME_MENU_TILE_GAP,
+      backgroundColor: "transparent",
     },
     homeGridColumn: {
       flexDirection: "column",
-      gap: 10,
+      backgroundColor: "transparent",
     },
     homeGridScrollContent: {
-      paddingHorizontal: 24,
-      paddingBottom: 32,
+      alignItems: "center",
+      paddingHorizontal: HOME_MENU_HORIZONTAL_PADDING,
+      paddingBottom: footerScrollInset + HOME_MENU_TILE_GAP,
+      backgroundColor: "transparent",
     },
     homeGridRow: {
-      width: "100%",
-      minHeight: HOME_TILE_ROW_HEIGHT,
-    },
-    menuButtonCell: {
-      width: "100%",
-      height: HOME_TILE_ROW_HEIGHT,
-    },
-    menuButton: {
-      flex: 1,
-      height: "100%",
-      alignSelf: "stretch",
-      backgroundColor: colors.background,
-      overflow: "hidden",
-      borderRadius: HOME_MENU_TILE_BORDER_RADIUS,
-      borderWidth: 0,
-      alignItems: "stretch",
-      justifyContent: "flex-start",
-      width: "100%",
-    },
-    menuButtonWithTileImage: {
-      paddingVertical: 0,
-      paddingHorizontal: 0,
-    },
-    menuButtonContainTile: {
-      flex: 1,
-      width: "100%",
-    },
-    menuButtonImage: {
-      width: HOME_MENU_ICON_SIZE,
-      height: HOME_MENU_ICON_SIZE,
-    },
-    menuButtonTileImageSlot: {
-      ...StyleSheet.absoluteFillObject,
-      overflow: "hidden",
-      borderRadius: HOME_MENU_TILE_BORDER_RADIUS,
-      backgroundColor: colors.background,
-    },
-    menuButtonTileImageFill: {
-      width: "100%",
-      height: "100%",
-    },
-    menuButtonIconSlot: {
-      flex: 1,
-      alignSelf: "stretch",
-      minHeight: 0,
-      backgroundColor: colors.background,
-      justifyContent: "center",
+      alignSelf: "center",
       alignItems: "center",
-    },
-    splashPlaceholder: {
-      flex: 1,
+      justifyContent: "center",
       backgroundColor: "transparent",
+      overflow: "hidden",
     },
   });
 }

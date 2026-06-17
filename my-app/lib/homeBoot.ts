@@ -16,6 +16,8 @@ export const COLD_SPLASH_WIRE_MS = 3000;
 /** Minimum cold-open splash duration before dismiss (home route). */
 export const COLD_SPLASH_MS = COLD_SPLASH_LOGO_MS + COLD_SPLASH_WIRE_MS;
 
+const PROFILE_HYDRATE_TIMEOUT_MS = 8_000;
+
 /** Matches `app.json` splash / expo-splash-screen plugin background (metal theme, no navy plate). */
 export const SPLASH_BACKGROUND_COLOR = "#141210";
 
@@ -61,6 +63,12 @@ export function hideNativeSplash(): void {
   void SplashScreen.hideAsync().catch(() => {});
 }
 
+/** Skip the home cold splash after tier-trial — avoids home ↔ splash flicker. */
+export function skipHomeColdSplash(): void {
+  publish({ coldSplashDone: true });
+  hideNativeSplash();
+}
+
 function startColdSplashTimer() {
   if (coldSplashTimerStarted) return;
   coldSplashTimerStarted = true;
@@ -82,19 +90,35 @@ export function ensureHomeBoot(): Promise<void> {
   }
 
   bootPromise = (async () => {
-    let stored = await loadCompanyProfile();
-    let full = companyProfileFromPartial(stored);
-    // Profile-complete users should never be blocked on home by the plan picker.
-    if (full.profileCompleted && !full.planPickerCompleted) {
-      full = await savePlanPickerChoice(full.subscriptionTier ?? "locked");
+    let timedOut = false;
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      publish({ profileHydrated: true });
+    }, PROFILE_HYDRATE_TIMEOUT_MS);
+
+    try {
+      let stored = await loadCompanyProfile();
+      if (timedOut) return;
+      let full = companyProfileFromPartial(stored);
+      // Profile-complete users should never be blocked on home by the plan picker.
+      if (full.profileCompleted && !full.planPickerCompleted) {
+        full = await savePlanPickerChoice(full.subscriptionTier ?? "locked");
+      }
+      if (timedOut) return;
+      publish({
+        splashLogoUri: full.logoUri,
+        profileCompleted: full.profileCompleted,
+        planPickerCompleted: full.planPickerCompleted,
+        subscriptionTier: full.subscriptionTier,
+        profileHydrated: true,
+      });
+    } catch {
+      if (!timedOut) {
+        publish({ profileHydrated: true });
+      }
+    } finally {
+      clearTimeout(timeout);
     }
-    publish({
-      splashLogoUri: full.logoUri,
-      profileCompleted: full.profileCompleted,
-      planPickerCompleted: full.planPickerCompleted,
-      subscriptionTier: full.subscriptionTier,
-      profileHydrated: true,
-    });
   })().finally(() => {
     bootPromise = null;
   });

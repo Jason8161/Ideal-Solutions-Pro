@@ -1,43 +1,64 @@
 import { Redirect, usePathname, type Href } from "expo-router";
-import { useEffect, useRef, useState, type PropsWithChildren } from "react";
+import { useEffect, useRef, type PropsWithChildren } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
+import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { AUTH_LOGIN_HREF, isAuthRoute, isPublicAppRoute } from "@/lib/auth/authPaths";
-import { loadEmployeeSession } from "@/lib/employeeSession";
+import {
+  consumeAuthScreenNavigationAllowed,
+  peekAuthScreenNavigationAllowed,
+} from "@/lib/auth/authNavigationIntent";
+import { AUTH_LOGIN_HREF, isAuthRoute } from "@/lib/auth/authPaths";
+import { isGuestTrialAccessActive } from "@/lib/auth/guestTrialAuth";
+import { useLaunchGateBypass } from "@/lib/launchGate";
+import { useLegalGateSessionComplete } from "@/lib/legal/useLegalGateSessionComplete";
+import {
+  isTrialHomeNavigationPending,
+  isTrialNavigationLocked,
+  isTrialOnboardingComplete,
+  useTrialGateState,
+} from "@/lib/subscriptions/trialGateState";
 
-/**
- * Redirects unauthenticated users to login; authenticated users away from auth screens.
- * Employee and invoice-pay routes stay public.
- */
+/** Auth session only — tier picker routing is imperative (useInitialOnboardingRoute). */
 export function AuthGate({ children }: PropsWithChildren) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
   const { isLoading, isAuthenticated } = useAuth();
-  const [employeeActive, setEmployeeActive] = useState(false);
-  const [employeeChecked, setEmployeeChecked] = useState(false);
+  const {
+    proTrial,
+    loading: subLoading,
+    requiresAccountLinking,
+  } = useSubscription();
+  const { trialStarted, suppressRedirects } = useTrialGateState(proTrial);
+  const legalGateComplete = useLegalGateSessionComplete();
+  const launchGateBypass = useLaunchGateBypass();
   const initialGatePassedRef = useRef(false);
+  const authScreenAllowedRef = useRef(false);
+
+  const onOnboarding = pathname.startsWith("/onboarding");
+  const onAuthScreen = isAuthRoute(pathname);
+  const guestTrialActive = isGuestTrialAccessActive(proTrial);
+  const gateReady = !isLoading && !subLoading;
+  const deferNavigation = !launchGateBypass && !legalGateComplete;
+  const navigationLocked = isTrialNavigationLocked();
 
   useEffect(() => {
-    let cancelled = false;
-    void loadEmployeeSession().then((session) => {
-      if (cancelled) return;
-      setEmployeeActive(session.active);
-      setEmployeeChecked(true);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (!onAuthScreen) {
+      authScreenAllowedRef.current = false;
+    }
+  }, [onAuthScreen]);
 
-  if (!isLoading && employeeChecked) {
+  if (onOnboarding) {
+    return children;
+  }
+
+  if (gateReady || launchGateBypass) {
     initialGatePassedRef.current = true;
   }
 
-  const onAuthScreen = isAuthRoute(pathname);
-  const isPublic = isPublicAppRoute(pathname);
-  const skipAuth = isPublic || employeeActive;
+  const showLaunchLoader =
+    !gateReady && !launchGateBypass && !initialGatePassedRef.current;
 
-  if ((isLoading || !employeeChecked) && !initialGatePassedRef.current) {
+  if (showLaunchLoader) {
     return (
       <View style={styles.loader}>
         <ActivityIndicator size="large" />
@@ -45,7 +66,27 @@ export function AuthGate({ children }: PropsWithChildren) {
     );
   }
 
-  if (!isAuthenticated && !skipAuth && !onAuthScreen) {
+  if (deferNavigation || suppressRedirects || isTrialHomeNavigationPending() || navigationLocked) {
+    return <>{children}</>;
+  }
+
+  if (!isAuthenticated && onAuthScreen) {
+    const authSegment = pathname.replace(/^\//, "").split("/")[0] ?? "";
+    const isLoginOrSignup = authSegment === "login" || authSegment === "signup";
+
+    if (isLoginOrSignup && !guestTrialActive && !trialStarted && !isTrialOnboardingComplete()) {
+      if (!authScreenAllowedRef.current) {
+        if (peekAuthScreenNavigationAllowed()) {
+          authScreenAllowedRef.current = true;
+          consumeAuthScreenNavigationAllowed();
+        } else if (requiresAccountLinking) {
+          authScreenAllowedRef.current = true;
+        }
+      }
+    }
+  }
+
+  if (!isAuthenticated && requiresAccountLinking && !onAuthScreen) {
     return <Redirect href={AUTH_LOGIN_HREF as Href} />;
   }
 

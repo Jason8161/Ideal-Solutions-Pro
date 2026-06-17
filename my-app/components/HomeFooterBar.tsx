@@ -61,11 +61,13 @@ export function HomeFooterBar() {
     <View
       style={[
         styles.bar,
+        styles.barPositioned,
         {
           paddingBottom: Math.max(insets.bottom, 10),
           backgroundColor: "transparent",
         },
       ]}
+      pointerEvents="box-none"
     >
       <View style={[styles.barSide, styles.barSideStart]}>
         <Pressable
@@ -131,6 +133,14 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingTop: 10,
     paddingHorizontal: 20,
+  },
+  barPositioned: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 40,
+    elevation: 40,
   },
   barSide: {
     flex: 1,

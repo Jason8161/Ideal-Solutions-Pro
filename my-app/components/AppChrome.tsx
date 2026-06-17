@@ -8,7 +8,7 @@ import { OwnerTimeClockAlertsBanner } from "@/components/timeClock/OwnerTimeCloc
 import { HomeColdSplashOverlay } from "@/components/HomeColdSplashOverlay";
 import { HomeFooterBar } from "@/components/HomeFooterBar";
 import { ImmersiveChromeSync } from "@/components/ImmersiveChromeSync";
-import { ImmersiveChromeProvider, useImmersiveChrome } from "@/context/ImmersiveChromeContext";
+import { ImmersiveChromeProvider } from "@/context/ImmersiveChromeContext";
 import {
   BrandHeaderProvider,
   useBrandHeaderVisibility,
@@ -17,20 +17,30 @@ import {
 import { useAppTheme } from "@/context/ThemeContext";
 import { isAuthRoute } from "@/lib/auth/authPaths";
 import { useHomeBoot } from "@/lib/homeBoot";
+import { useLegalGateSessionComplete } from "@/lib/legal/useLegalGateSessionComplete";
 
 function AppChromeBody({ children }: PropsWithChildren) {
   const pathname = usePathname();
   const { colors } = useAppTheme();
   const { hidden } = useBrandHeaderVisibility();
-  const { immersiveActive } = useImmersiveChrome();
   const { coldSplashDone } = useHomeBoot();
+  const legalGateComplete = useLegalGateSessionComplete();
   const onAuthScreen = isAuthRoute(pathname);
+  const onOnboardingRoute = pathname.startsWith("/onboarding");
   const onHome = pathname === "/" || pathname === "";
-  const showHomeFooter = !onAuthScreen && (onHome || !immersiveActive);
-  const showColdSplash = !onAuthScreen && onHome && !coldSplashDone;
 
-  // Brand header only on home; nested stacks already use headerShown: false.
-  useSuppressBrandHeader(onAuthScreen || showColdSplash || !onHome);
+  const showHomeFooter = !onAuthScreen && !onOnboardingRoute;
+  const showColdSplash = !onAuthScreen && onHome && !coldSplashDone && !legalGateComplete;
+  const skipKeyboardAvoiding = onAuthScreen || onOnboardingRoute;
+
+  useSuppressBrandHeader(onAuthScreen || onOnboardingRoute || showColdSplash || !onHome);
+
+  const body = (
+    <>
+      <ImmersiveChromeSync />
+      {children}
+    </>
+  );
 
   return (
     <View style={styles.wrap}>
@@ -41,16 +51,19 @@ function AppChromeBody({ children }: PropsWithChildren) {
           <OwnerTimeClockAlertsBanner />
         </View>
       ) : null}
-      <KeyboardAvoidingView
-        style={styles.content}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={0}
-      >
-        <ImmersiveChromeSync />
-        {children}
-      </KeyboardAvoidingView>
-      {showHomeFooter ? <HomeFooterBar /> : null}
+      {skipKeyboardAvoiding ? (
+        <View style={styles.content}>{body}</View>
+      ) : (
+        <KeyboardAvoidingView
+          style={styles.content}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={0}
+        >
+          {body}
+        </KeyboardAvoidingView>
+      )}
       {showColdSplash ? <HomeColdSplashOverlay /> : null}
+      {showHomeFooter ? <HomeFooterBar /> : null}
     </View>
   );
 }

@@ -1,8 +1,13 @@
+import { installStartupErrorHandler } from "@/lib/installStartupErrorHandler";
+
+installStartupErrorHandler();
+
 import { Slot, usePathname } from "expo-router";
 import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
+import { RootErrorBoundary } from "@/components/RootErrorBoundary";
 import { ensureHomeBoot, hideNativeSplash, useHomeBoot } from "@/lib/homeBoot";
 
 import { AppConstructionBackdrop } from "@/components/AppConstructionBackdrop";
@@ -13,6 +18,7 @@ import { EmployeeRouteGuard } from "@/lib/employeeRouteGuard";
 import { DisplaySettingsProvider } from "@/context/DisplaySettingsContext";
 import { AuthGate } from "@/components/auth/AuthGate";
 import { TrialOnboardingGate } from "@/components/onboarding/TrialOnboardingGate";
+import { useInitialOnboardingRoute } from "@/lib/subscriptions/useInitialOnboardingRoute";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { ScaleProvider } from "@/context/ScaleContext";
@@ -41,6 +47,12 @@ function RootNativeSplashDismissal() {
   return null;
 }
 
+/** One-shot cold-start navigation to tier-trial — never uses reactive Redirect. */
+function InitialOnboardingRouteHandler() {
+  useInitialOnboardingRoute();
+  return null;
+}
+
 function RootShell() {
   return (
     <View style={styles.root}>
@@ -49,13 +61,11 @@ function RootShell() {
       {/* Top/horizontal insets here; bottom inset is applied in HomeFooterBar. */}
       <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
         <AppChrome>
-          <LegalAcceptanceGate>
-            <BackupRestoreGate>
-              <EmployeeRouteGuard>
-                <Slot />
-              </EmployeeRouteGuard>
-            </BackupRestoreGate>
-          </LegalAcceptanceGate>
+          <BackupRestoreGate>
+            <EmployeeRouteGuard>
+              <Slot />
+            </EmployeeRouteGuard>
+          </BackupRestoreGate>
         </AppChrome>
       </SafeAreaView>
     </View>
@@ -68,23 +78,28 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <ThemeProvider>
-        <DisplaySettingsProvider>
-          <ScaleProvider>
-            <AuthProvider>
-              <SubscriptionProvider>
-                <AuthGate>
-                  <TrialOnboardingGate>
-                    <RootShell />
-                  </TrialOnboardingGate>
-                </AuthGate>
-              </SubscriptionProvider>
-            </AuthProvider>
-          </ScaleProvider>
-        </DisplaySettingsProvider>
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <RootErrorBoundary>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <DisplaySettingsProvider>
+            <ScaleProvider>
+              <AuthProvider>
+                <LegalAcceptanceGate>
+                  <SubscriptionProvider>
+                    <InitialOnboardingRouteHandler />
+                    <AuthGate>
+                      <TrialOnboardingGate>
+                        <RootShell />
+                      </TrialOnboardingGate>
+                    </AuthGate>
+                  </SubscriptionProvider>
+                </LegalAcceptanceGate>
+              </AuthProvider>
+            </ScaleProvider>
+          </DisplaySettingsProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </RootErrorBoundary>
   );
 }
 

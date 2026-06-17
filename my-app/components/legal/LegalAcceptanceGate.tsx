@@ -1,17 +1,38 @@
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from "react";
-import { Alert, BackHandler, Modal, Platform, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  BackHandler,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppConstructionBackdrop } from "@/components/AppConstructionBackdrop";
 import { LegalAgreementFlow } from "@/components/legal/LegalAgreementFlow";
+import { LegalDarkOverlay } from "@/components/legal/LegalDarkOverlay";
 import { LegalIntroScreen } from "@/components/legal/LegalIntroScreen";
 import { useAppTheme } from "@/context/ThemeContext";
+import { ONBOARDING_TIER_TRIAL_HREF } from "@/lib/auth/authPaths";
 import { hexToRgba } from "@/lib/colorSchemeStorage";
-import { useHomeBoot } from "@/lib/homeBoot";
+import { skipHomeColdSplash, useHomeBoot } from "@/lib/homeBoot";
 import { acceptAllLegalStuffDocuments } from "@/lib/legal/legalAcceptanceStorage";
 import { loadLegalGateState, type LegalGateStep } from "@/lib/legal/legalGate";
+import { finalizeLegalGateSession } from "@/lib/legal/legalGateSession";
+import { useResponsiveTypography } from "@/lib/layout/responsiveTypography";
+import { shouldSkipLegalGate } from "@/lib/legal/legalGatePolicy";
 import { loadLegalIntroSeen, markLegalIntroSeen } from "@/lib/legal/legalIntroStorage";
 import { syncLegalAcceptanceToSupabase } from "@/lib/legal/syncLegalAcceptance";
+import { markInitialOnboardingRouteHandled } from "@/lib/subscriptions/trialGateState";
+import { loadProTrialRecord } from "@/lib/subscriptions/trialStorage";
+
+const LEGAL_GATE_HYDRATE_TIMEOUT_MS = 10_000;
+
+let legalGateRoutedToTierTrial = false;
 
 type GateState = {
   hydrated: boolean;
@@ -22,9 +43,13 @@ type GateState = {
 };
 
 export function LegalAcceptanceGate({ children }: PropsWithChildren) {
+  const skipGate = shouldSkipLegalGate();
+  const router = useRouter();
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
-  const { coldSplashDone, profileHydrated } = useHomeBoot();
+  const { height: windowHeight } = useWindowDimensions();
+  const typo = useResponsiveTypography();
+  const { coldSplashDone } = useHomeBoot();
   const [state, setState] = useState<GateState>({
     hydrated: false,
     introSeen: false,
@@ -38,7 +63,14 @@ export function LegalAcceptanceGate({ children }: PropsWithChildren) {
       StyleSheet.create({
         modalRoot: {
           flex: 1,
+          minHeight: windowHeight,
           backgroundColor: "transparent",
+        },
+        modalContent: {
+          flex: 1,
+          minHeight: 0,
+          zIndex: 2,
+          elevation: 2,
         },
         bannerOverlay: {
           ...StyleSheet.absoluteFillObject,
@@ -54,11 +86,11 @@ export function LegalAcceptanceGate({ children }: PropsWithChildren) {
         },
         bannerText: {
           color: colors.text,
-          fontSize: 13,
-          lineHeight: 18,
+          fontSize: typo.scaleFont(15),
+          lineHeight: typo.bodyLineHeight,
         },
       }),
-    [colors, insets.bottom, insets.top],
+    [colors, insets.bottom, insets.top, typo.isTablet, windowHeight],
   );
 
   const refresh = useCallback(async () => {
@@ -71,12 +103,58 @@ export function LegalAcceptanceGate({ children }: PropsWithChildren) {
       busy: false,
       storageFailed: false,
     });
+    return gate;
   }, []);
 
+  /** After legal is satisfied, send fresh installs to the tier picker (subscription choice). */
+  const routeToTierTrialIfNeeded = useCallback(async () => {
+    if (legalGateRoutedToTierTrial) return;
+    const record = await loadProTrialRecord();
+    if (record?.trialStartDate) return;
+    legalGateRoutedToTierTrial = true;
+    skipHomeColdSplash();
+    router.replace(ONBOARDING_TIER_TRIAL_HREF);
+    markInitialOnboardingRouteHandled();
+  }, [router]);
+
   useEffect(() => {
-    if (!profileHydrated) return;
-    void refresh();
-  }, [profileHydrated, refresh]);
+    if (skipGate) {
+      void finalizeLegalGateSession().then(() => routeToTierTrialIfNeeded());
+      return;
+    }
+
+    let cancelled = false;
+    const hydrateTimeout = setTimeout(() => {
+      if (cancelled) return;
+      setState((current) =>
+        current.hydrated
+          ? current
+          : {
+              hydrated: true,
+              introSeen: false,
+              step: "intro",
+              busy: false,
+              storageFailed: false,
+            },
+      );
+    }, LEGAL_GATE_HYDRATE_TIMEOUT_MS);
+
+    void refresh().finally(() => {
+      if (!cancelled) clearTimeout(hydrateTimeout);
+    });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(hydrateTimeout);
+    };
+  }, [refresh, routeToTierTrialIfNeeded, skipGate]);
+
+  useEffect(() => {
+    if (skipGate || !state.hydrated) return;
+    if (state.step === null) {
+      void finalizeLegalGateSession().then(() => routeToTierTrialIfNeeded());
+    }
+  }, [skipGate, state.hydrated, state.step, routeToTierTrialIfNeeded]);
 
   const showGate = coldSplashDone && state.hydrated && state.step !== null;
 
@@ -89,10 +167,11 @@ export function LegalAcceptanceGate({ children }: PropsWithChildren) {
   const onDecline = useCallback(() => {
     Alert.alert(
       "Acceptance required",
-      "You must accept all legal documents to use Ideal Solutions Pro.",
+      "App Review and all users must accept the legal documents to use Ideal Solutions Pro. Tap Review to return to the documents — nothing else is required before the free guest trial.",
       Platform.OS === "web"
         ? [{ text: "OK" }]
         : [
+            { text: "Review documents", style: "cancel" },
             {
               text: "Exit app",
               style: "destructive",
@@ -104,7 +183,6 @@ export function LegalAcceptanceGate({ children }: PropsWithChildren) {
                 Alert.alert("Close the app", "Close Ideal Solutions Pro from the app switcher to exit.");
               },
             },
-            { text: "Review", style: "cancel" },
           ],
     );
   }, []);
@@ -130,10 +208,14 @@ export function LegalAcceptanceGate({ children }: PropsWithChildren) {
       return;
     }
     await syncLegalAcceptanceToSupabase();
-    await refresh();
-  }, [refresh]);
+    const gate = await refresh();
+    await finalizeLegalGateSession();
+    if (gate.step === null) {
+      await routeToTierTrialIfNeeded();
+    }
+  }, [refresh, routeToTierTrialIfNeeded]);
 
-  if (!coldSplashDone || !state.hydrated) {
+  if (skipGate || !coldSplashDone || !state.hydrated) {
     return <>{children}</>;
   }
 
@@ -159,10 +241,17 @@ export function LegalAcceptanceGate({ children }: PropsWithChildren) {
   return (
     <>
       {children}
-      <Modal visible animationType="fade" presentationStyle="fullScreen" onRequestClose={onDecline}>
+      <Modal
+        visible
+        animationType="fade"
+        presentationStyle="fullScreen"
+        statusBarTranslucent
+        onRequestClose={onDecline}
+      >
         <View style={overlayStyles.modalRoot}>
           <AppConstructionBackdrop />
-          <SafeAreaView style={overlayStyles.modalRoot} edges={["top", "bottom", "left", "right"]}>
+          <LegalDarkOverlay />
+          <SafeAreaView style={overlayStyles.modalContent} edges={["top", "bottom", "left", "right"]}>
             {state.step === "intro" ? (
               <LegalIntroScreen onContinue={() => void onContinueIntro()} onExit={onExitApp} />
             ) : (

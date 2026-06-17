@@ -1,85 +1,96 @@
 import { Redirect, usePathname, type Href } from "expo-router";
-import { useEffect, useRef, useState, type PropsWithChildren } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { useEffect, useState, type PropsWithChildren } from "react";
 
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { isAuthRoute, isPublicAppRoute } from "@/lib/auth/authPaths";
-import { loadProTrialRecord } from "@/lib/subscriptions/trialStorage";
+import {
+  AUTH_LOGIN_HREF,
+  isAuthRoute,
+  isEmployeeRoute,
+  isTrialOnboardingExemptRoute,
+} from "@/lib/auth/authPaths";
+import { loadEmployeeSession } from "@/lib/employeeSession";
+import { useLaunchGateBypass } from "@/lib/launchGate";
+import { useLegalGateSessionComplete } from "@/lib/legal/useLegalGateSessionComplete";
+import {
+  isTrialHomeNavigationPending,
+  isTrialNavigationLocked,
+  useTrialGateState,
+} from "@/lib/subscriptions/trialGateState";
 
-const ONBOARDING_HREF = "/onboarding/tier-trial" as Href;
 const UPGRADE_HREF = "/upgrade" as Href;
 
-/**
- * Routes subscription onboarding (tier trial picker) and upgrade lock screen.
- * Does not block public routes, auth screens, or employee/invoice-pay paths.
- */
+/** Blocks /upgrade when subscription locked after trial expiry. Tier picker uses imperative routing. */
 export function TrialOnboardingGate({ children }: PropsWithChildren) {
-  const pathname = usePathname();
-  const { isLoading: authLoading, isAuthenticated } = useAuth();
+  const pathname = usePathname() ?? "";
+  const legalGateComplete = useLegalGateSessionComplete();
+  const launchGateBypass = useLaunchGateBypass();
+  const { isAuthenticated } = useAuth();
   const {
-    loading: subLoading,
     isTestingUnlocked,
+    isBetaFullAccess,
+    requiresAccountLinking,
     subscriptionLocked,
     proTrial,
   } = useSubscription();
-  const [trialRecordLoaded, setTrialRecordLoaded] = useState(false);
-  const [hasTrialRecord, setHasTrialRecord] = useState(false);
-  const initialGatePassedRef = useRef(false);
+  const { trialNeverStarted, suppressRedirects } = useTrialGateState(proTrial);
+  const [employeeActive, setEmployeeActive] = useState(false);
+  const [employeeChecked, setEmployeeChecked] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    void loadProTrialRecord().then((record) => {
-      if (cancelled) return;
-      setHasTrialRecord(Boolean(record?.trialStartDate));
-      setTrialRecordLoaded(true);
-    });
+    void loadEmployeeSession()
+      .then((session) => {
+        if (cancelled) return;
+        setEmployeeActive(session.active);
+        setEmployeeChecked(true);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setEmployeeActive(false);
+        setEmployeeChecked(true);
+      });
     return () => {
       cancelled = true;
     };
-  }, [proTrial.isActive]);
-
-  const gateLoading = authLoading || subLoading || !trialRecordLoaded;
-  if (!gateLoading) {
-    initialGatePassedRef.current = true;
-  }
+  }, []);
 
   const onOnboarding = pathname.startsWith("/onboarding");
   const onUpgrade = pathname === "/upgrade";
-  const isPublic = isPublicAppRoute(pathname);
+  const trialExempt = isTrialOnboardingExemptRoute(pathname);
   const onAuth = isAuthRoute(pathname);
+  const onEmployeeRoute = isEmployeeRoute(pathname);
+  const employeeSubscriptionExempt = employeeActive && onEmployeeRoute;
 
-  if (gateLoading && !initialGatePassedRef.current) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (isTestingUnlocked || isPublic || onAuth) {
+  if (onOnboarding) {
     return children;
   }
 
-  if (subscriptionLocked && !onUpgrade) {
+  const deferNavigation = !launchGateBypass && !legalGateComplete;
+  const navigationLocked = isTrialNavigationLocked();
+
+  if (deferNavigation || suppressRedirects || isTrialHomeNavigationPending() || navigationLocked) {
+    return children;
+  }
+
+  if (isTestingUnlocked || isBetaFullAccess || trialExempt || onAuth) {
+    return children;
+  }
+
+  if (!isAuthenticated && requiresAccountLinking && !onAuth) {
+    return <Redirect href={AUTH_LOGIN_HREF} />;
+  }
+
+  if (
+    subscriptionLocked &&
+    !proTrial.isActive &&
+    !trialNeverStarted &&
+    !onUpgrade &&
+    !onOnboarding &&
+    !employeeSubscriptionExempt
+  ) {
     return <Redirect href={UPGRADE_HREF} />;
-  }
-
-  if (!subscriptionLocked && !hasTrialRecord && !proTrial.isActive && isAuthenticated && !onOnboarding) {
-    return <Redirect href={ONBOARDING_HREF} />;
-  }
-
-  if ((proTrial.isActive || hasTrialRecord) && onOnboarding) {
-    return <Redirect href={"/" as Href} />;
   }
 
   return children;
 }
-
-const styles = StyleSheet.create({
-  loader: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
