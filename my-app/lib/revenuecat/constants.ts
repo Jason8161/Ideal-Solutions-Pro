@@ -56,6 +56,22 @@ export const LEGACY_TIER_PRODUCT_IDS: Record<string, readonly string[]> = {
 
 
 
+/** Legacy RevenueCat package identifiers still matched when resolving offerings. */
+
+export const LEGACY_TIER_PACKAGE_IDS: Record<string, readonly string[]> = {
+
+  side_hustle: ["side_hustle_monthly"],
+
+  boss_man: [...LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS, ...LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS],
+
+  super_boss_man: ["super_boss_man_monthly"],
+
+  enterprise_boss_man: ["enterprise_boss_man_monthly"],
+
+};
+
+
+
 /** Consumable AI credit packs — see lib/subscription/aiAddons.ts */
 
 export const AI_ADDON_STORE_PRODUCT_IDS = [

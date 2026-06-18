@@ -10,6 +10,8 @@ export {
 
   LEGACY_ENTITLEMENT_IDS,
 
+  LEGACY_TIER_PACKAGE_IDS,
+
   LEGACY_TIER_PRODUCT_IDS,
 
 } from "./constants";

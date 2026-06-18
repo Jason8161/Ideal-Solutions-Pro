@@ -14,7 +14,7 @@ import { isSubscriptionGatingDisabled } from "@/lib/subscriptionTesting";
 
 import {
   IDEAL_SOLUTIONS_PRO_ENTITLEMENT,
-  LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS,
+  LEGACY_TIER_PACKAGE_IDS,
   LEGACY_TIER_PRODUCT_IDS,
   LEGACY_ENTITLEMENT_IDS,
 } from "./constants";
@@ -279,9 +279,8 @@ export function highestTierFromEntitlements(active: Record<string, unknown>): Su
 function tierPackageIdentifiers(tierId: SubscriptionTierId, plan: ReturnType<typeof getSubscriptionPlan>): string[] {
   const identifiers: string[] = [];
   if (plan.revenueCatPackageId) identifiers.push(plan.revenueCatPackageId);
-  if (tierId === "boss_man") {
-    identifiers.push(...LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS);
-  }
+  if (plan.revenueCatProductId) identifiers.push(plan.revenueCatProductId);
+  identifiers.push(...(LEGACY_TIER_PACKAGE_IDS[tierId] ?? []));
   return identifiers;
 }
 
@@ -291,8 +290,9 @@ export function findPackage(
   productId: string,
   legacyProductIds: readonly string[] = [],
 ): PurchasesPackage | undefined {
-  const productIds = [productId, ...legacyProductIds].filter(Boolean);
-  for (const id of productIds) {
+  const productIds = [productId, ...legacyProductIds, ...identifiers].filter(Boolean);
+  const uniqueProductIds = [...new Set(productIds)];
+  for (const id of uniqueProductIds) {
     const byProduct = packages.find((p) => p.product.identifier === id);
     if (byProduct) return byProduct;
   }
@@ -312,7 +312,24 @@ export function resolveTierPackageFromOfferings(
   const productId = plan.revenueCatProductId ?? "";
   const legacyProductIds = LEGACY_TIER_PRODUCT_IDS[tierId] ?? [];
   const identifiers = tierPackageIdentifiers(tierId, plan);
-  return findPackage(packages, identifiers, productId, legacyProductIds) ?? null;
+  const resolved = findPackage(packages, identifiers, productId, legacyProductIds) ?? null;
+  if (tierId === "enterprise_boss_man") {
+    if (resolved) {
+      rcLog("[RevenueCat] enterprise_boss_man package resolved", {
+        packageId: resolved.identifier,
+        productId: resolved.product.identifier,
+        expectedProductId: productId,
+      });
+    } else {
+      rcLog("[RevenueCat] enterprise_boss_man package not found in offerings", {
+        expectedProductId: productId,
+        legacyProductIds,
+        packageIdentifiers: identifiers,
+        available: packages.map((p) => ({ id: p.identifier, productId: p.product.identifier })),
+      });
+    }
+  }
+  return resolved;
 }
 
 export function filterPlansByOfferings<T extends { id: SubscriptionTierId; isPaid: boolean }>(
@@ -320,9 +337,17 @@ export function filterPlansByOfferings<T extends { id: SubscriptionTierId; isPai
   packages: PurchasesPackage[],
 ): T[] {
   if (packages.length === 0) return [];
-  return plans.filter(
+  const filtered = plans.filter(
     (plan) => !plan.isPaid || resolveTierPackageFromOfferings(packages, plan.id) !== null,
   );
+  const paidCount = filtered.filter((plan) => plan.isPaid).length;
+  rcLog("[RevenueCat] filterPlansByOfferings", {
+    inputPlans: plans.length,
+    availablePackages: packages.length,
+    visiblePaidTiers: paidCount,
+    tierIds: filtered.map((plan) => plan.id),
+  });
+  return filtered;
 }
 
 export function isValidPurchasePackage(pkg: PurchasesPackage | null | undefined): pkg is PurchasesPackage {
