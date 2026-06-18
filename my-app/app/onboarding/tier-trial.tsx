@@ -20,7 +20,7 @@ import type { ColorScheme } from "@/lib/colorSchemeStorage";
 import { useFormContentWidth } from "@/lib/layout/formContentWidth";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { skipHomeColdSplash } from "@/lib/homeBoot";
-import { configurePurchases, useOfferingsFilteredPlans } from "@/lib/revenuecat";
+import { useOfferingsFilteredPlans } from "@/lib/revenuecat";
 import {
   LOCAL_ONLY_DISCLAIMER,
   PLAN_PICKER_FAIR_USE_NOTE,
@@ -57,8 +57,6 @@ export default function TierTrialOnboardingScreen() {
     isTestingUnlocked,
     isBetaFullAccess,
     isConfigured,
-    purchaseTier,
-    refresh,
   } = useSubscription();
   const [selected, setSelected] = useState<TrialPickerSelection>("boss_man");
   const [busy, setBusy] = useState(false);
@@ -108,54 +106,28 @@ export default function TierTrialOnboardingScreen() {
     }
   }
 
-  async function onStartRevenueCatTrial(tierId: SubscriptionTierId) {
-    if (Platform.OS === "web") {
-      setActionError("Free trial purchases run on iOS and Android builds with native billing.");
-      return;
-    }
-
+  async function onStartGuestTrial(tierId: SubscriptionTierId) {
     setBusy(true);
     markTrialStarting();
     try {
-      if (!isConfigured) {
-        const configured = await configurePurchases();
-        if (!configured.ok) {
-          resetTrialOnboardingSession();
-          setActionError(configured.message);
-          console.warn("[RevenueCat] tier-trial: configure failed", configured.message);
-          return;
-        }
-        console.warn("[RevenueCat] configured", { source: "tier-trial" });
-      }
-
-      console.warn("[RevenueCat] tier-trial: purchase started", tierId);
-      const result = await purchaseTier(tierId);
-
-      if (result.cancelled) {
-        resetTrialOnboardingSession();
-        console.warn("[RevenueCat] tier-trial: purchase cancelled", tierId);
-        return;
-      }
+      const result = await startProTrial({ interestTier: tierId });
 
       if (!result.ok) {
         resetTrialOnboardingSession();
-        setActionError(result.message ?? "Could not start your free trial. Please try again.");
-        console.warn("[RevenueCat] tier-trial: purchase failed", result.message);
+        setActionError(result.message);
         return;
       }
 
-      console.warn("[RevenueCat] tier-trial: purchase success", tierId);
-      markTrialJustStarted();
       primeTrialStorageCache(true);
+      markTrialJustStarted();
       skipHomeColdSplash();
-      await refresh({ silent: true });
+      applyGuestTrialState(result.state);
       await navigateAfterTrialState("/");
       unlockTrialNavigation(TRIAL_NAVIGATION_UNLOCK_MS);
-      console.warn("[NAV] tier-trial: trial started — router.replace once");
+      console.warn("[NAV] tier-trial: guest trial started — router.replace once");
     } catch {
       resetTrialOnboardingSession();
       setActionError("Could not start your free trial. Please try again.");
-      console.warn("[RevenueCat] tier-trial: purchase threw unexpectedly");
     } finally {
       setBusy(false);
     }
@@ -180,7 +152,7 @@ export default function TierTrialOnboardingScreen() {
       return;
     }
 
-    await onStartRevenueCatTrial(selected);
+    await onStartGuestTrial(selected);
   }
 
   async function navigateAfterTrialState(href: Href) {
@@ -207,7 +179,7 @@ export default function TierTrialOnboardingScreen() {
         {TRIAL_DAYS}-day trial · {TRIAL_AI_REQUESTS_TOTAL} AI requests total · full access to your chosen tier
       </Text>
       <Text style={styles.guestNote}>
-        No app account needed to start — confirm the free trial in the App Store, then create an account later to sync billing across devices.
+        No app account needed — your {TRIAL_DAYS}-day trial runs on this device. Subscribe later in Settings when you are ready (StoreKit billing).
       </Text>
       <Text style={styles.localOnly}>{LOCAL_ONLY_DISCLAIMER}</Text>
 
