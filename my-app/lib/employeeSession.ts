@@ -1,7 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import type { AppRole } from "@/lib/auth/roles";
-import { persistRoleAsBoss, persistRoleAsEmployee } from "@/lib/auth/sessionRole";
+import {
+  persistRoleAsBoss,
+  persistRoleAsEmployee,
+  savePersistedCompanyRole,
+} from "@/lib/auth/sessionRole";
 import type { EmployeePermissions } from "@/lib/cloud/types";
 
 const SESSION_KEY = "ideal_employee_session_v1";
@@ -59,6 +63,7 @@ export async function saveEmployeeSession(session: EmployeeSession): Promise<voi
   await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(normalized));
   if (normalized.active) {
     await persistRoleAsEmployee();
+    await savePersistedCompanyRole("employee");
   }
 }
 

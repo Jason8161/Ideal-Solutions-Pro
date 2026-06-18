@@ -167,6 +167,7 @@ export const EMPLOYEE_ALLOWED_PATH_PREFIXES = [
   "/job-folder/job-photos",
   "/job-folder/schedule",
   "/calendar",
+  "/misc-apps",
 ] as const;
 
 /** Boss-only routes (financial, subscriptions, full job folder hub). */

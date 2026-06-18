@@ -31,6 +31,7 @@ import {
   loadEmployeeSession,
   type EmployeeSession,
 } from "@/lib/employeeSession";
+import { loadPersistedAppRole } from "@/lib/auth/sessionRole";
 import {
   HOME_MENU_HORIZONTAL_PADDING,
   HOME_MENU_TILE_GAP,
@@ -56,16 +57,19 @@ export default function EmployeeHomeScreen() {
   const [loading, setLoading] = useState(true);
   const [aiAssistantEnabled, setAiAssistantEnabled] = useState(true);
   const [socialPickerOpen, setSocialPickerOpen] = useState(false);
+  const [debugAppRole, setDebugAppRole] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const [sess, aiEnabled] = await Promise.all([
+      const [sess, aiEnabled, persistedRole] = await Promise.all([
         loadEmployeeSession(),
         loadAiAssistantToolsEnabled(),
+        loadPersistedAppRole(),
       ]);
       setSession(sess);
       setAiAssistantEnabled(aiEnabled);
+      setDebugAppRole(persistedRole ?? "none");
       if (sess.active && sess.cloudAuthToken) {
         await syncEmployeeAssignments();
         void registerEmployeePushTokenIfPossible();
@@ -130,6 +134,15 @@ export default function EmployeeHomeScreen() {
         <Text style={themed.headerSubtitle}>
           {displayName ? `${displayName} · ${companyLabel}` : companyLabel}
         </Text>
+        {__DEV__ ? (
+          <View style={themed.devBanner}>
+            <Text style={themed.devBannerTitle}>EMPLOYEE MODE ACTIVE</Text>
+            <Text style={themed.devBannerText}>
+              session.active={String(session.active)} session.role={session.role ?? "none"} persistedRole=
+              {debugAppRole}
+            </Text>
+          </View>
+        ) : null}
       </View>
       <ScrollView
         style={themed.scroll}
@@ -217,6 +230,24 @@ function makeStyles(colors: ColorScheme, footerScrollInset: number) {
     headerSubtitle: {
       color: colors.textMuted,
       fontSize: 14,
+      marginTop: 4,
+    },
+    devBanner: {
+      marginTop: 10,
+      padding: 10,
+      borderRadius: 8,
+      backgroundColor: "rgba(255, 200, 0, 0.25)",
+      borderWidth: 1,
+      borderColor: "rgba(255, 200, 0, 0.6)",
+    },
+    devBannerTitle: {
+      color: colors.text,
+      fontSize: 13,
+      fontWeight: "800",
+    },
+    devBannerText: {
+      color: colors.textMuted,
+      fontSize: 11,
       marginTop: 4,
     },
     scroll: {

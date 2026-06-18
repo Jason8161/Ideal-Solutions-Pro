@@ -102,7 +102,7 @@ export const HOME_TILES_WITH_CUSTOM_IMAGES: readonly HomeMenuItem[] = [...HOME_M
 /** When false, home tiles show only an icon fallback (no bundled PNGs or saved overrides). */
 export const HOME_MENU_SHOW_TILE_IMAGES = false;
 
-/** Employee portal home — exactly six sections (no boss mirrors). */
+/** Employee portal home — seven sections (no boss mirrors). */
 export const EMPLOYEE_HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
   {
     key: "ideal-assistant",
@@ -160,6 +160,16 @@ export const EMPLOYEE_HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
     href: "/employee/clock",
     icon: "clock-outline",
     image: require("@/assets/images/home-getting-paid.png"),
+    imageMonochrome: false,
+    alwaysShowTileImage: true,
+  },
+  {
+    key: "field-tools",
+    label: "Field Tools",
+    subtitle: "Maps, weather, and field utilities",
+    href: "/misc-apps",
+    icon: "hammer-wrench",
+    image: require("@/assets/images/home-misc-apps.png"),
     imageMonochrome: false,
     alwaysShowTileImage: true,
   },

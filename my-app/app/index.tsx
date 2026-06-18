@@ -1,6 +1,6 @@
 "use no memo";
 
-import { useFocusEffect, useRouter, type Href } from "expo-router";
+import { useFocusEffect, useRouter, Redirect, type Href } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -47,6 +47,7 @@ import {
 } from "@/lib/subscriptionGating";
 import type { SubscriptionTierId } from "@/lib/subscriptionPlans";
 import { OverdueInvoicesHomePrompt } from "@/components/invoices/OverdueInvoicesHomePrompt";
+import { isEmployeeSessionActive } from "@/lib/employeeSession";
 import {
   HOME_MENU_HORIZONTAL_PADDING,
   HOME_MENU_TILE_GAP,
@@ -124,6 +125,8 @@ export default function Page() {
   const themed = useMemo(() => makeStyles(colors, footerScrollInset), [colors, footerScrollInset]);
   const [socialPickerOpen, setSocialPickerOpen] = useState(false);
   const [tileOverrides, setTileOverrides] = useState<HomeTileImageOverrides>({});
+  const [employeeRedirectChecked, setEmployeeRedirectChecked] = useState(false);
+  const [employeeMode, setEmployeeMode] = useState(false);
   const { coldSplashDone, profileHydrated } = useHomeBoot();
   const {
     activeTier: subscriptionTier,
@@ -183,11 +186,27 @@ export default function Page() {
     void ensureHomeBoot();
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    void isEmployeeSessionActive().then((active) => {
+      if (cancelled) return;
+      setEmployeeMode(active);
+      setEmployeeRedirectChecked(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const homeGridRows = buildHomeGridRows();
   const gridInnerWidth = contentWidth ?? buttonWidth;
 
-  if (!coldSplashDone) {
+  if (!coldSplashDone || !employeeRedirectChecked) {
     return <View style={themed.splashPlaceholder} />;
+  }
+
+  if (employeeMode) {
+    return <Redirect href="/employee" />;
   }
 
   return (

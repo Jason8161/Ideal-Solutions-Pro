@@ -11,6 +11,7 @@ import {
 } from "@/lib/auth/routing";
 import { resolveCurrentAppRole, resolveCurrentCompanyRole } from "@/lib/auth/sessionRole";
 import { isBossAppRole, isEmployeeAppRole, type AppRole } from "@/lib/auth/roles";
+import { loadEmployeeSession } from "@/lib/employeeSession";
 import { isPathBlockedForRole } from "@/lib/permissions/roleAccess";
 import type { CompanyRoleId } from "@/lib/permissions/companyRoles";
 
@@ -23,29 +24,44 @@ export function EmployeeRouteGuard({ children }: PropsWithChildren) {
   const onGuestTrialRoute = isGuestTrialRoute(pathname);
   const [role, setRole] = useState<AppRole | null>(null);
   const [companyRole, setCompanyRole] = useState<CompanyRoleId | null>(null);
+  const [employeeSessionActive, setEmployeeSessionActive] = useState(false);
   const roleRef = useRef<AppRole | null>(null);
   const companyRoleRef = useRef<CompanyRoleId | null>(null);
+  const employeeSessionActiveRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
-    void Promise.all([resolveCurrentAppRole(), resolveCurrentCompanyRole()]).then(([next, coRole]) => {
+    void Promise.all([
+      resolveCurrentAppRole(),
+      resolveCurrentCompanyRole(),
+      loadEmployeeSession(),
+    ]).then(([next, coRole, employeeSession]) => {
       if (cancelled) return;
       roleRef.current = next;
       companyRoleRef.current = coRole;
+      employeeSessionActiveRef.current = employeeSession.active;
       setRole(next);
       setCompanyRole(coRole);
+      setEmployeeSessionActive(employeeSession.active);
     });
     return () => {
       cancelled = true;
     };
   }, [pathname]);
 
-  if (onGuestTrialRoute) {
+  const resolvedRole = role ?? roleRef.current;
+  const resolvedCompanyRole = companyRole ?? companyRoleRef.current;
+  const employeeActive = employeeSessionActive || employeeSessionActiveRef.current;
+  const isEmployeePortal =
+    isEmployeeAppRole(resolvedRole) ||
+    isEmployeeAppVariant() ||
+    resolvedCompanyRole === "employee" ||
+    employeeActive;
+
+  if (onGuestTrialRoute && !isEmployeePortal) {
     return children;
   }
 
-  const resolvedRole = role ?? roleRef.current;
-  const resolvedCompanyRole = companyRole ?? companyRoleRef.current;
   if (resolvedRole === null) {
     return (
       <View style={styles.loader}>
@@ -79,10 +95,7 @@ export function EmployeeRouteGuard({ children }: PropsWithChildren) {
   }
 
   const p = pathname.toLowerCase();
-  if (
-    (p === "/" || p === "") &&
-    (isEmployeeAppRole(resolvedRole) || isEmployeeAppVariant() || resolvedCompanyRole === "employee")
-  ) {
+  if ((p === "/" || p === "") && isEmployeePortal) {
     return <Redirect href={getHomeRouteForCompanyRole("employee")} />;
   }
 

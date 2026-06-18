@@ -26,6 +26,7 @@ export const EMPLOYEE_ALLOWED_ROUTE_PREFIXES = [
   "/job-folder/schedule",
   "/job-folder/job",
   "/calendar",
+  "/misc-apps",
 ] as const;
 
 /** Boss-only route prefixes — employees are redirected away. */
