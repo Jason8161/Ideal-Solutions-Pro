@@ -14,7 +14,7 @@ import { AppConstructionBackdrop } from "@/components/AppConstructionBackdrop";
 import { AppChrome } from "@/components/AppChrome";
 import { BackupRestoreGate } from "@/components/backup/BackupRestoreGate";
 import { LegalAcceptanceGate } from "@/components/legal/LegalAcceptanceGate";
-import { EmployeeRouteGuard } from "@/lib/employeeRouteGuard";
+import { EmployeeRouteGuard } from "@/components/auth/EmployeeRouteGuard";
 import { DisplaySettingsProvider } from "@/context/DisplaySettingsContext";
 import { AuthGate } from "@/components/auth/AuthGate";
 import { AppStartupGate } from "@/components/AppStartupGate";

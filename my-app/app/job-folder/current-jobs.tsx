@@ -24,10 +24,22 @@ function openJobActions(
   job: BossJob,
   router: ReturnType<typeof useRouter>,
   onComplete: () => void,
+  employeeMode: boolean,
 ) {
   const title = job.jobName.trim() || job.customerName.trim() || "Job";
   const jobHref = `/job-folder/job/${job.id}` as Href;
   const scheduleHref = `/job-folder/schedule?jobId=${job.id}` as Href;
+
+  if (employeeMode) {
+    Alert.alert(title, jobRowLabel(job), [
+      { text: "Cancel", style: "cancel" },
+      { text: "View details", onPress: () => router.push(jobHref) },
+      { text: "Add photos", onPress: () => router.push(`/job-folder/job/${job.id}?focus=photos` as Href) },
+      { text: "Add notes", onPress: () => router.push(`/job-folder/job/${job.id}/notes` as Href) },
+      { text: "Schedule", onPress: () => router.push(scheduleHref) },
+    ]);
+    return;
+  }
 
   Alert.alert(title, jobRowLabel(job), [
     { text: "Cancel", style: "cancel" },
@@ -57,7 +69,8 @@ function openJobActions(
     },
     {
       text: "Create invoice",
-      onPress: () => Alert.alert("Invoices", "PDF invoice export is coming soon."),
+      onPress: () =>
+        router.push(`/job-folder/invoices/invoice-edit?jobId=${job.id}` as Href),
     },
     {
       text: "Mark complete",
@@ -97,9 +110,9 @@ export default function CurrentJobsScreen() {
 
   return (
     <ScStickyScroll
-      backHref="/job-folder/hub/jobs-estimates"
+      backHref={employeeMode ? "/employee" : "/job-folder/hub/jobs-estimates"}
       title="Current jobs"
-      subtitle="Tap a job name for actions."
+      subtitle={employeeMode ? "Assigned jobs — read only." : "Tap a job name for actions."}
     >
       {!employeeMode ? (
         <Pressable
@@ -114,7 +127,9 @@ export default function CurrentJobsScreen() {
 
       {jobs.length === 0 ? (
         <Text style={scStyles.emptyText}>
-          No active jobs yet. Tap + New job above or convert an estimate to a job.
+          {employeeMode
+            ? "No assigned jobs yet. Your boss will assign work from the schedule."
+            : "No active jobs yet. Tap + New job above or convert an estimate to a job."}
         </Text>
       ) : (
         <View style={rowStyles.list}>
@@ -124,7 +139,7 @@ export default function CurrentJobsScreen() {
               <Pressable
                 key={job.id}
                 style={({ pressed }) => [rowStyles.row, pressed && { opacity: 0.85 }]}
-                onPress={() => openJobActions(job, router, refresh)}
+                onPress={() => openJobActions(job, router, refresh, employeeMode)}
                 accessibilityRole="button"
                 accessibilityLabel={jobName}
               >

@@ -79,6 +79,7 @@ export type ClockInInput = {
   employeeId: string;
   jobsiteId?: string | null;
   supervisorOverride?: boolean;
+  notes?: string;
 };
 
 export async function performVerifiedClockIn(input: ClockInInput): Promise<VerifiedClockResult> {
@@ -134,6 +135,7 @@ export async function performVerifiedClockIn(input: ClockInInput): Promise<Verif
     jobsiteVerification: verification,
     timeEntryId: entry.id,
     photo,
+    notes: input.notes?.trim() || undefined,
   });
 
   const name = await resolveEmployeeName(input.employeeId);

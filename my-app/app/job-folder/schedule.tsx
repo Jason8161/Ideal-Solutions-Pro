@@ -37,6 +37,7 @@ import {
   SCHEDULE_ASSIGNMENT_STATUSES,
 } from "@/lib/bossMan/scheduling/types";
 import type { BossJob } from "@/lib/bossMan/types";
+import { isEmployeeSessionActive, loadEmployeeSession } from "@/lib/employeeSession";
 import { isProTier } from "@/lib/subscriptionGating";
 
 type HubTab = "jobs" | "employees" | "schedule";
@@ -74,6 +75,7 @@ export default function ScheduleDispatchScreen() {
   const [selectedJobForAssign, setSelectedJobForAssign] = useState<string | null>(null);
   const [employeeAvailDay, setEmployeeAvailDay] = useState(() => dayKeyFromDate(startOfToday()));
   const [availabilityByKey, setAvailabilityByKey] = useState<Record<string, EmployeeAvailabilityStatus>>({});
+  const [employeeMode, setEmployeeMode] = useState(false);
 
   const jobMap = useMemo(() => new Map(jobs.map((j) => [j.id, j])), [jobs]);
   const employeeMap = useMemo(() => new Map(employees.map((e) => [e.id, e])), [employees]);
@@ -91,11 +93,22 @@ export default function ScheduleDispatchScreen() {
       loadScheduleAssignments(),
       assignmentsForDay(selectedDay),
       loadEmployeeDayAvailability(),
-    ]).then(([allJobs, emps, allAssignments, forDay, availRows]) => {
+      isEmployeeSessionActive(),
+      loadEmployeeSession(),
+    ]).then(([allJobs, emps, allAssignments, forDay, availRows, empMode, empSession]) => {
+      setEmployeeMode(empMode);
       setJobs(allJobs.filter(isBossJobActive));
       setEmployees(emps);
-      setAssignments(allAssignments);
-      setDayAssignments(forDay);
+      const scopedAssignments =
+        empMode && empSession.employeeId
+          ? allAssignments.filter((row) => row.employeeIds.includes(empSession.employeeId!))
+          : allAssignments;
+      setAssignments(scopedAssignments);
+      const scopedDay =
+        empMode && empSession.employeeId
+          ? forDay.filter((row) => row.employeeIds.includes(empSession.employeeId!))
+          : forDay;
+      setDayAssignments(scopedDay);
       const map: Record<string, EmployeeAvailabilityStatus> = {};
       for (const row of availRows) {
         map[`${row.employeeId}::${row.date}`] = row.status;
@@ -127,6 +140,7 @@ export default function ScheduleDispatchScreen() {
   };
 
   useEffect(() => {
+    if (employeeMode) return;
     const jobId =
       typeof scheduleJobIdParam === "string" ? scheduleJobIdParam.trim() : "";
     if (!jobId || openedScheduleFromParam.current || jobs.length === 0) return;
@@ -134,7 +148,7 @@ export default function ScheduleDispatchScreen() {
     if (!exists) return;
     openedScheduleFromParam.current = true;
     openNewAssignment({ jobId });
-  }, [scheduleJobIdParam, jobs]);
+  }, [employeeMode, scheduleJobIdParam, jobs]);
 
   const openEditAssignment = (row: ScheduleAssignment) => {
     setEditingAssignment(row);
@@ -204,8 +218,10 @@ export default function ScheduleDispatchScreen() {
     return (
       <Pressable
         key={row.id}
-        onPress={() => openEditAssignment(row)}
-        style={({ pressed }) => [scStyles.card, pressed && { opacity: 0.9 }, { marginBottom: 10, gap: 4 }]}
+        onPress={() => {
+          if (!employeeMode) openEditAssignment(row);
+        }}
+        style={({ pressed }) => [scStyles.card, pressed && !employeeMode && { opacity: 0.9 }, { marginBottom: 10, gap: 4 }]}
       >
         <Text style={scStyles.cardTitle}>
           {job?.jobName.trim() || job?.customerName.trim() || "Job"} · {formatTime12h(row.startTime)}
@@ -221,20 +237,26 @@ export default function ScheduleDispatchScreen() {
   return (
     <>
       <ScStickyScroll
-        backHref="/job-folder/hub/employees"
-        title="Schedule Dispatch"
-        subtitle="Direct crews, assign jobs, and dispatch by text, email, or share."
+        backHref={employeeMode ? "/employee" : "/job-folder/hub/employees"}
+        title={employeeMode ? "My schedule" : "Schedule Dispatch"}
+        subtitle={
+          employeeMode
+            ? "Your assigned shifts — read only."
+            : "Direct crews, assign jobs, and dispatch by text, email, or share."
+        }
       >
-        <Link href={"/job-folder/crew/dispatch" as Href} asChild>
-          <Pressable style={({ pressed }) => [styles.navRow, pressed && { opacity: 0.9 }, { marginBottom: 14 }]}>
-            <Text style={scStyles.menuButtonText}>Dispatch board</Text>
-            <Text style={scStyles.subtitle}>Available, assigned, emergency, and completed today</Text>
-          </Pressable>
-        </Link>
+        {!employeeMode ? (
+          <Link href={"/job-folder/crew/dispatch" as Href} asChild>
+            <Pressable style={({ pressed }) => [styles.navRow, pressed && { opacity: 0.9 }, { marginBottom: 14 }]}>
+              <Text style={scStyles.menuButtonText}>Dispatch board</Text>
+              <Text style={scStyles.subtitle}>Available, assigned, emergency, and completed today</Text>
+            </Pressable>
+          </Link>
+        ) : null}
 
-        {renderSegmented(hubTabs, hubTab, setHubTab)}
+        {!employeeMode ? renderSegmented(hubTabs, hubTab, setHubTab) : null}
 
-        {hubTab === "jobs" ? (
+        {!employeeMode && hubTab === "jobs" ? (
           <>
             <Pressable
               style={({ pressed }) => [scStyles.primaryCta, pressed && { opacity: 0.9 }, { marginBottom: 12 }]}
@@ -272,7 +294,7 @@ export default function ScheduleDispatchScreen() {
                   <VoiceTextInput
                     style={{
                       borderBottomWidth: 1,
-                      borderColor: "rgba(255,255,255,0.35)",
+                      borderColor: "#888888",
                       paddingVertical: 6,
                       color: "#fff",
                       marginTop: 4,
@@ -282,7 +304,7 @@ export default function ScheduleDispatchScreen() {
                       patchJobScheduling(job, { estimatedStartDate: val.trim() || undefined })
                     }
                     placeholder="YYYY-MM-DD est. start"
-                    placeholderTextColor="rgba(255,255,255,0.5)"
+                    placeholderTextColor="#888888"
                   />
                   <View style={{ flexDirection: "row", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
                     <Pressable
@@ -309,7 +331,7 @@ export default function ScheduleDispatchScreen() {
           </>
         ) : null}
 
-        {hubTab === "employees" ? (
+        {!employeeMode && hubTab === "employees" ? (
           <>
             <Text style={scStyles.sectionLabel}>Availability for day</Text>
             <ScrollDayPicker days={fourWeekDays.slice(0, 14)} selected={employeeAvailDay} onSelect={setEmployeeAvailDay} />
@@ -367,15 +389,17 @@ export default function ScheduleDispatchScreen() {
           </>
         ) : null}
 
-        {hubTab === "schedule" ? (
+        {employeeMode || hubTab === "schedule" ? (
           <>
             {renderSegmented(scheduleViews, scheduleView, setScheduleView)}
-            <Pressable
-              style={({ pressed }) => [scStyles.primaryCta, pressed && { opacity: 0.9 }, { marginBottom: 12 }]}
-              onPress={() => openNewAssignment({ date: selectedDay, jobId: selectedJobForAssign ?? undefined })}
-            >
-              <Text style={scStyles.primaryCtaText}>+ Assignment on {formatDayLabel(selectedDay)}</Text>
-            </Pressable>
+            {!employeeMode ? (
+              <Pressable
+                style={({ pressed }) => [scStyles.primaryCta, pressed && { opacity: 0.9 }, { marginBottom: 12 }]}
+                onPress={() => openNewAssignment({ date: selectedDay, jobId: selectedJobForAssign ?? undefined })}
+              >
+                <Text style={scStyles.primaryCtaText}>+ Assignment on {formatDayLabel(selectedDay)}</Text>
+              </Pressable>
+            ) : null}
 
             {scheduleView === "daily" ? (
               <>
@@ -383,11 +407,14 @@ export default function ScheduleDispatchScreen() {
                   days={fourWeekDays}
                   selected={selectedDay}
                   onSelect={setSelectedDay}
-                  onDayPress={(dayKey) =>
-                    openNewAssignment({
-                      date: dayKey,
-                      jobId: selectedJobForAssign ?? undefined,
-                    })
+                  onDayPress={
+                    employeeMode
+                      ? undefined
+                      : (dayKey) =>
+                          openNewAssignment({
+                            date: dayKey,
+                            jobId: selectedJobForAssign ?? undefined,
+                          })
                   }
                 />
                 {dayAssignments.length === 0 ? (
@@ -427,17 +454,20 @@ export default function ScheduleDispatchScreen() {
                   return (
                     <Pressable
                       key={dayKey}
-                      onPress={() =>
-                        openNewAssignment({
-                          date: dayKey,
-                          jobId: selectedJobForAssign ?? undefined,
-                        })
+                      onPress={
+                        employeeMode
+                          ? () => setSelectedDay(dayKey)
+                          : () =>
+                              openNewAssignment({
+                                date: dayKey,
+                                jobId: selectedJobForAssign ?? undefined,
+                              })
                       }
                       style={({ pressed }) => [
                         scStyles.card,
                         pressed && { opacity: 0.9 },
                         selectedDay === dayKey && styles.badgeAccent,
-                        hasAssignments && selectedDay !== dayKey && { borderWidth: 1, borderColor: "rgba(255,255,255,0.25)" },
+                        hasAssignments && selectedDay !== dayKey && { borderWidth: 1, borderColor: "#888888" },
                         { marginBottom: 8, flexDirection: "row", justifyContent: "space-between" },
                       ]}
                     >
@@ -497,18 +527,20 @@ export default function ScheduleDispatchScreen() {
         ) : null}
       </ScStickyScroll>
 
-      <ScheduleAssignmentModal
-        visible={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSaved={refresh}
-        jobs={jobs}
-        employees={employees}
-        assignments={assignments}
-        initial={editingAssignment}
-        presetJobId={presetJobId}
-        presetDate={selectedDay}
-        presetEmployeeIds={presetEmployeeIds}
-      />
+      {!employeeMode ? (
+        <ScheduleAssignmentModal
+          visible={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSaved={refresh}
+          jobs={jobs}
+          employees={employees}
+          assignments={assignments}
+          initial={editingAssignment}
+          presetJobId={presetJobId}
+          presetDate={selectedDay}
+          presetEmployeeIds={presetEmployeeIds}
+        />
+      ) : null}
     </>
   );
 }

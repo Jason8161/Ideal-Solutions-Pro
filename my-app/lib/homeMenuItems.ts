@@ -17,32 +17,10 @@ export type HomeMenuItem = {
   imageMonochrome?: boolean;
   /** Show bundled/override tile art even when {@link HOME_MENU_SHOW_TILE_IMAGES} is false. */
   alwaysShowTileImage?: boolean;
-  /** Intrinsic width ÷ height of bundled plaque art (metadata for contain letterboxing). */
-  tileAspectRatio?: number;
-  /** How tile art fills the button; defaults to `fill` when `image` is set. */
-  tileContentFit?: "contain" | "cover" | "fill";
 };
 
 /** `ideal-solutions-pro-button.png` intrinsic width ÷ height (1024×516). */
 export const HOME_AI_ASSISTANCE_TILE_ASPECT_RATIO = 1024 / 516;
-
-/** `home-todo.png` intrinsic width ÷ height (1024×1024). */
-export const HOME_TODO_TILE_ASPECT_RATIO = 1;
-
-/** `home-calendar.png` intrinsic width ÷ height (1024×1024). */
-export const HOME_CALENDAR_TILE_ASPECT_RATIO = 1;
-
-/** `home-social-media.png` intrinsic width ÷ height (1024×682). */
-export const HOME_SOCIAL_MEDIA_TILE_ASPECT_RATIO = 1024 / 682;
-
-/** `home-job-folder.png` intrinsic width ÷ height (1024×682). */
-export const HOME_JOB_FOLDER_TILE_ASPECT_RATIO = 1024 / 682;
-
-/** `home-getting-paid.png` intrinsic width ÷ height (1024×1024). */
-export const HOME_GETTING_PAID_TILE_ASPECT_RATIO = 1;
-
-/** `home-misc-apps.png` intrinsic width ÷ height (1536×1024). */
-export const HOME_MISC_APPS_TILE_ASPECT_RATIO = 1536 / 1024;
 
 /** Whether this home tile should render raster art (global flag or per-item override). */
 export function homeMenuItemShowsTileImage(item: HomeMenuItem): boolean {
@@ -60,8 +38,6 @@ export const HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
     image: require("@/assets/images/ideal-solutions-pro-button.png"),
     imageMonochrome: false,
     alwaysShowTileImage: true,
-    tileAspectRatio: HOME_AI_ASSISTANCE_TILE_ASPECT_RATIO,
-    tileContentFit: "contain",
   },
   {
     key: "todo",
@@ -70,8 +46,6 @@ export const HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
     image: require("@/assets/images/home-todo.png"),
     imageMonochrome: false,
     alwaysShowTileImage: true,
-    tileAspectRatio: HOME_TODO_TILE_ASPECT_RATIO,
-    tileContentFit: "fill",
   },
   {
     key: "job-folder",
@@ -80,8 +54,6 @@ export const HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
     image: require("@/assets/images/home-job-folder.png"),
     imageMonochrome: false,
     alwaysShowTileImage: true,
-    tileAspectRatio: HOME_JOB_FOLDER_TILE_ASPECT_RATIO,
-    tileContentFit: "fill",
   },
   {
     key: "calendar",
@@ -91,8 +63,6 @@ export const HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
     image: require("@/assets/images/home-calendar.png"),
     imageMonochrome: false,
     alwaysShowTileImage: true,
-    tileAspectRatio: HOME_CALENDAR_TILE_ASPECT_RATIO,
-    tileContentFit: "fill",
   },
   {
     key: "getting-paid",
@@ -103,8 +73,6 @@ export const HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
     image: require("@/assets/images/home-getting-paid.png"),
     imageMonochrome: false,
     alwaysShowTileImage: true,
-    tileAspectRatio: HOME_GETTING_PAID_TILE_ASPECT_RATIO,
-    tileContentFit: "fill",
   },
   {
     key: "misc-apps",
@@ -115,8 +83,6 @@ export const HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
     image: require("@/assets/images/home-misc-apps.png"),
     imageMonochrome: false,
     alwaysShowTileImage: true,
-    tileAspectRatio: HOME_MISC_APPS_TILE_ASPECT_RATIO,
-    tileContentFit: "fill",
   },
 ];
 
@@ -128,8 +94,6 @@ export const HOME_SOCIAL_MEDIA_TILE: HomeMenuItem = {
   image: require("@/assets/images/home-social-media.png"),
   imageMonochrome: false,
   alwaysShowTileImage: true,
-  tileAspectRatio: HOME_SOCIAL_MEDIA_TILE_ASPECT_RATIO,
-  tileContentFit: "fill",
 };
 
 /** All home tiles that support a custom image override (main menu + social). */
@@ -137,6 +101,69 @@ export const HOME_TILES_WITH_CUSTOM_IMAGES: readonly HomeMenuItem[] = [...HOME_M
 
 /** When false, home tiles show only an icon fallback (no bundled PNGs or saved overrides). */
 export const HOME_MENU_SHOW_TILE_IMAGES = false;
+
+/** Employee portal home — exactly six sections (no boss mirrors). */
+export const EMPLOYEE_HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
+  {
+    key: "ideal-assistant",
+    label: "Ideal Assistant",
+    subtitle: "Field AI — counts against company plan",
+    href: "/employee/ai-assistant",
+    icon: "robot-industrial",
+    image: require("@/assets/images/ideal-solutions-pro-button.png"),
+    imageMonochrome: false,
+    alwaysShowTileImage: true,
+  },
+  {
+    key: "job-folder",
+    label: "Job Folder",
+    subtitle: "Assigned jobs — read only",
+    href: "/job-folder/current-jobs",
+    icon: "folder-wrench",
+    image: require("@/assets/images/home-job-folder.png"),
+    imageMonochrome: false,
+    alwaysShowTileImage: true,
+  },
+  {
+    key: "schedule",
+    label: "Schedule",
+    subtitle: "Your shifts — read only",
+    href: "/job-folder/schedule",
+    icon: "calendar-clock",
+    image: require("@/assets/images/home-calendar.png"),
+    imageMonochrome: false,
+    alwaysShowTileImage: true,
+  },
+  {
+    key: "calendar",
+    label: "Calendar",
+    subtitle: "Company events & personal reminders",
+    href: "/calendar",
+    icon: "calendar",
+    image: require("@/assets/images/home-calendar.png"),
+    imageMonochrome: false,
+    alwaysShowTileImage: true,
+  },
+  {
+    key: "social-media",
+    label: "Social Media",
+    subtitle: "Post to company accounts",
+    icon: "share-variant",
+    image: require("@/assets/images/home-social-media.png"),
+    imageMonochrome: false,
+    alwaysShowTileImage: true,
+  },
+  {
+    key: "time-hours",
+    label: "Time / Hours",
+    subtitle: "Clock in/out, timesheets, time off",
+    href: "/employee/clock",
+    icon: "clock-outline",
+    image: require("@/assets/images/home-getting-paid.png"),
+    imageMonochrome: false,
+    alwaysShowTileImage: true,
+  },
+];
 
 export type HomeButtonKey = (typeof HOME_MENU_ITEMS)[number]["key"];
 export type HomeTileImageKey = (typeof HOME_TILES_WITH_CUSTOM_IMAGES)[number]["key"];

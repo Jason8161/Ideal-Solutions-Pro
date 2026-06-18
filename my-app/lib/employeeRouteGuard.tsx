@@ -1,1 +1,1 @@
-export { RoleRouteGuard as EmployeeRouteGuard } from "@/lib/auth/roleRouteGuard";
+export { EmployeeRouteGuard } from "@/components/auth/EmployeeRouteGuard";

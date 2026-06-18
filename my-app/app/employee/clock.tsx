@@ -48,6 +48,7 @@ export default function EmployeeClockScreen() {
   const [loading, setLoading] = useState(true);
   const [confirmation, setConfirmation] = useState<ConfirmationState | null>(null);
   const [clockOutNotes, setClockOutNotes] = useState("");
+  const [clockInNotes, setClockInNotes] = useState("");
   const [jobCompletion, setJobCompletion] = useState<JobCompletionStatus>("in_progress");
   const [pendingSync, setPendingSync] = useState(0);
 
@@ -124,7 +125,7 @@ export default function EmployeeClockScreen() {
       return;
     }
     setBusy(true);
-    void performVerifiedClockIn({ employeeId, jobsiteId: selectedJobId })
+    void performVerifiedClockIn({ employeeId, jobsiteId: selectedJobId, notes: clockInNotes })
       .then((result) => {
         setConfirmation({ mode: "clock_in", result });
         return refresh();
@@ -172,9 +173,9 @@ export default function EmployeeClockScreen() {
 
   return (
     <ScStickyScroll
-      backHref="/"
-      title="My time clock"
-      subtitle="Clock in or out with one-shot GPS verification. No live tracking."
+      backHref={session.active ? "/employee" : "/"}
+      title="Time / Hours"
+      subtitle="Clock in or out, daily notes, and time-off requests."
     >
       {loading ? (
         <ActivityIndicator color={scStyles.cardTitle.color} />
@@ -196,6 +197,12 @@ export default function EmployeeClockScreen() {
               {pendingSync} punch{pendingSync === 1 ? "" : "es"} queued — will sync when online.
             </Text>
           ) : null}
+
+          <Link href={"/employee/time-off" as Href} asChild>
+            <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }, { marginBottom: 8 }]}>
+              <Text style={scStyles.menuButtonText}>Request time off / view balance</Text>
+            </Pressable>
+          </Link>
 
           {confirmation ? (
             <>
@@ -294,6 +301,14 @@ export default function EmployeeClockScreen() {
                   <Text style={scStyles.menuButtonText}>{jobLabel(job.id)}</Text>
                 </Pressable>
               ))}
+              <VoiceTextInput
+                style={[input, { marginTop: 8 }]}
+                value={clockInNotes}
+                onChangeText={setClockInNotes}
+                placeholder="Daily notes (optional)"
+                placeholderTextColor={placeholderTextColor(colors)}
+                multiline
+              />
               {selectedJobId ? (
                 <Pressable
                   style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }, { marginTop: 4 }]}
@@ -324,16 +339,20 @@ export default function EmployeeClockScreen() {
         </>
       )}
 
-      <Link href={"/settings/clock-verification" as Href} asChild>
-        <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}>
-          <Text style={scStyles.menuButtonText}>Clock verification settings</Text>
-        </Pressable>
-      </Link>
-      <Link href={"/settings/employee-ai" as Href} asChild>
-        <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}>
-          <Text style={scStyles.menuButtonText}>Employee session settings</Text>
-        </Pressable>
-      </Link>
+      {!session.active ? (
+        <>
+          <Link href={"/settings/clock-verification" as Href} asChild>
+            <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}>
+              <Text style={scStyles.menuButtonText}>Clock verification settings</Text>
+            </Pressable>
+          </Link>
+          <Link href={"/settings/employee-ai" as Href} asChild>
+            <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}>
+              <Text style={scStyles.menuButtonText}>Employee session settings</Text>
+            </Pressable>
+          </Link>
+        </>
+      ) : null}
     </ScStickyScroll>
   );
 }

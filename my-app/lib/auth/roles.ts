@@ -36,3 +36,6 @@ export function appRoleLabel(role: AppRole): string {
       return role;
   }
 }
+
+/** App roles that map to the boss_man workspace portal (full access). */
+export const BOSS_MAN_APP_ROLES: readonly AppRole[] = ["admin", "contractor"];
