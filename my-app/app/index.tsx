@@ -32,7 +32,7 @@ import {
   type HomeTileImageKey,
 } from "@/lib/homeMenuItems";
 import { useSubscription } from "@/context/SubscriptionContext";
-import { ensureHomeBoot, refreshHomeProfile, SPLASH_BACKGROUND_COLOR, useHomeBoot } from "@/lib/homeBoot";
+import { ensureHomeBoot, refreshHomeProfile, useHomeBoot } from "@/lib/homeBoot";
 import {
   buildHomeGridRows,
   homeMenuItemRoute,
@@ -481,7 +481,7 @@ function makeStyles(colors: ColorScheme, footerScrollInset: number) {
   return StyleSheet.create({
     splashPlaceholder: {
       flex: 1,
-      backgroundColor: SPLASH_BACKGROUND_COLOR,
+      backgroundColor: "transparent",
     },
     root: {
       flex: 1,

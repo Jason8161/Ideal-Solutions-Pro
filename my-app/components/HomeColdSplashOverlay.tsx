@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { useBrandingImageStageDimensions } from "@/lib/brandingImageLayout";
-import { COLD_SPLASH_LOGO_MS, SPLASH_BACKGROUND_COLOR, useHomeBoot } from "@/lib/homeBoot";
+import { COLD_SPLASH_LOGO_MS, useHomeBoot } from "@/lib/homeBoot";
 import { COLD_SPLASH_APP_LOGO, COLD_SPLASH_HERO_IMAGE } from "@/lib/splashBackgroundImage";
 
 type SplashPhase = "logo" | "wire";
@@ -26,6 +26,7 @@ export function HomeColdSplashOverlay() {
 
   return (
     <View style={styles.overlay} pointerEvents="auto" accessibilityViewIsModal>
+      {/* Transparent overlay — root `AppConstructionBackdrop` shows the metal wallpaper through. */}
       <View style={[styles.imageStage, { width: stage.width, height: stage.height }]}>
         <Image
           source={phase === "logo" ? logoSource : COLD_SPLASH_HERO_IMAGE}
@@ -46,7 +47,7 @@ export function HomeColdSplashOverlay() {
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: SPLASH_BACKGROUND_COLOR,
+    backgroundColor: "transparent",
     zIndex: 30,
     elevation: 30,
     alignItems: "center",
