@@ -625,10 +625,10 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       try {
         const pkg = await findTierPackage(tierId);
         if (!isValidPurchasePackage(pkg)) {
-          const productId = plan.revenueCatProductId ?? "";
+          const productId = plan.revenueCatProductId ?? plan.revenueCatPackageId ?? tierId;
           return {
             ok: false,
-            message: `No RevenueCat package for ${plan.name}. Add product ${productId} to the default offering.`,
+            message: `${plan.name} is not available in the store right now. Choose another plan or try again later.${productId ? ` (SKU: ${productId})` : ""}`,
           };
         }
 

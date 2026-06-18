@@ -51,7 +51,7 @@ import {
   getSubscriptionPlan,
   type SubscriptionTierId,
 } from "@/lib/subscriptionPlans";
-import { PURCHASE_ACTION_TIMEOUT_MS } from "@/lib/revenuecat";
+import { PURCHASE_ACTION_TIMEOUT_MS, useOfferingsFilteredPlans } from "@/lib/revenuecat";
 import { packageDisclosureFromPackage, type PackageDisclosureInfo } from "@/lib/revenuecat/disclosure";
 import { findTierPackage } from "@/lib/revenuecat/purchases";
 
@@ -130,6 +130,25 @@ export default function SubscribeScreen() {  const router = useRouter();
   const [betaDebugExpanded, setBetaDebugExpanded] = useState(showBetaDebugPanel);
   const [employeeAccessSelected, setEmployeeAccessSelected] = useState(false);
   const [rcDisclosure, setRcDisclosure] = useState<PackageDisclosureInfo | null>(null);
+  const filterByOfferings = !isTestingUnlocked && Platform.OS !== "web";
+  const { offeringsLoading, offeringsLoaded, availablePlans, offeringsError } =
+    useOfferingsFilteredPlans(pickerPlans, { enabled: filterByOfferings, isConfigured });
+  const visiblePlans = filterByOfferings ? availablePlans : pickerPlans;
+
+  useEffect(() => {
+    if (!filterByOfferings || !offeringsLoaded || offeringsLoading || employeeAccessSelected) return;
+    if (!visiblePlans.some((plan) => plan.id === selectedId)) {
+      const fallback = visiblePlans[0]?.id;
+      if (fallback) setSelectedId(fallback);
+    }
+  }, [
+    employeeAccessSelected,
+    filterByOfferings,
+    offeringsLoaded,
+    offeringsLoading,
+    selectedId,
+    visiblePlans,
+  ]);
   const manageDisabled = loading || actionBusy || Platform.OS === "web";
   const buttonHitSlop = typo.isTablet
     ? { top: 12, bottom: 12, left: 12, right: 12 }
@@ -244,7 +263,18 @@ export default function SubscribeScreen() {  const router = useRouter();
       ) : null}
 
       <View style={styles.tierList}>
-        {pickerPlans.map((plan) => (
+        {filterByOfferings && offeringsLoading ? (
+          <View style={styles.row}>
+            <ActivityIndicator color={colors.text} />
+            <Text style={styles.body}>Loading subscription plans…</Text>
+          </View>
+        ) : null}
+        {filterByOfferings && offeringsLoaded && visiblePlans.length === 0 ? (
+          <Text style={styles.warn}>
+            {offeringsError ?? "No monthly subscription plans are available from the store right now."}
+          </Text>
+        ) : null}
+        {visiblePlans.map((plan) => (
           <PlanTierCard
             key={plan.id}
             plan={plan}

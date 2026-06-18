@@ -1,5 +1,5 @@
 import { useRouter, type Href } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   InteractionManager,
@@ -20,7 +20,7 @@ import type { ColorScheme } from "@/lib/colorSchemeStorage";
 import { useFormContentWidth } from "@/lib/layout/formContentWidth";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { skipHomeColdSplash } from "@/lib/homeBoot";
-import { configurePurchases } from "@/lib/revenuecat";
+import { configurePurchases, useOfferingsFilteredPlans } from "@/lib/revenuecat";
 import {
   LOCAL_ONLY_DISCLAIMER,
   PLAN_PICKER_FAIR_USE_NOTE,
@@ -65,8 +65,22 @@ export default function TierTrialOnboardingScreen() {
   const [actionError, setActionError] = useState<string | null>(null);
   const contentWidth = useFormContentWidth();
 
-  const plans = paidSubscriptionPlans();
+  const allPlans = paidSubscriptionPlans();
+  const filterByOfferings =
+    !isTestingUnlocked && !isBetaFullAccess && Platform.OS !== "web";
+  const { offeringsLoading, offeringsLoaded, availablePlans, offeringsError } =
+    useOfferingsFilteredPlans(allPlans, { enabled: filterByOfferings, isConfigured });
+  const plans = filterByOfferings ? availablePlans : allPlans;
   const employeeSelected = selected === "employee";
+
+  useEffect(() => {
+    if (!filterByOfferings || !offeringsLoaded || offeringsLoading) return;
+    if (selected === "employee") return;
+    if (!plans.some((plan) => plan.id === selected)) {
+      const fallback = plans[0]?.id ?? "employee";
+      setSelected(fallback);
+    }
+  }, [filterByOfferings, offeringsLoaded, offeringsLoading, plans, selected]);
 
   async function onStartEmployeePath() {
     setBusy(true);
@@ -197,6 +211,19 @@ export default function TierTrialOnboardingScreen() {
       </Text>
       <Text style={styles.localOnly}>{LOCAL_ONLY_DISCLAIMER}</Text>
 
+      {filterByOfferings && offeringsLoading ? (
+        <View style={styles.loadingRow}>
+          <ActivityIndicator color={COLORS.textPrimary} />
+          <Text style={styles.note}>Loading subscription plans…</Text>
+        </View>
+      ) : null}
+
+      {filterByOfferings && offeringsLoaded && plans.length === 0 ? (
+        <Text style={styles.actionError}>
+          {offeringsError ?? "No subscription plans are available right now. Try employee access or try again later."}
+        </Text>
+      ) : null}
+
       <View style={styles.cards}>
         {plans.map((plan) => (
           <PlanTierCard
@@ -222,7 +249,7 @@ export default function TierTrialOnboardingScreen() {
           accessibilityLabel={employeeSelected ? "Continue to invite code" : "Start free trial"}
           accessibilityState={{ disabled: busy, busy }}
           onPress={() => void onStartTrial()}
-          disabled={busy}
+          disabled={busy || (filterByOfferings && offeringsLoading) || (filterByOfferings && offeringsLoaded && plans.length === 0 && !employeeSelected)}
           hitSlop={
             typo.isTablet
               ? { top: 12, bottom: 12, left: 12, right: 12 }
@@ -285,6 +312,12 @@ function makeStyles(colors: ColorScheme, typo: ResponsiveTypography) {
       fontWeight: typo.hintFontWeight,
     },
     cards: { gap: typo.scaleSpacing(14), marginTop: typo.scaleSpacing(8) },
+    loadingRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: typo.scaleSpacing(10),
+      marginTop: typo.scaleSpacing(4),
+    },
     actionError: {
       fontSize: typo.hintFontSize,
       lineHeight: typo.hintLineHeight,

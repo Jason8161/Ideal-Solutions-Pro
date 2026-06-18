@@ -276,7 +276,16 @@ export function highestTierFromEntitlements(active: Record<string, unknown>): Su
   return best ? normalizeSubscriptionTierId(best) : null;
 }
 
-function findPackage(
+function tierPackageIdentifiers(tierId: SubscriptionTierId, plan: ReturnType<typeof getSubscriptionPlan>): string[] {
+  const identifiers: string[] = [];
+  if (plan.revenueCatPackageId) identifiers.push(plan.revenueCatPackageId);
+  if (tierId === "boss_man") {
+    identifiers.push(...LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS, ...LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS);
+  }
+  return identifiers;
+}
+
+export function findPackage(
   packages: PurchasesPackage[],
   identifiers: string[],
   productId: string,
@@ -286,6 +295,27 @@ function findPackage(
     if (byPackage) return byPackage;
   }
   return packages.find((p) => p.product.identifier === productId);
+}
+
+export function resolveTierPackageFromOfferings(
+  packages: PurchasesPackage[],
+  tierId: SubscriptionTierId,
+): PurchasesPackage | null {
+  const plan = getSubscriptionPlan(tierId);
+  if (!plan.isPaid) return null;
+  const productId = plan.revenueCatProductId ?? "";
+  const identifiers = tierPackageIdentifiers(tierId, plan);
+  return findPackage(packages, identifiers, productId) ?? null;
+}
+
+export function filterPlansByOfferings<T extends { id: SubscriptionTierId; isPaid: boolean }>(
+  plans: T[],
+  packages: PurchasesPackage[],
+): T[] {
+  if (packages.length === 0) return [];
+  return plans.filter(
+    (plan) => !plan.isPaid || resolveTierPackageFromOfferings(packages, plan.id) !== null,
+  );
 }
 
 export function isValidPurchasePackage(pkg: PurchasesPackage | null | undefined): pkg is PurchasesPackage {
@@ -313,7 +343,11 @@ export async function getOfferingsWithTimeout(): Promise<OfferingsLoadResult> {
       "RevenueCat offerings timed out",
     );
     const packages = offerings.current?.availablePackages ?? [];
-    rcLog("[RevenueCat] offerings loaded", packages.map((p) => p.identifier));
+    console.warn(
+      "[RevenueCat] offerings loaded",
+      packages.map((p) => ({ id: p.identifier, productId: p.product.identifier })),
+    );
+    console.warn("[RevenueCat] offerings package count", packages.length);
     return { ok: true, packages };
   } catch (error) {
     const timedOut = error instanceof Error && error.message.includes("timed out");
@@ -325,15 +359,6 @@ export async function getOfferingsWithTimeout(): Promise<OfferingsLoadResult> {
   }
 }
 
-function tierPackageIdentifiers(tierId: SubscriptionTierId, plan: ReturnType<typeof getSubscriptionPlan>): string[] {
-  const identifiers: string[] = [];
-  if (plan.revenueCatPackageId) identifiers.push(plan.revenueCatPackageId);
-  if (tierId === "boss_man") {
-    identifiers.push(...LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS, ...LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS);
-  }
-  return identifiers;
-}
-
 export async function findTierPackage(tierId: SubscriptionTierId): Promise<PurchasesPackage | null> {
   const plan = getSubscriptionPlan(tierId);
   if (!plan.isPaid) return null;
@@ -341,9 +366,7 @@ export async function findTierPackage(tierId: SubscriptionTierId): Promise<Purch
   const offerings = await getOfferingsWithTimeout();
   if (!offerings.ok) return null;
 
-  const productId = plan.revenueCatProductId ?? "";
-  const identifiers = tierPackageIdentifiers(tierId, plan);
-  return findPackage(offerings.packages, identifiers, productId) ?? null;
+  return resolveTierPackageFromOfferings(offerings.packages, tierId);
 }
 
 export async function purchasePackage(pkg: PurchasesPackage): Promise<RevenueCatResult> {
