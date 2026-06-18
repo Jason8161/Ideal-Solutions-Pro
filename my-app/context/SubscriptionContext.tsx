@@ -64,6 +64,7 @@ import {
 import {
   formatRevenueCatConfigureWarning,
   isRevenueCatNonBlockingConfigureMessage,
+  PLAN_UNAVAILABLE_USER_MESSAGE,
   purchasesErrorMessage,
 } from "@/lib/revenuecat/errors";
 import {
@@ -625,10 +626,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       try {
         const pkg = await findTierPackage(tierId);
         if (!isValidPurchasePackage(pkg)) {
-          const productId = plan.revenueCatProductId ?? plan.revenueCatPackageId ?? tierId;
           return {
             ok: false,
-            message: `${plan.name} is not available in the store right now. Choose another plan or try again later.${productId ? ` (SKU: ${productId})` : ""}`,
+            message: PLAN_UNAVAILABLE_USER_MESSAGE,
           };
         }
 

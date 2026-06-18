@@ -144,8 +144,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     isPaid: true,
     maxEmployees: 0,
     monthlyAiLimit: 50,
-    revenueCatProductId: "side_hustle_monthly",
-    revenueCatPackageId: "side_hustle_monthly",
+    revenueCatProductId: "Side_Job_DIY",
     revenueCatEntitlementId: "side_hustle",
   },
   {
@@ -165,8 +164,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     isPaid: true,
     maxEmployees: 0,
     monthlyAiLimit: 100,
-    revenueCatProductId: "boss_man_monthly",
-    revenueCatPackageId: "boss_man_monthly",
+    revenueCatProductId: "idealsolutionspro.BossManMode",
     revenueCatEntitlementId: "ideal_solutions_pro",
   },
   {
@@ -184,8 +182,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     isPaid: true,
     maxEmployees: 8,
     monthlyAiLimit: 150,
-    revenueCatProductId: "super_boss_man_monthly",
-    revenueCatPackageId: "super_boss_man_monthly",
+    revenueCatProductId: "idealsolutionspro.SuperBossManMode",
     revenueCatEntitlementId: "super_boss_man",
   },
   {
@@ -203,8 +200,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     isPaid: true,
     maxEmployees: 15,
     monthlyAiLimit: 200,
-    revenueCatProductId: "enterprise_boss_man_monthly",
-    revenueCatPackageId: "enterprise_boss_man_monthly",
+    revenueCatProductId: "idealsolutionspro.EnterpriseBossMan",
     revenueCatEntitlementId: "enterprise_boss_man",
   },
 ];

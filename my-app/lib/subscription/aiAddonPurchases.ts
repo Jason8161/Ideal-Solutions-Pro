@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 import type { PurchasesPackage } from "react-native-purchases";
 
 import { configurePurchases, getPurchases, purchasePackage } from "@/lib/revenuecat/purchases";
+import { PLAN_UNAVAILABLE_USER_MESSAGE } from "@/lib/revenuecat/errors";
 import { isSubscriptionGatingDisabled, SUBSCRIPTIONS_TESTING_NOTICE } from "@/lib/subscriptionTesting";
 
 import { addAddonCredits } from "./aiQuota";
@@ -49,7 +50,7 @@ export async function purchaseAiAddon(tierId: AiAddonTierId): Promise<AiAddonPur
     if (!pkg) {
       return {
         ok: false,
-        message: `No RevenueCat package for ${tier.headline}. Add product ${tier.revenueCatProductId} to the default offering.`,
+        message: PLAN_UNAVAILABLE_USER_MESSAGE,
       };
     }
 

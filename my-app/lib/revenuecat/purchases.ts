@@ -15,7 +15,7 @@ import { isSubscriptionGatingDisabled } from "@/lib/subscriptionTesting";
 import {
   IDEAL_SOLUTIONS_PRO_ENTITLEMENT,
   LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS,
-  LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS,
+  LEGACY_TIER_PRODUCT_IDS,
   LEGACY_ENTITLEMENT_IDS,
 } from "./constants";
 import {
@@ -280,7 +280,7 @@ function tierPackageIdentifiers(tierId: SubscriptionTierId, plan: ReturnType<typ
   const identifiers: string[] = [];
   if (plan.revenueCatPackageId) identifiers.push(plan.revenueCatPackageId);
   if (tierId === "boss_man") {
-    identifiers.push(...LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS, ...LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS);
+    identifiers.push(...LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS);
   }
   return identifiers;
 }
@@ -289,12 +289,18 @@ export function findPackage(
   packages: PurchasesPackage[],
   identifiers: string[],
   productId: string,
+  legacyProductIds: readonly string[] = [],
 ): PurchasesPackage | undefined {
+  const productIds = [productId, ...legacyProductIds].filter(Boolean);
+  for (const id of productIds) {
+    const byProduct = packages.find((p) => p.product.identifier === id);
+    if (byProduct) return byProduct;
+  }
   for (const id of identifiers) {
     const byPackage = packages.find((p) => p.identifier === id);
     if (byPackage) return byPackage;
   }
-  return packages.find((p) => p.product.identifier === productId);
+  return undefined;
 }
 
 export function resolveTierPackageFromOfferings(
@@ -304,8 +310,9 @@ export function resolveTierPackageFromOfferings(
   const plan = getSubscriptionPlan(tierId);
   if (!plan.isPaid) return null;
   const productId = plan.revenueCatProductId ?? "";
+  const legacyProductIds = LEGACY_TIER_PRODUCT_IDS[tierId] ?? [];
   const identifiers = tierPackageIdentifiers(tierId, plan);
-  return findPackage(packages, identifiers, productId) ?? null;
+  return findPackage(packages, identifiers, productId, legacyProductIds) ?? null;
 }
 
 export function filterPlansByOfferings<T extends { id: SubscriptionTierId; isPaid: boolean }>(

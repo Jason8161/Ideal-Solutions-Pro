@@ -143,25 +143,28 @@ Legacy entitlements (`ideal_starter`, `ideal_pro`, `ideal_boss`, `pro`, `boss_ma
 
 ### 2. Store products (App Store Connect + Google Play)
 
-Create matching subscription products in **both** stores, then link them in RevenueCat:
+Create matching subscription products in **both** stores, then link them in RevenueCat. **Product IDs must match exactly** (source of truth: RevenueCat dashboard):
 
-| Product ID | Price | Billing | Maps to |
-|------------|-------|---------|---------|
-| `side_hustle_monthly` | $9.99 | Monthly auto-renew | Side Hustle |
-| `boss_man_monthly` | $19.99 | Monthly auto-renew | Ideal Solutions Pro (Boss Man) |
-| `super_boss_man_monthly` | $49.99 | Monthly auto-renew | Super Boss Man |
-| `enterprise_boss_man_monthly` | $99.99 | Monthly auto-renew | Enterprise Boss Man |
+| Product ID | Price | Billing | Maps to tier |
+|------------|-------|---------|--------------|
+| `Side_Job_DIY` | $9.99 | Monthly auto-renew | Side Hustle (`side_hustle`) |
+| `idealsolutionspro.BossManMode` | $19.99 | Monthly auto-renew | Boss Man (`boss_man`) |
+| `idealsolutionspro.SuperBossManMode` | $49.99 | Monthly auto-renew | Super Boss Man (`super_boss_man`) |
+| `idealsolutionspro.EnterpriseBossMan` | $99.99 | Monthly auto-renew | Enterprise Boss Man (`enterprise_boss_man`) |
 
-Optional legacy Boss Man monthly SKUs (still resolved if present in an offering):
+Legacy product IDs (still resolved if present in an offering for existing subscribers):
 
 | Product ID | Notes |
 |------------|-------|
-| `ideal_pro_monthly` / `ideal_solutions_pro_monthly` | Alternate Boss Man naming |
+| `side_hustle_monthly` | Pre-rename Side Hustle SKU |
+| `boss_man_monthly`, `ideal_pro_monthly`, `ideal_solutions_pro_monthly` | Pre-rename Boss Man SKUs |
+| `super_boss_man_monthly` | Pre-rename Super Boss Man SKU |
+| `enterprise_boss_man_monthly` | Pre-rename Enterprise SKU |
 
 ### 3. Offering (default)
 
 1. Add products in RevenueCat linked to store SKUs above.
-2. Add packages to the **default** offering (one monthly package per tier; package id typically matches product id or `$rc_monthly` for Boss Man).
+2. Add packages to the **default** offering (one monthly package per tier). Package identifiers are resolved at runtime from `offerings.current.availablePackages` by matching `product.identifier` (store product ID).
 3. Attach each product to its matching entitlement (`side_hustle`, `ideal_solutions_pro`, `super_boss_man`, `enterprise_boss_man`).
 
 ### 4. Paywall & Customer Center

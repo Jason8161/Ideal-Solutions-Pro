@@ -2,6 +2,7 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 
 import { isSubscriptionGatingDisabled, SUBSCRIPTIONS_TESTING_NOTICE } from "@/lib/subscriptionTesting";
+import { PLAN_UNAVAILABLE_USER_MESSAGE } from "@/lib/revenuecat/errors";
 
 import { EMPLOYEE_AI_PLANS, getEmployeeAiPlan } from "./tiers";
 import type { EmployeeAiTierId } from "./types";
@@ -105,7 +106,7 @@ export async function purchaseEmployeeTier(
     if (!pkg) {
       return {
         ok: false,
-        message: `No RevenueCat package for ${plan.name}. Add product ${productId ?? ""} to the default offering.`,
+        message: PLAN_UNAVAILABLE_USER_MESSAGE,
       };
     }
     await Purchases.purchasePackage(pkg);

@@ -1,15 +1,18 @@
 # Ideal Solutions Pro — subscription tiers
 
-Contractor-focused plan names and feature gates. Store **product IDs are unchanged** where possible; only in-app tier IDs and copy changed.
+Contractor-focused plan names and feature gates. Tier IDs and RevenueCat product IDs are defined in `lib/subscriptions/tiers.ts`.
 
-## Tier IDs
+## Tier IDs (v2)
 
-| Tier ID | Label | Price | RevenueCat product | Entitlement |
-|---------|--------|-------|-------------------|-------------|
-| `helper` | Helper Mode | Free (7-day trial) | — | — |
-| `side_job` | Side Job / DIY Mode | $9.99/mo | `ideal_starter_monthly` | `ideal_starter` |
-| `bossman` | Bossman Mode | $19.99/mo | `boss_man_monthly` | `ideal_solutions_pro` |
-| `super_bossman` | Super Bossman | $75/mo | `ideal_boss_monthly` | `ideal_boss` |
+| Tier ID | Label | Price | Store product ID | Entitlement |
+|---------|--------|-------|------------------|-------------|
+| `locked` | Trial ended | — | — | — |
+| `side_hustle` | Side Hustle / DIY | $9.99/mo | `Side_Job_DIY` | `side_hustle` |
+| `boss_man` | Boss Man | $19.99/mo | `idealsolutionspro.BossManMode` | `ideal_solutions_pro` |
+| `super_boss_man` | Super Boss Man | $49.99/mo | `idealsolutionspro.SuperBossManMode` | `super_boss_man` |
+| `enterprise_boss_man` | Enterprise Boss Man | $99.99/mo | `idealsolutionspro.EnterpriseBossMan` | `enterprise_boss_man` |
+
+**Employee Access** is not a paid tier — invitation-code flow only, no RevenueCat purchase.
 
 ### Legacy ID migration (profile / dev overrides)
 
@@ -63,12 +66,13 @@ Legacy entitlement key `pro` (app.config `entitlementId`) maps to **Bossman** ti
 
 ## RevenueCat dashboard
 
-Keep existing product IDs; link entitlements as in table above. **Update store prices** in App Store Connect / Google Play Console to match in-app display:
+Store product IDs must match App Store Connect / Google Play and the table above. See `docs/REVENUECAT_PRODUCTS.md` for legacy SKU fallbacks.
 
-| Product ID | Display price | Store action |
-|------------|---------------|--------------|
-| `ideal_starter_monthly` | $9.99/mo | Confirm price |
-| `ideal_pro_monthly` | $24.99/mo | **Change from $19.99** |
-| `ideal_boss_monthly` | $75/mo | Confirm price |
+| Product ID | Display price |
+|------------|---------------|
+| `Side_Job_DIY` | $9.99/mo |
+| `idealsolutionspro.BossManMode` | $19.99/mo |
+| `idealsolutionspro.SuperBossManMode` | $49.99/mo |
+| `idealsolutionspro.EnterpriseBossMan` | $99.99/mo |
 
-Helper Mode has no store product (free 7-day trial only). Optional future product for Super Bossman pricing: reuse `ideal_boss_monthly` until a dedicated SKU is added.
+Employee Access has no store product (invitation code only).

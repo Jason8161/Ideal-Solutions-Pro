@@ -10,6 +10,8 @@ export {
 
   LEGACY_ENTITLEMENT_IDS,
 
+  LEGACY_TIER_PRODUCT_IDS,
+
 } from "./constants";
 
 export {
@@ -19,6 +21,8 @@ export {
   isPurchaseCancelledError,
 
   isRevenueCatNonBlockingConfigureMessage,
+
+  PLAN_UNAVAILABLE_USER_MESSAGE,
 
   purchasesErrorMessage,
 

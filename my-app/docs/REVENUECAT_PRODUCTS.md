@@ -1,17 +1,28 @@
-# RevenueCat product catalog (placeholders)
+# RevenueCat product catalog
 
 Create these in **App Store Connect**, **Google Play Console**, and the **RevenueCat** dashboard. Link each product to the matching entitlement in the default offering.
 
 ## Subscriptions (monthly)
 
-| Entitlement ID | Product ID | Price | Display name |
-|----------------|------------|-------|----------------|
-| `side_hustle` | `side_hustle_monthly` | $9.99/mo | Side Hustle / DIY |
-| `boss_man` | `boss_man_monthly` | $19.99/mo | Boss Man |
-| `super_boss_man` | `super_boss_man_monthly` | $49.99/mo | Super Boss Man |
-| `enterprise_boss_man` | `enterprise_boss_man_monthly` | $99.99/mo | Enterprise Boss Man |
+| Tier ID | Entitlement ID | Store product ID | Price | Display name |
+|---------|----------------|------------------|-------|--------------|
+| `side_hustle` | `side_hustle` | `Side_Job_DIY` | $9.99/mo | Side Hustle / DIY |
+| `boss_man` | `ideal_solutions_pro` | `idealsolutionspro.BossManMode` | $19.99/mo | Boss Man |
+| `super_boss_man` | `super_boss_man` | `idealsolutionspro.SuperBossManMode` | $49.99/mo | Super Boss Man |
+| `enterprise_boss_man` | `enterprise_boss_man` | `idealsolutionspro.EnterpriseBossMan` | $99.99/mo | Enterprise Boss Man |
 
-Package identifiers in code match product IDs unless you use `$rc_monthly` aliases in the dashboard.
+The app resolves packages dynamically from `offerings.current.availablePackages` by matching `product.identifier` to `revenueCatProductId` in `lib/subscriptions/tiers.ts`. RevenueCat package identifiers do not need to match store product IDs.
+
+### Legacy store product IDs (still honored)
+
+| Tier | Legacy product IDs |
+|------|-------------------|
+| Side Hustle | `side_hustle_monthly` |
+| Boss Man | `boss_man_monthly`, `ideal_pro_monthly`, `ideal_solutions_pro_monthly` |
+| Super Boss Man | `super_boss_man_monthly` |
+| Enterprise Boss Man | `enterprise_boss_man_monthly` |
+
+Legacy package identifiers for Boss Man (`$rc_monthly`, `monthly`) are also matched as a fallback.
 
 ### Legacy entitlements (still honored)
 
