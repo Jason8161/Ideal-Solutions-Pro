@@ -23,7 +23,7 @@ import {
   syncAppointmentNotification,
   type NotificationPermissionState,
 } from "@/lib/appointmentNotifications";
-import { INPUT_ACCENT_FILL_OPACITY } from "@/components/themed/screenChrome";
+import { INPUT_ACCENT_FILL_OPACITY, mutedTextColor, placeholderTextColor } from "@/components/themed/screenChrome";
 import { hexToRgba, type ColorScheme } from "@/lib/colorSchemeStorage";
 import {
   addAppointment,
@@ -44,6 +44,7 @@ import {
   updateAppointment,
   type AppointmentRecord,
 } from "@/lib/appointmentStorage";
+import { isEmployeeSessionActive } from "@/lib/employeeSession";
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -197,7 +198,7 @@ export default function CalendarScreen() {
   const { colors } = useAppTheme();
   const scStyles = useScStyles();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const placeholderColor = hexToRgba(colors.text, 0.5);
+  const placeholderColor = placeholderTextColor(colors);
 
   const today = useMemo(() => new Date(), []);
   const [viewMonth, setViewMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
@@ -209,6 +210,7 @@ export default function CalendarScreen() {
   const [saving, setSaving] = useState(false);
   const [permission, setPermission] = useState<NotificationPermissionState>("undetermined");
   const [futureHorizon, setFutureHorizon] = useState<FutureHorizon | null>(null);
+  const [employeeMode, setEmployeeMode] = useState(false);
 
   const markedDays = useMemo(() => daysWithAppointments(allAppointments), [allAppointments]);
 
@@ -241,6 +243,7 @@ export default function CalendarScreen() {
     useCallback(() => {
       void refresh();
       void getNotificationPermission().then(setPermission);
+      void isEmployeeSessionActive().then(setEmployeeMode);
     }, [refresh]),
   );
 
@@ -257,10 +260,18 @@ export default function CalendarScreen() {
   };
 
   const openCreate = () => {
+    if (employeeMode) return;
     setEditor(defaultEditor(selectedDayKey));
   };
 
   const openEdit = (record: AppointmentRecord) => {
+    if (employeeMode) {
+      Alert.alert(
+        record.title,
+        `${formatAppointmentDate(record.startISO)}\n${formatAppointmentTimeRange(record.startISO, record.endISO)}${record.notes.trim() ? `\n\n${record.notes.trim()}` : ""}`,
+      );
+      return;
+    }
     setEditor(editorFromRecord(record));
   };
 
@@ -402,10 +413,15 @@ export default function CalendarScreen() {
     <View style={scStyles.screen}>
       <StickyPageHeader
         title="Calendar"
-        subtitle="Schedule jobs and visits. Pick a day, add an appointment, and get a phone alert before it starts."
-        fallbackHref={HOME_FALLBACK_HREF}
+        subtitle={
+          employeeMode
+            ? "View company events and personal reminders — read only."
+            : "Schedule jobs and visits. Pick a day, add an appointment, and get a phone alert before it starts."
+        }
+        fallbackHref={employeeMode ? "/employee" : HOME_FALLBACK_HREF}
       />
       <ScrollView style={scStyles.scrollBody} contentContainerStyle={styles.content}>
+      {!employeeMode ? (
       <View style={styles.topActions}>
         <Pressable
           accessibilityRole="button"
@@ -427,6 +443,16 @@ export default function CalendarScreen() {
           <Text style={styles.secondaryActionBtnText}>See future appointments</Text>
         </Pressable>
       </View>
+      ) : (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="See future appointments"
+          style={({ pressed }) => [styles.secondaryActionBtn, pressed && styles.pressed, { marginBottom: 12 }]}
+          onPress={openFutureHorizonPicker}
+        >
+          <Text style={styles.secondaryActionBtnText}>See future appointments</Text>
+        </Pressable>
+      )}
 
       {permission === "denied" ? (
         <View style={styles.permissionBanner}>
@@ -558,7 +584,11 @@ export default function CalendarScreen() {
           <Text style={styles.muted}>Loading appointments…</Text>
         ) : dayAppointments.length === 0 ? (
           <View style={styles.emptyCard}>
-            <Text style={styles.emptyText}>No appointments this day. Tap “Add new appointment” to add one.</Text>
+            <Text style={styles.emptyText}>
+              {employeeMode
+                ? "No appointments this day."
+                : "No appointments this day. Tap “Add new appointment” to add one."}
+            </Text>
           </View>
         ) : (
           dayAppointments.map((record) => (
@@ -569,15 +599,17 @@ export default function CalendarScreen() {
             >
               <View style={styles.apptHeader}>
                 <Text style={styles.apptTitle}>{record.title}</Text>
-                <Pressable
-                  hitSlop={8}
-                  onPress={(e) => {
-                    e.stopPropagation?.();
-                    handleDelete(record);
-                  }}
-                >
-                  <Text style={styles.deleteLink}>Delete</Text>
-                </Pressable>
+                {!employeeMode ? (
+                  <Pressable
+                    hitSlop={8}
+                    onPress={(e) => {
+                      e.stopPropagation?.();
+                      handleDelete(record);
+                    }}
+                  >
+                    <Text style={styles.deleteLink}>Delete</Text>
+                  </Pressable>
+                ) : null}
               </View>
               <Text style={styles.apptMeta}>{formatAppointmentTimeRange(record.startISO, record.endISO)}</Text>
               {record.notes.trim() ? <Text style={styles.apptNotes}>{record.notes.trim()}</Text> : null}
@@ -587,7 +619,7 @@ export default function CalendarScreen() {
         )}
       </View>
 
-      <Modal visible={editor !== null} animationType="slide" transparent onRequestClose={closeEditor}>
+      <Modal visible={!employeeMode && editor !== null} animationType="slide" transparent onRequestClose={closeEditor}>
         <View style={styles.modalBackdrop}>
           <AppConstructionBackdrop />
           <ScrollView
@@ -746,7 +778,7 @@ function makeStyles(colors: ColorScheme) {
   const inputFill = hexToRgba(colors.accent, INPUT_ACCENT_FILL_OPACITY);
   const accentTintActive = hexToRgba(colors.accent, 0.38);
   const textColor = colors.text;
-  const mutedText = hexToRgba(colors.text, 0.72);
+  const mutedText = mutedTextColor(colors);
 
   return StyleSheet.create({
     content: {
@@ -965,7 +997,7 @@ function makeStyles(colors: ColorScheme) {
     apptHeader: {
       flexDirection: "row",
       justifyContent: "space-between",
-      alignItems: "flex-start",
+      alignItems: ", flex-start",
       gap: 8,
     },
     apptTitle: {
@@ -982,9 +1014,7 @@ function makeStyles(colors: ColorScheme) {
     apptMeta: {
       color: textColor,
       fontSize: 14,
-      fontWeight: "700",
-      opacity: 0.85,
-    },
+      fontWeight: "700"},
     apptMetaSmall: {
       fontSize: 13,
       fontWeight: "700",
@@ -996,9 +1026,7 @@ function makeStyles(colors: ColorScheme) {
     apptNotes: {
       color: textColor,
       fontSize: 14,
-      lineHeight: 20,
-      opacity: 0.9,
-      fontWeight: "700",
+      lineHeight: 20, fontWeight: "700",
     },
     apptReminder: {
       color: mutedText,
@@ -1096,13 +1124,9 @@ function makeStyles(colors: ColorScheme) {
     chipText: {
       color: textColor,
       fontSize: 13,
-      fontWeight: "700",
-      opacity: 0.85,
-    },
+      fontWeight: "700"},
     chipTextActive: {
-      color: textColor,
-      opacity: 1,
-    },
+      color: textColor},
     modalActions: {
       flexDirection: "row",
       gap: 10,

@@ -166,8 +166,8 @@ export const EMPLOYEE_HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
   {
     key: "field-tools",
     label: "Field Tools",
-    subtitle: "Maps, weather, and field utilities",
-    href: "/misc-apps",
+    subtitle: "Photos, materials, safety, and field utilities",
+    href: "/employee/field-tools",
     icon: "hammer-wrench",
     image: require("@/assets/images/home-misc-apps.png"),
     imageMonochrome: false,

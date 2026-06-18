@@ -7,7 +7,7 @@ import { VoiceTextInput } from "@/components/VoiceTextInput";
 import { CustomJobPhasePicker } from "@/components/bossMan/CustomJobPhasePicker";
 import { useBossManChrome } from "@/components/bossMan/bossManChrome";
 import { StickyPageHeader, StickyScreenShell } from "@/components/serviceCalls/screenChrome";
-import { inputStyle } from "@/components/themed/screenChrome";
+import { inputStyle, placeholderTextColor } from "@/components/themed/screenChrome";
 import { useAppTheme } from "@/context/ThemeContext";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { hexToRgba } from "@/lib/colorSchemeStorage";
@@ -21,6 +21,7 @@ import {
 import { JOB_STATUSES, type BossJob, type JobStatus, type PersonalTabStatesMap } from "@/lib/bossMan/types";
 import { parseNumericInput } from "@/lib/myCrewSettings";
 import { isProTier } from "@/lib/subscriptionGating";
+import { isEmployeeSessionActive } from "@/lib/employeeSession";
 
 export default function BossJobDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -42,10 +43,12 @@ export default function BossJobDetailScreen() {
   const [estimateTotal, setEstimateTotal] = useState("");
   const [paid, setPaid] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [employeeMode, setEmployeeMode] = useState(false);
 
   const loadJob = useCallback(() => {
     if (!id || typeof id !== "string") return;
-    void getBossJobById(id).then((row) => {
+    void Promise.all([getBossJobById(id), isEmployeeSessionActive()]).then(([row, emp]) => {
+      setEmployeeMode(emp);
       if (!row) {
         setLoaded(true);
         return;
@@ -141,6 +144,79 @@ export default function BossJobDetailScreen() {
     );
   }
 
+  if (employeeMode) {
+    return (
+      <StickyScreenShell
+        header={
+          <StickyPageHeader
+            title={jobName.trim() || customerName.trim() || "Job"}
+            subtitle={`${status}${jobPhase?.trim() ? ` · ${jobPhase.trim()}` : ""}`}
+            fallbackHref="/job-folder/current-jobs"
+          />
+        }
+      >
+        <ScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
+          <Field label="Customer" styles={fieldStyles}>
+            <Text style={fieldStyles.readOnly}>{customerName.trim() || "—"}</Text>
+          </Field>
+          <Field label="Job name" styles={fieldStyles}>
+            <Text style={fieldStyles.readOnly}>{jobName.trim() || "—"}</Text>
+          </Field>
+          <Field label="Address" styles={fieldStyles}>
+            <Text style={fieldStyles.readOnly}>{address.trim() || "—"}</Text>
+          </Field>
+          <Field label="Status" styles={fieldStyles}>
+            <Text style={fieldStyles.readOnly}>{status}</Text>
+          </Field>
+          {jobPhase?.trim() ? (
+            <Field label="Phase" styles={fieldStyles}>
+              <Text style={fieldStyles.readOnly}>{jobPhase.trim()}</Text>
+            </Field>
+          ) : null}
+
+          <Text style={scStyles.sectionLabel}>Stored notes</Text>
+          {job.notes.length === 0 ? (
+            <Text style={scStyles.emptyText}>No notes saved yet.</Text>
+          ) : (
+            [...job.notes]
+              .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+              .map((note: BossJob["notes"][number]) => (
+                <View key={note.id} style={scStyles.card}>
+                  <Text style={scStyles.cardMeta}>{formatNoteTimestamp(note.createdAt)}</Text>
+                  <Text style={[scStyles.cardTitle, { marginTop: 4, fontWeight: "600" }]}>{note.text}</Text>
+                </View>
+              ))
+          )}
+          <Pressable
+            style={({ pressed }) => [bossStyles.actionBtn, pressed && { opacity: 0.9 }]}
+            onPress={() => router.push(`/job-folder/job/${id}/notes` as Href)}
+          >
+            <Text style={scStyles.menuButtonText}>Add note</Text>
+          </Pressable>
+
+          <Text style={scStyles.sectionLabel}>Photos</Text>
+          {job.photoUris.length === 0 ? (
+            <Text style={scStyles.emptyText}>No photos yet.</Text>
+          ) : (
+            job.photoUris.map((uri: string, index: number) => (
+              <View key={`${uri}-${index}`} style={photoStyles.block}>
+                <Image
+                  source={{ uri }}
+                  style={photoStyles.image}
+                  resizeMode="cover"
+                  accessibilityLabel="Job photo"
+                />
+              </View>
+            ))
+          )}
+          <Pressable style={({ pressed }) => [bossStyles.actionBtn, pressed && { opacity: 0.9 }]} onPress={() => void addPhoto()}>
+            <Text style={scStyles.menuButtonText}>Add photo</Text>
+          </Pressable>
+        </ScrollView>
+      </StickyScreenShell>
+    );
+  }
+
   return (
     <StickyScreenShell
       header={
@@ -162,7 +238,7 @@ export default function BossJobDetailScreen() {
             value={customerName}
             onChangeText={setCustomerName}
             style={fieldStyles.input}
-            placeholderTextColor={hexToRgba(colors.text, 0.45)}
+            placeholderTextColor={placeholderTextColor(colors)}
             placeholder="Customer or company"
           />
         </Field>
@@ -171,7 +247,7 @@ export default function BossJobDetailScreen() {
             value={jobName}
             onChangeText={setJobName}
             style={fieldStyles.input}
-            placeholderTextColor={hexToRgba(colors.text, 0.45)}
+            placeholderTextColor={placeholderTextColor(colors)}
             placeholder="Job title"
           />
         </Field>
@@ -181,7 +257,7 @@ export default function BossJobDetailScreen() {
             onChangeText={setAddress}
             style={[fieldStyles.input, fieldStyles.textArea]}
             multiline
-            placeholderTextColor={hexToRgba(colors.text, 0.45)}
+            placeholderTextColor={placeholderTextColor(colors)}
             placeholder="Street, city, state, ZIP"
           />
         </Field>
@@ -191,7 +267,7 @@ export default function BossJobDetailScreen() {
             onChangeText={setEstimateTotal}
             style={fieldStyles.input}
             keyboardType="decimal-pad"
-            placeholderTextColor={hexToRgba(colors.text, 0.45)}
+            placeholderTextColor={placeholderTextColor(colors)}
           />
         </Field>
 
@@ -386,6 +462,7 @@ function makeFieldStyles(colors: import("@/lib/colorSchemeStorage").ColorScheme)
       ...inputStyle(colors),
     },
     textArea: { minHeight: 88, textAlignVertical: "top" },
+    readOnly: { fontSize: 16, color: colors.text, lineHeight: 22 },
     paidRow: {
       flexDirection: "row",
       alignItems: "center",

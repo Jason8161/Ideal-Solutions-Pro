@@ -3,6 +3,7 @@ import { useEffect, useRef, type PropsWithChildren } from "react";
 import { Platform } from "react-native";
 
 import { isAuthRoute, ONBOARDING_TIER_TRIAL_HREF } from "@/lib/auth/authPaths";
+import { isEmployeeSessionActive } from "@/lib/employeeSession";
 import { useHomeBoot } from "@/lib/homeBoot";
 import { loadLegalGateState } from "@/lib/legal/legalGate";
 import {
@@ -22,6 +23,7 @@ import { loadProTrialRecord } from "@/lib/subscriptions/trialStorage";
 import { isPaidSubscriptionTier } from "@/lib/subscriptions/tiers";
 
 const HOME_HREF = "/" as Href;
+const EMPLOYEE_HOME_HREF = "/employee" as Href;
 
 /** One-shot cold-start navigation — never re-run after settled. */
 let startupRouteSettled = false;
@@ -124,6 +126,16 @@ export function AppStartupGate({ children }: PropsWithChildren) {
         navLog("settled — trial active on tier-trial (user CTA may navigate)");
         startupRouteSettled = true;
         settledRef.current = true;
+        return;
+      }
+
+      const employeeActive = await isEmployeeSessionActive();
+      if (cancelled) return;
+      if (employeeActive && (pathname === HOME_HREF || pathname === "")) {
+        navLog("replace → employee home");
+        startupRouteSettled = true;
+        settledRef.current = true;
+        router.replace(EMPLOYEE_HOME_HREF);
         return;
       }
 
