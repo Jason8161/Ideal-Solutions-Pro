@@ -21,8 +21,11 @@ import { getOrCreateDeviceId } from "@/lib/cloud/deviceId";
 import { syncEmployeeAssignments } from "@/lib/cloud/jobAssignments";
 import { registerEmployeePushTokenIfPossible } from "@/lib/cloud/pushToken";
 import { cloudRoleToAppRole } from "@/lib/auth/roles";
-import { persistRoleFromCloud } from "@/lib/auth/sessionRole";
-import { saveEmployeeSession } from "@/lib/employeeSession";
+import {
+  loadEmployeeSession,
+  saveEmployeeSession,
+  isEmployeeSessionActive,
+} from "@/lib/employeeSession";
 import {
   loadProTrialRecord,
   startProTrial,
@@ -107,8 +110,7 @@ export default function EmployeeJoinScreen() {
         [result.employee?.firstName, result.employee?.lastName].filter(Boolean).join(" ") ||
         "Employee";
       const appRole = cloudRoleToAppRole(result.user.roleId);
-      await persistRoleFromCloud(result.user.roleId);
-      await saveEmployeeSession({
+      const saved = await saveEmployeeSession({
         active: true,
         role: appRole,
         displayName: name,
@@ -120,6 +122,20 @@ export default function EmployeeJoinScreen() {
         cloudAuthToken: result.authToken,
         permissions: result.employee?.permissions ?? {},
       });
+      if (!saved) {
+        setSubmitError("Could not save your employee session. Please try again.");
+        return;
+      }
+
+      const verified = await loadEmployeeSession();
+      const employeeActive = await isEmployeeSessionActive();
+      console.warn(
+        `[EMPLOYEE] join success isEmployeeSessionActive=${employeeActive} active=${verified.active} companyId=${verified.companyId ?? "null"}`,
+      );
+      if (!verified.active || !employeeActive) {
+        setSubmitError("Employee session verification failed. Please try again.");
+        return;
+      }
 
       const trialRecord = await loadProTrialRecord();
       if (!trialRecord?.trialStartDate) {
@@ -129,6 +145,7 @@ export default function EmployeeJoinScreen() {
 
       await syncEmployeeAssignments();
       void registerEmployeePushTokenIfPossible();
+      console.warn("[EMPLOYEE] join navigate → /employee");
       router.replace("/employee" as Href);
     } catch (e) {
       setSubmitError(inviteCodeErrorMessage(e));

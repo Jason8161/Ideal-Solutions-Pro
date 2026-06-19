@@ -3,6 +3,7 @@ import { useEffect, useRef, type PropsWithChildren } from "react";
 import { Platform } from "react-native";
 
 import { isAuthRoute, ONBOARDING_TIER_TRIAL_HREF } from "@/lib/auth/authPaths";
+import { resolveCurrentAppRole } from "@/lib/auth/sessionRole";
 import { isEmployeeSessionActive } from "@/lib/employeeSession";
 import { useHomeBoot } from "@/lib/homeBoot";
 import { loadLegalGateState } from "@/lib/legal/legalGate";
@@ -31,6 +32,11 @@ let startupRouteSettled = false;
 function navLog(message: string, detail?: Record<string, unknown>): void {
   const extra = detail ? ` ${JSON.stringify(detail)}` : "";
   console.warn(`[NAV] AppStartupGate: ${message}${extra}`);
+}
+
+function employeeNavLog(message: string, detail?: Record<string, unknown>): void {
+  const extra = detail ? ` ${JSON.stringify(detail)}` : "";
+  console.warn(`[EMPLOYEE] AppStartupGate: ${message}${extra}`);
 }
 
 async function readStartupRouteState(): Promise<{ legalAccepted: boolean; trialStarted: boolean }> {
@@ -67,9 +73,14 @@ async function readStartupRouteState(): Promise<{ legalAccepted: boolean; trialS
   return { legalAccepted, trialStarted };
 }
 
+function isEmployeePath(pathname: string): boolean {
+  return pathname === "/employee" || pathname.startsWith("/employee/");
+}
+
 /**
  * Single cold-start navigation authority.
  * Legal UI stays in LegalAcceptanceGate; this gate only routes after legal + trial storage are known.
+ * Employee session/role is checked BEFORE trial/subscription routing.
  */
 export function AppStartupGate({ children }: PropsWithChildren) {
   const router = useRouter();
@@ -105,17 +116,44 @@ export function AppStartupGate({ children }: PropsWithChildren) {
         return;
       }
 
+      // FIRST: employee session or role — never defer to trial/onboarding.
+      const employeeActive = await isEmployeeSessionActive();
+      if (cancelled) return;
+      const role = await resolveCurrentAppRole();
+      if (cancelled) return;
+
+      employeeNavLog("startup employee check", { employeeActive, role, pathname });
+
+      if (employeeActive || role === "employee") {
+        if (!isEmployeePath(pathname)) {
+          navLog("replace → employee home (employee-first)");
+          employeeNavLog("route chosen", { route: "/employee", reason: "employee-first" });
+          startupRouteSettled = true;
+          settledRef.current = true;
+          router.replace(EMPLOYEE_HOME_HREF);
+          return;
+        }
+        navLog("settled — employee route");
+        employeeNavLog("route chosen", { route: pathname, reason: "already-on-employee" });
+        startupRouteSettled = true;
+        settledRef.current = true;
+        return;
+      }
+
+      // SECOND: trial/subscription routing for boss_man / contractor.
       const onTierTrial = pathname === ONBOARDING_TIER_TRIAL_HREF;
       const onOnboarding = pathname.startsWith("/onboarding");
 
       if (!trialStarted) {
         if (onTierTrial || onOnboarding) {
           navLog("settled — on onboarding without trial");
+          employeeNavLog("route chosen", { route: pathname, reason: "onboarding-no-trial" });
           startupRouteSettled = true;
           settledRef.current = true;
           return;
         }
         navLog("replace → tier-trial");
+        employeeNavLog("route chosen", { route: ONBOARDING_TIER_TRIAL_HREF, reason: "no-trial" });
         startupRouteSettled = true;
         settledRef.current = true;
         router.replace(ONBOARDING_TIER_TRIAL_HREF);
@@ -124,26 +162,19 @@ export function AppStartupGate({ children }: PropsWithChildren) {
 
       if (onTierTrial) {
         navLog("settled — trial active on tier-trial (user CTA may navigate)");
+        employeeNavLog("route chosen", { route: pathname, reason: "trial-on-tier-trial" });
         startupRouteSettled = true;
         settledRef.current = true;
         return;
       }
 
-      const employeeActive = await isEmployeeSessionActive();
-      if (cancelled) return;
       const onHome = pathname === HOME_HREF || pathname === "" || pathname === "/index";
-      if (employeeActive && onHome) {
-        navLog("replace → employee home");
-        startupRouteSettled = true;
-        settledRef.current = true;
-        router.replace(EMPLOYEE_HOME_HREF);
-        return;
-      }
-
       if (onHome) {
         navLog("settled — trial active on home");
+        employeeNavLog("route chosen", { route: "/", reason: "trial-active-home" });
       } else {
         navLog("settled — trial active", { pathname });
+        employeeNavLog("route chosen", { route: pathname, reason: "trial-active" });
       }
       startupRouteSettled = true;
       settledRef.current = true;

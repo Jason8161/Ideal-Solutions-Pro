@@ -8,8 +8,18 @@ import { isCompanyRoleId } from "@/lib/permissions/companyRoles";
 
 import { cloudRoleToAppRole, DEFAULT_BOSS_ROLE, type AppRole } from "./roles";
 
-const ROLE_SESSION_KEY = "ideal_workspace_role_v1";
-const COMPANY_ROLE_KEY = "ideal_company_role_v1";
+/** AsyncStorage key — last resolved workspace app role (`admin` | `contractor` | `employee`). */
+export const WORKSPACE_ROLE_STORAGE_KEY = "ideal_workspace_role_v1";
+/** AsyncStorage key — persisted company role (`owner` | `employee` | …). */
+export const COMPANY_ROLE_STORAGE_KEY = "ideal_company_role_v1";
+
+const ROLE_SESSION_KEY = WORKSPACE_ROLE_STORAGE_KEY;
+const COMPANY_ROLE_KEY = COMPANY_ROLE_STORAGE_KEY;
+
+function employeeRoleLog(message: string, detail?: Record<string, unknown>): void {
+  const extra = detail ? ` ${JSON.stringify(detail)}` : "";
+  console.warn(`[EMPLOYEE] ${message}${extra}`);
+}
 
 export async function loadPersistedCompanyRole(): Promise<CompanyRoleId | null> {
   try {
@@ -69,11 +79,16 @@ export async function resolveCurrentCompanyRole(): Promise<CompanyRoleId | null>
 export async function resolveCurrentAppRole(): Promise<AppRole> {
   const employee = await loadEmployeeSession();
   if (employee.active) {
-    return employee.role ?? "employee";
+    const role = employee.role ?? "employee";
+    employeeRoleLog("resolveCurrentAppRole", { role, source: "employee_session" });
+    return role;
   }
 
   const companyRole = await resolveCurrentCompanyRole();
-  if (companyRole === "employee") return "employee";
+  if (companyRole === "employee") {
+    employeeRoleLog("resolveCurrentAppRole", { role: "employee", source: "company_role" });
+    return "employee";
+  }
   if (companyRole === "admin") return "admin";
   if (companyRole === "owner") return "contractor";
 
@@ -96,6 +111,7 @@ export async function persistRoleFromCloud(roleId: CloudRole): Promise<AppRole> 
 
 export async function persistRoleAsEmployee(): Promise<void> {
   await savePersistedAppRole("employee");
+  employeeRoleLog("employee role saved", { role: "employee" });
 }
 
 export async function persistRoleAsBoss(): Promise<void> {

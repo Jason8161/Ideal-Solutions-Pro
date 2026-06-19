@@ -49,6 +49,7 @@ import type { SubscriptionTierId } from "@/lib/subscriptionPlans";
 import { ScreenDebugBanner } from "@/components/debug/ScreenDebugBanner";
 import { OverdueInvoicesHomePrompt } from "@/components/invoices/OverdueInvoicesHomePrompt";
 import { isEmployeeSessionActive } from "@/lib/employeeSession";
+import { resolveCurrentAppRole } from "@/lib/auth/sessionRole";
 import {
   HOME_MENU_HORIZONTAL_PADDING,
   HOME_MENU_TILE_GAP,
@@ -190,9 +191,13 @@ export default function Page() {
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
-      void isEmployeeSessionActive().then((active) => {
+      void Promise.all([isEmployeeSessionActive(), resolveCurrentAppRole()]).then(([active, role]) => {
         if (cancelled) return;
-        setEmployeeMode(active);
+        const employeeMode = active || role === "employee";
+        console.warn(
+          `[EMPLOYEE] index mount isEmployeeSessionActive=${active} role=${role} redirect=${employeeMode}`,
+        );
+        setEmployeeMode(employeeMode);
         setEmployeeRedirectChecked(true);
       });
       return () => {
