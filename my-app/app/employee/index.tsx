@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 
+import { ScreenDebugBanner } from "@/components/debug/ScreenDebugBanner";
 import { useFooterScrollInset } from "@/components/FormScrollView";
 import { HomeMenuButton } from "@/components/home/HomeMenuButton";
 import { SocialMediaPickerModal } from "@/components/SocialMediaPickerModal";
@@ -19,7 +20,6 @@ import type { ColorScheme } from "@/lib/colorSchemeStorage";
 import { isEmployeeAppVariant } from "@/lib/auth/appVariant";
 import { syncEmployeeAssignments } from "@/lib/cloud/jobAssignments";
 import { registerEmployeePushTokenIfPossible } from "@/lib/cloud/pushToken";
-import { loadAiAssistantToolsEnabled } from "@/lib/aiAssistant";
 import {
   EMPLOYEE_HOME_MENU_ITEMS,
   HOME_SOCIAL_MEDIA_TILE,
@@ -54,17 +54,13 @@ export default function EmployeeHomeScreen() {
 
   const [session, setSession] = useState<EmployeeSession | null>(null);
   const [loading, setLoading] = useState(true);
-  const [aiAssistantEnabled, setAiAssistantEnabled] = useState(true);
   const [socialPickerOpen, setSocialPickerOpen] = useState(false);
+  const menuItems = EMPLOYEE_HOME_MENU_ITEMS;
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const [sess, aiEnabled] = await Promise.all([
-        loadEmployeeSession(),
-        loadAiAssistantToolsEnabled(),
-      ]);
+      const sess = await loadEmployeeSession();
       setSession(sess);
-      setAiAssistantEnabled(aiEnabled);
       if (sess.active && sess.cloudAuthToken) {
         await syncEmployeeAssignments();
         void registerEmployeePushTokenIfPossible();
@@ -84,14 +80,10 @@ export default function EmployeeHomeScreen() {
   const displayName = session?.displayName?.trim();
   const gridInnerWidth = contentWidth ?? buttonWidth;
 
-  const menuItems = EMPLOYEE_HOME_MENU_ITEMS.filter((item) => {
-    if (item.key === "ideal-assistant" && !aiAssistantEnabled) return false;
-    return true;
-  });
-
   if (loading) {
     return (
       <View style={themed.loader}>
+        <ScreenDebugBanner screenId="app/employee/index.tsx" />
         <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
@@ -100,6 +92,7 @@ export default function EmployeeHomeScreen() {
   if (!session?.active) {
     return (
       <View style={themed.joinRoot}>
+        <ScreenDebugBanner screenId="app/employee/index.tsx" />
         <Text style={themed.joinTitle}>
           {employeeVariant ? "Ideal Solutions Employee" : "Employee Access"}
         </Text>
@@ -122,6 +115,7 @@ export default function EmployeeHomeScreen() {
 
   return (
     <View style={themed.root}>
+      <ScreenDebugBanner screenId="app/employee/index.tsx" />
       <View style={themed.header}>
         <Text style={themed.headerTitle}>
           {employeeVariant ? "Ideal Solutions Employee" : "Employee"}

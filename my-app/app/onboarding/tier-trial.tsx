@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 
+import { ScreenDebugBanner } from "@/components/debug/ScreenDebugBanner";
 import { PlanTierCard } from "@/components/subscription/PlanTierCard";
 import { EmployeeAccessCard } from "@/components/subscription/EmployeeAccessCard";
 import { mutedTextColor, primaryCtaStyle, primaryCtaTextStyle, COLORS, type ResponsiveTypography } from "@/components/themed/screenChrome";
@@ -172,6 +173,7 @@ export default function TierTrialOnboardingScreen() {
       contentContainerStyle={[styles.content, contentWidth ? styles.contentTablet : null]}
       keyboardShouldPersistTaps="handled"
     >
+      <ScreenDebugBanner screenId="app/onboarding/tier-trial.tsx" />
       <View style={[styles.inner, contentWidth ? { width: contentWidth, maxWidth: "100%" } : null]}>
       <Text style={styles.headline}>{PLAN_PICKER_HEADLINE}</Text>
       <Text style={styles.note}>{PLAN_PICKER_FAIR_USE_NOTE}</Text>

@@ -131,7 +131,8 @@ export function AppStartupGate({ children }: PropsWithChildren) {
 
       const employeeActive = await isEmployeeSessionActive();
       if (cancelled) return;
-      if (employeeActive && (pathname === HOME_HREF || pathname === "")) {
+      const onHome = pathname === HOME_HREF || pathname === "" || pathname === "/index";
+      if (employeeActive && onHome) {
         navLog("replace → employee home");
         startupRouteSettled = true;
         settledRef.current = true;
@@ -139,7 +140,7 @@ export function AppStartupGate({ children }: PropsWithChildren) {
         return;
       }
 
-      if (pathname === HOME_HREF || pathname === "") {
+      if (onHome) {
         navLog("settled — trial active on home");
       } else {
         navLog("settled — trial active", { pathname });

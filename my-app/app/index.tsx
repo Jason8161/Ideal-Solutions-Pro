@@ -46,6 +46,7 @@ import {
   type HomeMenuTileKey,
 } from "@/lib/subscriptionGating";
 import type { SubscriptionTierId } from "@/lib/subscriptionPlans";
+import { ScreenDebugBanner } from "@/components/debug/ScreenDebugBanner";
 import { OverdueInvoicesHomePrompt } from "@/components/invoices/OverdueInvoicesHomePrompt";
 import { isEmployeeSessionActive } from "@/lib/employeeSession";
 import {
@@ -186,31 +187,43 @@ export default function Page() {
     void ensureHomeBoot();
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    void isEmployeeSessionActive().then((active) => {
-      if (cancelled) return;
-      setEmployeeMode(active);
-      setEmployeeRedirectChecked(true);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      void isEmployeeSessionActive().then((active) => {
+        if (cancelled) return;
+        setEmployeeMode(active);
+        setEmployeeRedirectChecked(true);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }, []),
+  );
 
   const homeGridRows = buildHomeGridRows();
   const gridInnerWidth = contentWidth ?? buttonWidth;
 
   if (!coldSplashDone || !employeeRedirectChecked) {
-    return <View style={themed.splashPlaceholder} />;
+    return (
+      <View style={themed.splashPlaceholder}>
+        <ScreenDebugBanner screenId="app/index.tsx" />
+      </View>
+    );
   }
 
   if (employeeMode) {
-    return <Redirect href="/employee" />;
+    return (
+      <>
+        <ScreenDebugBanner screenId="app/index.tsx" />
+        <Redirect href="/employee" />
+      </>
+    );
   }
 
   return (
     <View style={themed.root}>
+      <ScreenDebugBanner screenId="app/index.tsx" />
       <View style={themed.homeMenuSection}>
         <ScrollView
           style={themed.homeMenuScroll}
