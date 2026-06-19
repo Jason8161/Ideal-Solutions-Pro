@@ -11,7 +11,6 @@ import {
   View,
 } from "react-native";
 
-import { ScreenDebugBanner } from "@/components/debug/ScreenDebugBanner";
 import { useFooterScrollInset } from "@/components/FormScrollView";
 import { HomeMenuButton } from "@/components/home/HomeMenuButton";
 import { SocialMediaPickerModal } from "@/components/SocialMediaPickerModal";
@@ -83,7 +82,6 @@ export default function EmployeeHomeScreen() {
   if (loading) {
     return (
       <View style={themed.loader}>
-        <ScreenDebugBanner screenId="app/employee/index.tsx" />
         <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
@@ -92,7 +90,6 @@ export default function EmployeeHomeScreen() {
   if (!session?.active) {
     return (
       <View style={themed.joinRoot}>
-        <ScreenDebugBanner screenId="app/employee/index.tsx" />
         <Text style={themed.joinTitle}>
           {employeeVariant ? "Ideal Solutions Employee" : "Employee Access"}
         </Text>
@@ -115,7 +112,6 @@ export default function EmployeeHomeScreen() {
 
   return (
     <View style={themed.root}>
-      <ScreenDebugBanner screenId="app/employee/index.tsx" />
       <View style={themed.header}>
         <Text style={themed.headerTitle}>
           {employeeVariant ? "Ideal Solutions Employee" : "Employee"}

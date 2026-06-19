@@ -3,8 +3,6 @@
 import { useFocusEffect, useRouter, Redirect, type Href } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Alert,
-  Linking,
   ScrollView,
   StyleSheet,
   View,
@@ -19,10 +17,6 @@ import {
   loadHomeTileImageOverrides,
   type HomeTileImageOverrides,
 } from "@/lib/homeButtonImageOverrides";
-import { getAccountingAppLaunchUrl } from "@/lib/accountingAppLaunchUrls";
-import { loadAccountingAppSelection } from "@/lib/accountingAppStorage";
-import { looksLikeOpenableUrl } from "@/lib/bankAppShortcutsStorage";
-import { loadHomeAccountingLaunchUrlOverride } from "@/lib/homeAccountingBankLaunchOverrides";
 import {
   HOME_MENU_ITEMS,
   HOME_MENU_SHOW_TILE_IMAGES,
@@ -46,7 +40,6 @@ import {
   type HomeMenuTileKey,
 } from "@/lib/subscriptionGating";
 import type { SubscriptionTierId } from "@/lib/subscriptionPlans";
-import { ScreenDebugBanner } from "@/components/debug/ScreenDebugBanner";
 import { OverdueInvoicesHomePrompt } from "@/components/invoices/OverdueInvoicesHomePrompt";
 import { isEmployeeSessionActive } from "@/lib/employeeSession";
 import { resolveCurrentAppRole } from "@/lib/auth/sessionRole";
@@ -210,25 +203,15 @@ export default function Page() {
   const gridInnerWidth = contentWidth ?? buttonWidth;
 
   if (!coldSplashDone || !employeeRedirectChecked) {
-    return (
-      <View style={themed.splashPlaceholder}>
-        <ScreenDebugBanner screenId="app/index.tsx" />
-      </View>
-    );
+    return <View style={themed.splashPlaceholder} />;
   }
 
   if (employeeMode) {
-    return (
-      <>
-        <ScreenDebugBanner screenId="app/index.tsx" />
-        <Redirect href="/employee" />
-      </>
-    );
+    return <Redirect href="/employee" />;
   }
 
   return (
     <View style={themed.root}>
-      <ScreenDebugBanner screenId="app/index.tsx" />
       <View style={themed.homeMenuSection}>
         <ScrollView
           style={themed.homeMenuScroll}
@@ -272,82 +255,6 @@ export default function Page() {
       </View>
       <SocialMediaPickerModal visible={socialPickerOpen} onClose={() => setSocialPickerOpen(false)} />
     </View>
-  );
-}
-
-async function openExternalUrl(url: string) {
-  try {
-    await Linking.openURL(url);
-  } catch {
-    Alert.alert("Could not open link", "Check the URL or try opening it from your browser.");
-  }
-}
-
-async function handleOpenAccountingFromHome(router: ReturnType<typeof useRouter>) {
-  const [accOverride, selection] = await Promise.all([
-    loadHomeAccountingLaunchUrlOverride(),
-    loadAccountingAppSelection(),
-  ]);
-  const trimmedOverride = accOverride?.trim();
-  if (trimmedOverride && looksLikeOpenableUrl(trimmedOverride)) {
-    await openExternalUrl(trimmedOverride);
-    return;
-  }
-  const url = getAccountingAppLaunchUrl(selection);
-  if (!url) {
-    Alert.alert(
-      "Accountant / Billing",
-      "Set your accounting software under Settings → Accounting & billing.",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Settings", onPress: () => router.push("/settings/accounting-billing" as Href) },
-      ],
-    );
-    return;
-  }
-  await openExternalUrl(url);
-}
-
-function AccountingBillingHomeMenuTile({
-  item,
-  buttonWidth,
-  buttonHeight,
-  accentColor,
-  subscriptionTier,
-  testFlightDetectionDone,
-  overrideUri,
-}: {
-  item: HomeMenuItem;
-  buttonWidth: number;
-  buttonHeight: number;
-  accentColor: string;
-  subscriptionTier: SubscriptionTierId;
-  testFlightDetectionDone: boolean;
-  overrideUri?: string | null;
-}) {
-  const router = useRouter();
-  const { featureAccessContext } = useSubscription();
-  return (
-    <HomeMenuButton
-      width={buttonWidth}
-      height={buttonHeight}
-      accessibilityLabel={item.label}
-      accessibilityHint="Opens your accounting app from Settings."
-      image={homeMenuButtonImage(item, overrideUri)}
-      icon={item.icon}
-      iconColor={accentColor}
-      imageMonochrome={item.imageMonochrome}
-      onPress={() =>
-        promptUpgradeForHomeTileWhenReady(
-          testFlightDetectionDone,
-          "todo",
-          subscriptionTier,
-          () => openSubscriptionSettings(router),
-          () => void handleOpenAccountingFromHome(router),
-          featureAccessContext,
-        )
-      }
-    />
   );
 }
 
@@ -398,9 +305,7 @@ function isHomeMenuTileKey(key: string): key is HomeMenuTileKey {
   return (
     key === "ai-assistance" ||
     key === "job-folder" ||
-    key === "todo" ||
     key === "calendar" ||
-    key === "getting-paid" ||
     key === "social-media"
   );
 }
@@ -444,20 +349,6 @@ function HomeMenuTile({
   if (item.key === "job-folder") {
     return (
       <JobFolderHomeMenuTile
-        item={item}
-        buttonWidth={buttonWidth}
-        buttonHeight={buttonHeight}
-        accentColor={accentColor}
-        subscriptionTier={subscriptionTier}
-        testFlightDetectionDone={testFlightDetectionDone}
-        overrideUri={overrideUri}
-      />
-    );
-  }
-
-  if (item.key === "todo") {
-    return (
-      <AccountingBillingHomeMenuTile
         item={item}
         buttonWidth={buttonWidth}
         buttonHeight={buttonHeight}

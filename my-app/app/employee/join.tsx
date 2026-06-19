@@ -8,7 +8,6 @@ import {
   View,
 } from "react-native";
 
-import { ScreenDebugBanner } from "@/components/debug/ScreenDebugBanner";
 import { useBossManChrome } from "@/components/bossMan/bossManChrome";
 import { VoiceTextInput } from "@/components/VoiceTextInput";
 import { ScStickyScroll } from "@/components/serviceCalls/screenChrome";
@@ -157,9 +156,7 @@ export default function EmployeeJoinScreen() {
   const placeholderColor = useMemo(() => placeholderTextColor(colors), [colors]);
 
   return (
-    <>
-      <ScreenDebugBanner screenId="app/employee/join.tsx" />
-      <ScStickyScroll
+    <ScStickyScroll
       backHref="/employee"
       title="Employee Access"
       subtitle="Enter the invitation code sent by your employer."
@@ -203,7 +200,6 @@ export default function EmployeeJoinScreen() {
         )}
       </Pressable>
     </ScStickyScroll>
-    </>
   );
 }
 

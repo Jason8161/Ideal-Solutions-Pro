@@ -1,6 +1,5 @@
 import { Text, View } from "react-native";
 
-import { ScreenDebugBanner } from "@/components/debug/ScreenDebugBanner";
 import { useBossManChrome } from "@/components/bossMan/bossManChrome";
 import { ScStickyScroll } from "@/components/serviceCalls/screenChrome";
 
@@ -8,8 +7,6 @@ export default function CheckGuyDashboardScreen() {
   const { scStyles } = useBossManChrome();
 
   return (
-  <>
-    <ScreenDebugBanner screenId="app/check-guy/index.tsx" />
     <ScStickyScroll title="Check Guy" subtitle="Draw releases & approval history">
       <Text style={[scStyles.subtitle, { marginBottom: 16 }]}>
         Get notified when phases complete, review superintendent approvals, and approve or deny draw
@@ -23,6 +20,5 @@ export default function CheckGuyDashboardScreen() {
         <Text style={scStyles.cardMeta}>• Approval history</Text>
       </View>
     </ScStickyScroll>
-  </>
   );
 }

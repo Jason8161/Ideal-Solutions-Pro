@@ -98,28 +98,26 @@ const SUGGESTED_QUICK_PROMPTS_BY_TRADE: Record<TradeCategory, readonly string[]>
 export type HomeGridTileKey =
   | "ai-assistance"
   | "job-folder"
-  | "todo"
-  | "getting-paid"
   | "calendar"
+  | "employee-actions"
   | "social-media"
   | "misc-apps";
 
 const DEFAULT_HOME_GRID_KEYS: readonly HomeGridTileKey[] = [
   "ai-assistance",
   "job-folder",
-  "todo",
-  "getting-paid",
   "calendar",
+  "employee-actions",
   "social-media",
   "misc-apps",
 ];
 
 /** Home grid keys — AI tile stays first; Job Folder follows for estimate-heavy trades. */
 const HOME_GRID_PRIORITY_BY_TRADE: Record<TradeCategory, readonly HomeGridTileKey[]> = {
-  electrical: ["ai-assistance", "job-folder", "calendar", "todo", "getting-paid", "social-media", "misc-apps"],
-  plumbing: ["ai-assistance", "job-folder", "getting-paid", "todo", "calendar", "social-media", "misc-apps"],
-  hvac: ["ai-assistance", "job-folder", "calendar", "todo", "getting-paid", "social-media", "misc-apps"],
-  siding_roofing: ["ai-assistance", "job-folder", "getting-paid", "todo", "calendar", "social-media", "misc-apps"],
+  electrical: ["ai-assistance", "job-folder", "calendar", "employee-actions", "social-media", "misc-apps"],
+  plumbing: ["ai-assistance", "job-folder", "calendar", "employee-actions", "social-media", "misc-apps"],
+  hvac: ["ai-assistance", "job-folder", "calendar", "employee-actions", "social-media", "misc-apps"],
+  siding_roofing: ["ai-assistance", "job-folder", "calendar", "employee-actions", "social-media", "misc-apps"],
   general: [...DEFAULT_HOME_GRID_KEYS],
 };
 
