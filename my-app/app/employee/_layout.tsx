@@ -1,7 +1,10 @@
 import { Stack } from "expo-router";
 
+import { EmployeeFeatureGate } from "@/components/subscription/EmployeeFeatureGate";
+
 export default function EmployeeLayout() {
   return (
+    <EmployeeFeatureGate>
     <Stack
       screenOptions={{
         headerShown: false,
@@ -18,5 +21,6 @@ export default function EmployeeLayout() {
       <Stack.Screen name="daily-notes" />
       <Stack.Screen name="ai-assistant" />
     </Stack>
+    </EmployeeFeatureGate>
   );
 }

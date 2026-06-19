@@ -34,6 +34,7 @@ import {
 } from "@/lib/homeNavigation";
 import { shouldSuppressTrialRefresh } from "@/lib/subscriptions/trialGateState";
 import {
+  canAccessFeature,
   homeJobFolderHrefForTier,
   promptUpgradeForHomeTileWhenReady,
   SUBSCRIPTION_SETTINGS_HREF,
@@ -127,6 +128,7 @@ export default function Page() {
     activeTier: subscriptionTier,
     testFlightDetectionDone,
     refresh: refreshSubscription,
+    featureAccessContext,
   } = useSubscription();
 
   const reloadTileOverrides = useCallback(() => {
@@ -199,7 +201,13 @@ export default function Page() {
     }, []),
   );
 
-  const homeGridRows = buildHomeGridRows();
+  const homeGridRows = useMemo(() => {
+    const rows = buildHomeGridRows();
+    if (canAccessFeature("employees", subscriptionTier, featureAccessContext)) {
+      return rows;
+    }
+    return rows.filter((item) => item.key !== "employee-actions");
+  }, [subscriptionTier, featureAccessContext]);
   const gridInnerWidth = contentWidth ?? buttonWidth;
 
   if (!coldSplashDone || !employeeRedirectChecked) {
@@ -306,6 +314,7 @@ function isHomeMenuTileKey(key: string): key is HomeMenuTileKey {
     key === "ai-assistance" ||
     key === "job-folder" ||
     key === "calendar" ||
+    key === "employee-actions" ||
     key === "social-media"
   );
 }

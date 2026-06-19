@@ -56,7 +56,8 @@ export type HomeMenuTileKey =
   | "todo"
   | "calendar"
   | "getting-paid"
-  | "social-media";
+  | "social-media"
+  | "employee-actions";
 
 export type FeatureAccessContext = {
   /** @deprecated Use subscriptionLocked */
@@ -300,6 +301,8 @@ export function getHomeTileGatedFeature(
       return "getting_paid";
     case "social-media":
       return null;
+    case "employee-actions":
+      return "employees";
     default:
       return null;
   }

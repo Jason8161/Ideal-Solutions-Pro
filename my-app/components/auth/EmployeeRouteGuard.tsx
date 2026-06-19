@@ -4,20 +4,16 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 import { isEmployeeAppVariant } from "@/lib/auth/appVariant";
 import { isGuestTrialRoute } from "@/lib/auth/authPaths";
-import {
-  getHomeRouteForCompanyRole,
-  getHomeRouteForSession,
-  shouldBlockBossOnEmployeeRoute,
-} from "@/lib/auth/routing";
+import { getHomeRouteForCompanyRole, getHomeRouteForSession } from "@/lib/auth/routing";
 import { resolveCurrentAppRole, resolveCurrentCompanyRole } from "@/lib/auth/sessionRole";
-import { isBossAppRole, isEmployeeAppRole, type AppRole } from "@/lib/auth/roles";
+import { isEmployeeAppRole, type AppRole } from "@/lib/auth/roles";
 import { loadEmployeeSession } from "@/lib/employeeSession";
 import { isPathBlockedForRole } from "@/lib/permissions/roleAccess";
 import type { CompanyRoleId } from "@/lib/permissions/companyRoles";
 
 /**
  * Blocks employees from boss-only routes and redirects to the employee portal home.
- * Boss users are kept off /employee/* unless using the employee app variant.
+ * Boss `/employee/*` subscription gating lives in {@link EmployeeFeatureGate}.
  */
 export function EmployeeRouteGuard({ children }: PropsWithChildren) {
   const pathname = usePathname() ?? "";
@@ -88,10 +84,6 @@ export function EmployeeRouteGuard({ children }: PropsWithChildren) {
     pathname !== "/settings/user-info"
   ) {
     return <Redirect href={"/check-guy" as Href} />;
-  }
-
-  if (shouldBlockBossOnEmployeeRoute(resolvedRole, pathname) && isBossAppRole(resolvedRole) && !isEmployeeAppVariant()) {
-    return <Redirect href={"/" as Href} />;
   }
 
   const p = pathname.toLowerCase();
