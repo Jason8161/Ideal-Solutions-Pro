@@ -34,8 +34,8 @@ import {
 } from "@/lib/homeNavigation";
 import { shouldSuppressTrialRefresh } from "@/lib/subscriptions/trialGateState";
 import {
-  canAccessFeature,
   homeJobFolderHrefForTier,
+  isEmployeeEligibleTier,
   promptUpgradeForHomeTileWhenReady,
   SUBSCRIPTION_SETTINGS_HREF,
   type HomeMenuTileKey,
@@ -203,11 +203,11 @@ export default function Page() {
 
   const homeGridRows = useMemo(() => {
     const rows = buildHomeGridRows();
-    if (canAccessFeature("employees", subscriptionTier, featureAccessContext)) {
+    if (isEmployeeEligibleTier(subscriptionTier)) {
       return rows;
     }
     return rows.filter((item) => item.key !== "employee-actions");
-  }, [subscriptionTier, featureAccessContext]);
+  }, [subscriptionTier]);
   const gridInnerWidth = contentWidth ?? buttonWidth;
 
   if (!coldSplashDone || !employeeRedirectChecked) {

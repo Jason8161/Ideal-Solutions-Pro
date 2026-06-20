@@ -11,6 +11,7 @@ export {
   getUpgradeTarget,
   hasFeature,
   homeJobFolderHrefForTier,
+  isEmployeeEligibleTier,
   isBossTier,
   isBossmanTier,
   isProTier,

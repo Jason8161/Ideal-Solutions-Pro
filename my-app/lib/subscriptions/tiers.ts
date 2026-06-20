@@ -1,5 +1,5 @@
 /**
- * Ideal Solutions Pro — subscription tiers (v2).
+ * Ideal Solutions Pro — subscription tiers (single source of truth).
  * RevenueCat product IDs: docs/REVENUECAT_PRODUCTS.md
  */
 
@@ -9,6 +9,8 @@ export type SubscriptionTierId =
   | "boss_man"
   | "super_boss_man"
   | "enterprise_boss_man";
+
+export type PaidSubscriptionTierId = Exclude<SubscriptionTierId, "locked">;
 
 /** @deprecated Legacy persisted tier IDs — migrate on read. */
 export type LegacySubscriptionTierId =
@@ -48,6 +50,154 @@ export const SUBSCRIPTION_TIER_ORDER: SubscriptionTierId[] = [
 
 export const TRIAL_DAYS = 7;
 export const TRIAL_AI_REQUESTS_TOTAL = 5;
+
+/** Primary entitlement for Boss Man — must match RevenueCat dashboard. */
+export const IDEAL_SOLUTIONS_PRO_ENTITLEMENT = "ideal_solutions_pro";
+
+/** Legacy entitlement keys still honored for existing subscribers. */
+export const LEGACY_ENTITLEMENT_IDS = ["ideal_starter", "ideal_pro", "ideal_boss", "pro"] as const;
+
+/** Legacy Boss Man monthly store SKUs still matched when resolving packages. */
+export const LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS = [
+  "boss_man_monthly",
+  "ideal_pro_monthly",
+  "ideal_solutions_pro_monthly",
+] as const;
+
+/** Legacy Boss Man monthly package identifiers in the default offering. */
+export const LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS = ["$rc_monthly", "monthly"] as const;
+
+/**
+ * Canonical tier configuration — single source of truth for paywall, subscription screen,
+ * RevenueCat mapping, feature gating, and employee eligibility.
+ */
+export type SubscriptionTierConfig = {
+  id: PaidSubscriptionTierId;
+  displayName: string;
+  /** Store product IDs (current + legacy) for package resolution and restore mapping. */
+  productIds: readonly string[];
+  /** RevenueCat entitlement keys that grant this tier. */
+  entitlementKeys: readonly string[];
+  rank: number;
+  showOnPaywall: boolean;
+  showOnSubscriptionScreen: boolean;
+  /** Employee Actions / crew tools — true only for Super Boss Man + Enterprise. */
+  employeeEligible: boolean;
+  priceLabel: string;
+  monthlyPrice: number;
+  tagline: string;
+  features: string[];
+  mostPopular?: boolean;
+  recommended?: boolean;
+  maxEmployees: number;
+  monthlyAiLimit: number;
+  revenueCatPackageId?: string;
+};
+
+export const SUBSCRIPTION_TIER_CONFIG: Record<PaidSubscriptionTierId, SubscriptionTierConfig> = {
+  side_hustle: {
+    id: "side_hustle",
+    displayName: "Side Hustle / DIY",
+    productIds: ["Side_Job_DIY", "side_hustle_monthly"],
+    entitlementKeys: ["side_hustle"],
+    rank: 1,
+    showOnPaywall: true,
+    showOnSubscriptionScreen: true,
+    employeeEligible: false,
+    priceLabel: "$9.99/mo",
+    monthlyPrice: 9.99,
+    tagline: "Solo contractor — estimates, invoices, scheduling, customers",
+    features: [
+      "50 AI requests / month",
+      "Estimating, invoices, scheduling, customers",
+      "Local photo & document storage on device",
+      "No employees",
+    ],
+    maxEmployees: 0,
+    monthlyAiLimit: 50,
+  },
+  boss_man: {
+    id: "boss_man",
+    displayName: "Boss Man",
+    productIds: ["idealsolutionspro.BossManMode", ...LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS],
+    entitlementKeys: [IDEAL_SOLUTIONS_PRO_ENTITLEMENT],
+    rank: 2,
+    showOnPaywall: true,
+    showOnSubscriptionScreen: true,
+    employeeEligible: false,
+    priceLabel: "$19.99/mo",
+    monthlyPrice: 19.99,
+    tagline: "Advanced estimating and workflows for solo operators",
+    features: [
+      "100 AI requests / month",
+      "Advanced estimating & workflows",
+      "Everything in Side Hustle / DIY",
+      "No employees",
+    ],
+    mostPopular: true,
+    recommended: true,
+    maxEmployees: 0,
+    monthlyAiLimit: 100,
+  },
+  super_boss_man: {
+    id: "super_boss_man",
+    displayName: "Super Boss Man",
+    productIds: ["idealsolutionspro.SuperBossManMode", "super_boss_man_monthly"],
+    entitlementKeys: ["super_boss_man"],
+    rank: 3,
+    showOnPaywall: true,
+    showOnSubscriptionScreen: true,
+    employeeEligible: true,
+    priceLabel: "$49.99/mo",
+    monthlyPrice: 49.99,
+    tagline: "Small crews — up to 8 employees, team features",
+    features: [
+      "150 AI requests / month",
+      "Up to 8 employees & crew tools",
+      "Team scheduling & shared workflows",
+      "Everything in Boss Man",
+    ],
+    maxEmployees: 8,
+    monthlyAiLimit: 150,
+  },
+  enterprise_boss_man: {
+    id: "enterprise_boss_man",
+    displayName: "Enterprise Boss Man",
+    productIds: ["idealsolutionspro.EnterpriseBossMan", "enterprise_boss_man_monthly"],
+    entitlementKeys: ["enterprise_boss_man"],
+    rank: 4,
+    showOnPaywall: true,
+    showOnSubscriptionScreen: true,
+    employeeEligible: true,
+    priceLabel: "$99.99/mo",
+    monthlyPrice: 99.99,
+    tagline: "Larger teams — up to 15 employees, priority support",
+    features: [
+      "200 AI requests / month",
+      "Up to 15 employees",
+      "Priority support",
+      "Everything in Super Boss Man",
+    ],
+    maxEmployees: 15,
+    monthlyAiLimit: 200,
+  },
+};
+
+/** Legacy store product IDs per paid tier (derived from config). */
+export const LEGACY_TIER_PRODUCT_IDS: Record<PaidSubscriptionTierId, readonly string[]> = {
+  side_hustle: SUBSCRIPTION_TIER_CONFIG.side_hustle.productIds,
+  boss_man: SUBSCRIPTION_TIER_CONFIG.boss_man.productIds,
+  super_boss_man: SUBSCRIPTION_TIER_CONFIG.super_boss_man.productIds,
+  enterprise_boss_man: SUBSCRIPTION_TIER_CONFIG.enterprise_boss_man.productIds,
+};
+
+/** Legacy RevenueCat package identifiers still matched when resolving offerings. */
+export const LEGACY_TIER_PACKAGE_IDS: Record<PaidSubscriptionTierId, readonly string[]> = {
+  side_hustle: ["side_hustle_monthly"],
+  boss_man: [...LEGACY_BOSS_MAN_MONTHLY_PACKAGE_IDS, ...LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS],
+  super_boss_man: ["super_boss_man_monthly"],
+  enterprise_boss_man: ["enterprise_boss_man_monthly"],
+};
 
 export type AiAddonPackId = "ai_100" | "ai_500" | "ai_2000" | "ai_5000";
 
@@ -105,14 +255,37 @@ export type SubscriptionPlan = {
   mostPopular?: boolean;
   recommended?: boolean;
   isPaid: boolean;
-  /** Max employees (0 = solo only). */
   maxEmployees: number;
-  /** Monthly AI requests included (resets each billing period). */
   monthlyAiLimit: number;
   revenueCatProductId?: string;
   revenueCatPackageId?: string;
   revenueCatEntitlementId?: string;
+  showOnPaywall?: boolean;
+  showOnSubscriptionScreen?: boolean;
+  employeeEligible?: boolean;
 };
+
+function tierConfigToPlan(config: SubscriptionTierConfig): SubscriptionPlan {
+  return {
+    id: config.id,
+    name: config.displayName,
+    priceLabel: config.priceLabel,
+    monthlyPrice: config.monthlyPrice,
+    tagline: config.tagline,
+    features: config.features,
+    mostPopular: config.mostPopular,
+    recommended: config.recommended,
+    isPaid: true,
+    maxEmployees: config.maxEmployees,
+    monthlyAiLimit: config.monthlyAiLimit,
+    revenueCatProductId: config.productIds[0],
+    revenueCatPackageId: config.revenueCatPackageId,
+    revenueCatEntitlementId: config.entitlementKeys[0],
+    showOnPaywall: config.showOnPaywall,
+    showOnSubscriptionScreen: config.showOnSubscriptionScreen,
+    employeeEligible: config.employeeEligible,
+  };
+}
 
 export const PLAN_PICKER_HEADLINE =
   "Pick the plan that fits how you run jobs. Start with a 7-day trial on your chosen tier — 5 AI requests total, all files stay on your device.";
@@ -120,90 +293,18 @@ export const PLAN_PICKER_HEADLINE =
 export const PLAN_PICKER_FAIR_USE_NOTE =
   "Photos, videos, and PDFs are stored on this device only. Use iCloud, OneDrive, Google Drive, or Dropbox for backup — we never host your job media in the cloud.";
 
-/** Paid tiers shown in onboarding / subscribe pickers (excludes locked). */
-export const PAID_TIER_IDS: SubscriptionTierId[] = [
+/** Paid tiers in rank order (excludes locked). */
+export const PAID_TIER_IDS: PaidSubscriptionTierId[] = [
   "side_hustle",
   "boss_man",
   "super_boss_man",
   "enterprise_boss_man",
 ];
 
-export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
-  {
-    id: "side_hustle",
-    name: "Side Hustle / DIY",
-    priceLabel: "$9.99/mo",
-    monthlyPrice: 9.99,
-    tagline: "Solo contractor — estimates, invoices, scheduling, customers",
-    features: [
-      "50 AI requests / month",
-      "Estimating, invoices, scheduling, customers",
-      "Local photo & document storage on device",
-      "No employees",
-    ],
-    isPaid: true,
-    maxEmployees: 0,
-    monthlyAiLimit: 50,
-    revenueCatProductId: "Side_Job_DIY",
-    revenueCatEntitlementId: "side_hustle",
-  },
-  {
-    id: "boss_man",
-    name: "Boss Man",
-    priceLabel: "$19.99/mo",
-    monthlyPrice: 19.99,
-    tagline: "Advanced estimating and workflows for solo operators",
-    features: [
-      "100 AI requests / month",
-      "Advanced estimating & workflows",
-      "Everything in Side Hustle / DIY",
-      "No employees",
-    ],
-    mostPopular: true,
-    recommended: true,
-    isPaid: true,
-    maxEmployees: 0,
-    monthlyAiLimit: 100,
-    revenueCatProductId: "idealsolutionspro.BossManMode",
-    revenueCatEntitlementId: "ideal_solutions_pro",
-  },
-  {
-    id: "super_boss_man",
-    name: "Super Boss Man",
-    priceLabel: "$49.99/mo",
-    monthlyPrice: 49.99,
-    tagline: "Small crews — up to 8 employees, team features",
-    features: [
-      "150 AI requests / month",
-      "Up to 8 employees & crew tools",
-      "Team scheduling & shared workflows",
-      "Everything in Boss Man",
-    ],
-    isPaid: true,
-    maxEmployees: 8,
-    monthlyAiLimit: 150,
-    revenueCatProductId: "idealsolutionspro.SuperBossManMode",
-    revenueCatEntitlementId: "super_boss_man",
-  },
-  {
-    id: "enterprise_boss_man",
-    name: "Enterprise Boss Man",
-    priceLabel: "$99.99/mo",
-    monthlyPrice: 99.99,
-    tagline: "Larger teams — up to 15 employees, priority support",
-    features: [
-      "200 AI requests / month",
-      "Up to 15 employees",
-      "Priority support",
-      "Everything in Super Boss Man",
-    ],
-    isPaid: true,
-    maxEmployees: 15,
-    monthlyAiLimit: 200,
-    revenueCatProductId: "idealsolutionspro.EnterpriseBossMan",
-    revenueCatEntitlementId: "enterprise_boss_man",
-  },
-];
+/** All paid plans — derived from {@link SUBSCRIPTION_TIER_CONFIG}. */
+export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = PAID_TIER_IDS.map(
+  (id) => tierConfigToPlan(SUBSCRIPTION_TIER_CONFIG[id]),
+);
 
 export const LOCKED_PLAN: SubscriptionPlan = {
   id: "locked",
@@ -226,6 +327,122 @@ export const BOSSMAN_SUPPLY_HOUSE_PRESET_IDS = [
   "grainger",
 ] as const;
 
+export function getTierConfig(tierId: SubscriptionTierId): SubscriptionTierConfig | null {
+  if (tierId === "locked") return null;
+  return SUBSCRIPTION_TIER_CONFIG[tierId] ?? null;
+}
+
+export function paidTierConfigs(): SubscriptionTierConfig[] {
+  return PAID_TIER_IDS.map((id) => SUBSCRIPTION_TIER_CONFIG[id]);
+}
+
+/** Plans visible on RevenueCat paywall / onboarding plan picker. */
+export function plansForPaywall(): SubscriptionPlan[] {
+  return SUBSCRIPTION_PLANS.filter((p) => p.showOnPaywall !== false);
+}
+
+/** Plans visible on Settings → Subscription screen (always includes all configured tiers). */
+export function plansForSubscriptionScreen(): SubscriptionPlan[] {
+  return SUBSCRIPTION_PLANS.filter((p) => p.showOnSubscriptionScreen !== false);
+}
+
+export function isEmployeeEligibleTier(tier: SubscriptionTierId): boolean {
+  const config = getTierConfig(tier);
+  return config?.employeeEligible === true;
+}
+
+export function resolveTierFromEntitlementKey(
+  entitlementKey: string,
+): PaidSubscriptionTierId | null {
+  for (const id of PAID_TIER_IDS) {
+    const config = SUBSCRIPTION_TIER_CONFIG[id];
+    if (config.entitlementKeys.includes(entitlementKey)) {
+      return id;
+    }
+  }
+  for (const legacyId of LEGACY_ENTITLEMENT_IDS) {
+    if (legacyId !== entitlementKey) continue;
+    const mapped =
+      legacyId === "ideal_starter"
+        ? "side_hustle"
+        : legacyId === "ideal_pro" || legacyId === "pro"
+          ? "boss_man"
+          : legacyId === "ideal_boss"
+            ? "super_boss_man"
+            : null;
+    if (mapped) return mapped;
+  }
+  return null;
+}
+
+export function resolveTierFromProductId(productId: string): PaidSubscriptionTierId | null {
+  const normalized = productId.trim();
+  if (!normalized) return null;
+  let best: PaidSubscriptionTierId | null = null;
+  let bestRank = -1;
+  for (const id of PAID_TIER_IDS) {
+    const config = SUBSCRIPTION_TIER_CONFIG[id];
+    if (config.productIds.some((pid) => pid === normalized)) {
+      if (config.rank > bestRank) {
+        bestRank = config.rank;
+        best = id;
+      }
+    }
+  }
+  return best;
+}
+
+export function highestTierFromKeys(input: {
+  entitlementKeys?: Iterable<string>;
+  productIds?: Iterable<string>;
+}): SubscriptionTierId | null {
+  let best: SubscriptionTierId | null = null;
+  let bestRank = -1;
+
+  const consider = (tier: SubscriptionTierId | null) => {
+    if (!tier || tier === "locked") return;
+    const rank = tierRank(tier);
+    if (rank > bestRank) {
+      bestRank = rank;
+      best = tier;
+    }
+  };
+
+  if (input.entitlementKeys) {
+    for (const key of input.entitlementKeys) {
+      consider(resolveTierFromEntitlementKey(key));
+    }
+  }
+
+  if (input.productIds) {
+    for (const productId of input.productIds) {
+      consider(resolveTierFromProductId(productId));
+    }
+  }
+
+  return best ? normalizeSubscriptionTierId(best) : null;
+}
+
+export type TierDebugSnapshot = {
+  activeEntitlement: string | null;
+  productId: string | null;
+  resolvedTier: SubscriptionTierId | null;
+  localTier: SubscriptionTierId;
+  employeeEligible: boolean;
+};
+
+/** Dev-only diagnostic — prefix [TIER DEBUG]. */
+export function logTierDebug(snapshot: TierDebugSnapshot): void {
+  if (!__DEV__) return;
+  console.log("[TIER DEBUG]", {
+    activeEntitlement: snapshot.activeEntitlement,
+    productId: snapshot.productId,
+    resolvedInternalTier: snapshot.resolvedTier,
+    storedLocalTier: snapshot.localTier,
+    employeeEligible: snapshot.employeeEligible,
+  });
+}
+
 export function normalizeSubscriptionTierId(
   raw: string | null | undefined,
 ): SubscriptionTierId {
@@ -246,6 +463,8 @@ export function getSubscriptionPlan(id: SubscriptionTierId): SubscriptionPlan {
 }
 
 export function tierRank(id: SubscriptionTierId): number {
+  const config = getTierConfig(id);
+  if (config) return config.rank;
   const idx = SUBSCRIPTION_TIER_ORDER.indexOf(id);
   return idx >= 0 ? idx : 0;
 }

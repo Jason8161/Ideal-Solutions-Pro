@@ -5,19 +5,15 @@ import type { CustomerInfo, PurchasesPackage } from "react-native-purchases";
 import { withPromiseTimeout } from "@/lib/async/withPromiseTimeout";
 import {
   getSubscriptionPlan,
-  normalizeSubscriptionTierId,
-  SUBSCRIPTION_PLANS,
-  tierRank,
-  type SubscriptionTierId,
-} from "@/lib/subscription/tiers";
-import { isSubscriptionGatingDisabled } from "@/lib/subscriptionTesting";
-
-import {
+  getTierConfig,
+  highestTierFromKeys,
   IDEAL_SOLUTIONS_PRO_ENTITLEMENT,
   LEGACY_TIER_PACKAGE_IDS,
   LEGACY_TIER_PRODUCT_IDS,
-  LEGACY_ENTITLEMENT_IDS,
-} from "./constants";
+  plansForSubscriptionScreen,
+  type SubscriptionTierId,
+} from "@/lib/subscription/tiers";
+import { isSubscriptionGatingDisabled } from "@/lib/subscriptionTesting";
 import {
   isInvalidRevenueCatCredentialsMessage,
   isPurchaseCancelledError,
@@ -222,58 +218,41 @@ export function hasIdealSolutionsPro(customerInfo: CustomerInfo | null | undefin
   return checkEntitlement(customerInfo, IDEAL_SOLUTIONS_PRO_ENTITLEMENT);
 }
 
+function activeEntitlementKeys(active: Record<string, unknown>): string[] {
+  return Object.keys(active).filter((key) => Boolean(active[key]));
+}
+
+function activeProductIds(customerInfo: CustomerInfo): string[] {
+  const ids = new Set<string>();
+  for (const entitlement of Object.values(customerInfo.entitlements.active)) {
+    if (entitlement.productIdentifier) {
+      ids.add(entitlement.productIdentifier);
+    }
+  }
+  for (const productId of customerInfo.activeSubscriptions ?? []) {
+    ids.add(productId);
+  }
+  for (const productId of customerInfo.allPurchasedProductIdentifiers ?? []) {
+    ids.add(productId);
+  }
+  return [...ids];
+}
+
+/** Resolves the highest paid tier from RevenueCat customer info (product IDs beat entitlements). */
+export function resolveTierFromCustomerInfo(
+  customerInfo: CustomerInfo | null | undefined,
+): SubscriptionTierId | null {
+  if (!customerInfo) return null;
+  const entitlementKeys = activeEntitlementKeys(customerInfo.entitlements.active);
+  const productIds = activeProductIds(customerInfo);
+  const fromProducts = highestTierFromKeys({ productIds });
+  if (fromProducts) return fromProducts;
+  return highestTierFromKeys({ entitlementKeys });
+}
+
+/** @deprecated Use {@link resolveTierFromCustomerInfo} — kept for existing call sites. */
 export function highestTierFromEntitlements(active: Record<string, unknown>): SubscriptionTierId | null {
-  let best: SubscriptionTierId | null = null;
-  let bestRank = -1;
-
-  if (active[IDEAL_SOLUTIONS_PRO_ENTITLEMENT]) {
-    const proRank = tierRank("boss_man");
-    if (proRank > bestRank) {
-      bestRank = proRank;
-      best = "boss_man";
-    }
-  }
-
-  for (const plan of SUBSCRIPTION_PLANS) {
-    if (!plan.revenueCatEntitlementId) continue;
-    if (active[plan.revenueCatEntitlementId]) {
-      const rank = tierRank(plan.id);
-      if (rank > bestRank) {
-        bestRank = rank;
-        best = plan.id;
-      }
-    }
-  }
-
-  const legacy = getPrimaryEntitlementId();
-  if (active[legacy] && legacy !== IDEAL_SOLUTIONS_PRO_ENTITLEMENT) {
-    const bossmanRank = tierRank("boss_man");
-    if (bossmanRank > bestRank) {
-      return "boss_man";
-    }
-  }
-
-  for (const legacyId of LEGACY_ENTITLEMENT_IDS) {
-    if (active[legacyId]) {
-      const mapped =
-        legacyId === "ideal_starter"
-          ? "side_hustle"
-          : legacyId === "ideal_pro" || legacyId === "pro"
-            ? "boss_man"
-            : legacyId === "ideal_boss"
-              ? "super_boss_man"
-              : null;
-      if (mapped) {
-        const rank = tierRank(mapped);
-        if (rank > bestRank) {
-          bestRank = rank;
-          best = mapped;
-        }
-      }
-    }
-  }
-
-  return best ? normalizeSubscriptionTierId(best) : null;
+  return highestTierFromKeys({ entitlementKeys: activeEntitlementKeys(active) });
 }
 
 function tierPackageIdentifiers(tierId: SubscriptionTierId, plan: ReturnType<typeof getSubscriptionPlan>): string[] {
@@ -336,10 +315,18 @@ export function filterPlansByOfferings<T extends { id: SubscriptionTierId; isPai
   plans: T[],
   packages: PurchasesPackage[],
 ): T[] {
-  if (packages.length === 0) return [];
-  const filtered = plans.filter(
-    (plan) => !plan.isPaid || resolveTierPackageFromOfferings(packages, plan.id) !== null,
+  const subscriptionScreenIds = new Set(
+    plansForSubscriptionScreen().map((plan) => plan.id),
   );
+  const filtered = plans.filter((plan) => {
+    if (!plan.isPaid) return true;
+    const config = getTierConfig(plan.id);
+    if (config?.showOnSubscriptionScreen || subscriptionScreenIds.has(plan.id)) {
+      return true;
+    }
+    if (packages.length === 0) return false;
+    return resolveTierPackageFromOfferings(packages, plan.id) !== null;
+  });
   const paidCount = filtered.filter((plan) => plan.isPaid).length;
   rcLog("[RevenueCat] filterPlansByOfferings", {
     inputPlans: plans.length,

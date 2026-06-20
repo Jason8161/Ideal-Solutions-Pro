@@ -10,10 +10,13 @@ import type { SupplyHousePresetId } from "@/lib/supplierPresets";
 import {
   BOSSMAN_SUPPLY_HOUSE_PRESET_IDS,
   getSubscriptionPlan,
+  isEmployeeEligibleTier,
   RETAIL_MATERIAL_SUPPLIER_IDS,
   tierMeetsMinimum,
   type SubscriptionTierId,
 } from "@/lib/subscription/tiers";
+
+export { isEmployeeEligibleTier };
 
 export const SUBSCRIPTION_SETTINGS_HREF = "/settings/subscribe" as const;
 

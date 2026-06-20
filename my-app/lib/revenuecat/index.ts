@@ -66,6 +66,8 @@ export {
 
   highestTierFromEntitlements,
 
+  resolveTierFromCustomerInfo,
+
   isPurchasesUiAvailable,
 
   isValidPurchasePackage,

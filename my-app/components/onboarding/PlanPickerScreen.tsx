@@ -30,7 +30,7 @@ import {
 
   getSubscriptionPlan,
 
-  paidSubscriptionPlans,
+  plansForPaywall,
 
   type SubscriptionTierId,
 
@@ -114,7 +114,7 @@ export function PlanPickerScreen({ onComplete }: PlanPickerScreenProps) {
 
 
 
-  const allPlans = paidSubscriptionPlans();
+  const allPlans = plansForPaywall();
 
   const filterByOfferings =
 

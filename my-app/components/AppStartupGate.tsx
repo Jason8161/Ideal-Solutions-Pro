@@ -17,6 +17,7 @@ import {
   configurePurchases,
   getCustomerInfo,
   highestTierFromEntitlements,
+  resolveTierFromCustomerInfo,
 } from "@/lib/revenuecat";
 import { isSubscriptionGatingDisabled } from "@/lib/subscriptionTesting";
 import { getCachedHasStorageTrial, isTrialNavigationLocked } from "@/lib/subscriptions/trialGateState";
@@ -60,7 +61,7 @@ async function readStartupRouteState(): Promise<{ legalAccepted: boolean; trialS
     try {
       await configurePurchases();
       const info = await getCustomerInfo();
-      const tier = info ? highestTierFromEntitlements(info.entitlements.active) : null;
+      const tier = info ? resolveTierFromCustomerInfo(info) : null;
       if (tier && isPaidSubscriptionTier(tier)) {
         trialStarted = true;
         console.warn("[RevenueCat] AppStartupGate: active entitlement — onboarding complete", tier);

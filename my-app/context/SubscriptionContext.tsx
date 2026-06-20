@@ -10,8 +10,10 @@ import {
 import {
   isPaidSubscriptionTier,
   normalizeSubscriptionTierId,
-  SUBSCRIPTION_PLANS,
   getSubscriptionPlan,
+  logTierDebug,
+  isEmployeeEligibleTier,
+  plansForSubscriptionScreen,
   tierRank,
   type SubscriptionPlan,
   type SubscriptionTierId,
@@ -51,7 +53,7 @@ import {
   getCustomerInfo,
   getRevenueCatApiKey,
   hasIdealSolutionsPro,
-  highestTierFromEntitlements,
+  resolveTierFromCustomerInfo,
   isValidPurchasePackage,
   loginRevenueCatUser,
   presentCustomerCenter,
@@ -233,7 +235,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   const effectiveTier = activeTier;
 
   const pickerPlans = useMemo(
-    () => subscriptionPlansForPicker(devOverride, SUBSCRIPTION_PLANS),
+    () => subscriptionPlansForPicker(devOverride, plansForSubscriptionScreen()),
     [devOverride],
   );
 
@@ -286,9 +288,25 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         try {
           const info = await getCustomerInfo();
           if (info) {
-            fromStore = highestTierFromEntitlements(info.entitlements.active);
+            fromStore = resolveTierFromCustomerInfo(info);
             if (fromStore) fromStore = normalizeSubscriptionTierId(fromStore);
             proEntitlement = hasIdealSolutionsPro(info);
+            if (__DEV__) {
+              const activeKeys = Object.keys(info.entitlements.active).filter(
+                (key) => info.entitlements.active[key],
+              );
+              const productIds = [
+                ...info.activeSubscriptions,
+                ...Object.values(info.entitlements.active).map((e) => e.productIdentifier),
+              ].filter(Boolean);
+              logTierDebug({
+                activeEntitlement: activeKeys[0] ?? null,
+                productId: productIds[0] ?? null,
+                resolvedTier: fromStore,
+                localTier: profileTierValue,
+                employeeEligible: fromStore ? isEmployeeEligibleTier(fromStore) : false,
+              });
+            }
           }
         } catch {
           storeError = true;
