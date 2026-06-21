@@ -21,8 +21,10 @@ import {
 import type { FeatureAccessContext } from "@/lib/subscription/featureAccess";
 import {
   resolveSubscriptionAccess,
+  shouldPersistActiveTierToProfile,
   type SubscriptionAccessSource,
 } from "@/lib/subscription/accessResolver";
+import { resetSubscriptionCacheAndRestore } from "@/lib/subscription/subscriptionCacheReset";
 import {
   fetchFreeAccessOverrideForUser,
   type ResolvedFreeAccessOverride,
@@ -124,6 +126,8 @@ type SubscriptionContextValue = {
   purchaseDefault: () => Promise<{ ok: boolean; message?: string }>;
   purchaseTier: (tierId: SubscriptionTierId) => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
   restore: () => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
+  /** __DEV__ — clear local tier cache, restore purchases, refresh RevenueCat customer info. */
+  resetSubscriptionCache: () => Promise<{ ok: boolean; message?: string }>;
   showPaywall: () => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
   showCustomerCenter: () => Promise<{ ok: boolean; message?: string; cancelled?: boolean }>;
   hasIdealSolutionsProEntitlement: boolean;
@@ -279,7 +283,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
       const stored = await loadCompanyProfile();
       const profile = companyProfileFromPartial(stored);
-      const profileTierValue = normalizeSubscriptionTierId(profile.subscriptionTier);
+      let profileTierValue = normalizeSubscriptionTierId(profile.subscriptionTier);
 
       let fromStore: SubscriptionTierId | null = null;
       let storeError = false;
@@ -287,27 +291,31 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       if (Platform.OS !== "web") {
         try {
           const info = await getCustomerInfo();
+          let entitlementsActive: Record<string, boolean> = {};
+          let productIds: string[] = [];
           if (info) {
             fromStore = resolveTierFromCustomerInfo(info);
             if (fromStore) fromStore = normalizeSubscriptionTierId(fromStore);
             proEntitlement = hasIdealSolutionsPro(info);
-            if (__DEV__) {
-              const activeKeys = Object.keys(info.entitlements.active).filter(
-                (key) => info.entitlements.active[key],
-              );
-              const productIds = [
-                ...info.activeSubscriptions,
-                ...Object.values(info.entitlements.active).map((e) => e.productIdentifier),
-              ].filter(Boolean);
-              logTierDebug({
-                activeEntitlement: activeKeys[0] ?? null,
-                productId: productIds[0] ?? null,
-                resolvedTier: fromStore,
-                localTier: profileTierValue,
-                employeeEligible: fromStore ? isEmployeeEligibleTier(fromStore) : false,
-              });
+            for (const [key, entitlement] of Object.entries(info.entitlements.active)) {
+              if (entitlement) entitlementsActive[key] = true;
+            }
+            productIds = [
+              ...info.activeSubscriptions,
+              ...Object.values(info.entitlements.active).map((e) => e.productIdentifier),
+            ].filter(Boolean);
+            if (fromStore && isPaidSubscriptionTier(fromStore)) {
+              await syncHomeSubscriptionTier(fromStore);
+              profileTierValue = fromStore;
             }
           }
+          logTierDebug({
+            productId: productIds[0] ?? null,
+            entitlementsActive,
+            resolvedTier: fromStore,
+            storedTier: profileTierValue,
+            employeeEligible: fromStore ? isEmployeeEligibleTier(fromStore) : false,
+          });
         } catch {
           storeError = true;
           fromStore = null;
@@ -371,7 +379,13 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           freeAccessOverride: overrideRow,
           proTrial: trial,
         });
-        await syncHomeSubscriptionTier(normalizeSubscriptionTierId(access.activeTier));
+        if (shouldPersistActiveTierToProfile(access.source)) {
+          await syncHomeSubscriptionTier(normalizeSubscriptionTierId(access.activeTier));
+        } else {
+          await syncHomeSubscriptionTier(normalizeSubscriptionTierId(access.activeTier), {
+            persistProfile: false,
+          });
+        }
       }
     },
     [runtimeTestFlight, testFlightDetectionDone, accessUserId],
@@ -618,7 +632,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     setProTrial(state);
     setErrorMessage(null);
     if (state.isActive && state.interestTier) {
-      void syncHomeSubscriptionTier(normalizeSubscriptionTierId(state.interestTier));
+      void syncHomeSubscriptionTier(normalizeSubscriptionTierId(state.interestTier), {
+        persistProfile: false,
+      });
     }
   }, []);
 
@@ -672,10 +688,31 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
     const result = await restorePurchases();
     if (result.ok) {
-      await readCustomerInfo();
+      await readCustomerInfo(session?.userId ?? null);
     }
     return result;
   }, [readCustomerInfo, session?.userId]);
+
+  const resetSubscriptionCache = useCallback(async () => {
+    if (!__DEV__) {
+      return { ok: false, message: "Reset subscription cache is only available in development builds." };
+    }
+    setLoading(true);
+    try {
+      const { restoreOk, restoreMessage } = await resetSubscriptionCacheAndRestore();
+      await loadDevOverride();
+      await readCustomerInfo(session?.userId ?? null);
+      if (!restoreOk) {
+        return {
+          ok: false,
+          message: restoreMessage ?? "Restore failed after clearing local cache.",
+        };
+      }
+      return { ok: true };
+    } finally {
+      setLoading(false);
+    }
+  }, [loadDevOverride, readCustomerInfo, session?.userId]);
 
   const showPaywall = useCallback(async () => {
     if (isSubscriptionGatingDisabled()) {
@@ -734,6 +771,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       purchaseDefault,
       purchaseTier,
       restore,
+      resetSubscriptionCache,
       showPaywall,
       showCustomerCenter,
       hasIdealSolutionsProEntitlement,
@@ -773,6 +811,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       purchaseDefault,
       purchaseTier,
       restore,
+      resetSubscriptionCache,
       showPaywall,
       showCustomerCenter,
       hasIdealSolutionsProEntitlement,

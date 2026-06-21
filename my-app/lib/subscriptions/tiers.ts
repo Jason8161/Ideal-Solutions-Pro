@@ -119,8 +119,8 @@ export const SUBSCRIPTION_TIER_CONFIG: Record<PaidSubscriptionTierId, Subscripti
   boss_man: {
     id: "boss_man",
     displayName: "Boss Man",
-    productIds: ["idealsolutionspro.BossManMode", ...LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS],
-    entitlementKeys: [IDEAL_SOLUTIONS_PRO_ENTITLEMENT],
+    productIds: ["idealsolutionspro.BossManMode", ...LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS, "BossManMode"],
+    entitlementKeys: [IDEAL_SOLUTIONS_PRO_ENTITLEMENT, "idealsolutionspro.BossManMode", "BossManMode"],
     rank: 2,
     showOnPaywall: true,
     showOnSubscriptionScreen: true,
@@ -142,8 +142,8 @@ export const SUBSCRIPTION_TIER_CONFIG: Record<PaidSubscriptionTierId, Subscripti
   super_boss_man: {
     id: "super_boss_man",
     displayName: "Super Boss Man",
-    productIds: ["idealsolutionspro.SuperBossManMode", "super_boss_man_monthly"],
-    entitlementKeys: ["super_boss_man"],
+    productIds: ["idealsolutionspro.SuperBossManMode", "super_boss_man_monthly", "SuperBossManMode"],
+    entitlementKeys: ["super_boss_man", "ideal_boss", "idealsolutionspro.SuperBossManMode", "SuperBossManMode"],
     rank: 3,
     showOnPaywall: true,
     showOnSubscriptionScreen: true,
@@ -163,8 +163,8 @@ export const SUBSCRIPTION_TIER_CONFIG: Record<PaidSubscriptionTierId, Subscripti
   enterprise_boss_man: {
     id: "enterprise_boss_man",
     displayName: "Enterprise Boss Man",
-    productIds: ["idealsolutionspro.EnterpriseBossMan", "enterprise_boss_man_monthly"],
-    entitlementKeys: ["enterprise_boss_man"],
+    productIds: ["idealsolutionspro.EnterpriseBossMan", "enterprise_boss_man_monthly", "EnterpriseBossMan"],
+    entitlementKeys: ["enterprise_boss_man", "idealsolutionspro.EnterpriseBossMan", "EnterpriseBossMan"],
     rank: 4,
     showOnPaywall: true,
     showOnSubscriptionScreen: true,
@@ -354,14 +354,17 @@ export function isEmployeeEligibleTier(tier: SubscriptionTierId): boolean {
 export function resolveTierFromEntitlementKey(
   entitlementKey: string,
 ): PaidSubscriptionTierId | null {
+  const normalized = entitlementKey.trim();
+  if (!normalized) return null;
+
   for (const id of PAID_TIER_IDS) {
     const config = SUBSCRIPTION_TIER_CONFIG[id];
-    if (config.entitlementKeys.includes(entitlementKey)) {
+    if (config.entitlementKeys.some((key) => key === normalized || key.toLowerCase() === normalized.toLowerCase())) {
       return id;
     }
   }
   for (const legacyId of LEGACY_ENTITLEMENT_IDS) {
-    if (legacyId !== entitlementKey) continue;
+    if (legacyId !== normalized) continue;
     const mapped =
       legacyId === "ideal_starter"
         ? "side_hustle"
@@ -372,17 +375,28 @@ export function resolveTierFromEntitlementKey(
             : null;
     if (mapped) return mapped;
   }
-  return null;
+  return resolveTierFromProductId(normalized);
+}
+
+function normalizeProductId(raw: string): string {
+  return raw.trim();
+}
+
+function productIdsMatch(configProductId: string, candidate: string): boolean {
+  const a = normalizeProductId(configProductId);
+  const b = normalizeProductId(candidate);
+  if (!a || !b) return false;
+  return a === b || a.toLowerCase() === b.toLowerCase();
 }
 
 export function resolveTierFromProductId(productId: string): PaidSubscriptionTierId | null {
-  const normalized = productId.trim();
+  const normalized = normalizeProductId(productId);
   if (!normalized) return null;
   let best: PaidSubscriptionTierId | null = null;
   let bestRank = -1;
   for (const id of PAID_TIER_IDS) {
     const config = SUBSCRIPTION_TIER_CONFIG[id];
-    if (config.productIds.some((pid) => pid === normalized)) {
+    if (config.productIds.some((pid) => productIdsMatch(pid, normalized))) {
       if (config.rank > bestRank) {
         bestRank = config.rank;
         best = id;
@@ -424,21 +438,21 @@ export function highestTierFromKeys(input: {
 }
 
 export type TierDebugSnapshot = {
-  activeEntitlement: string | null;
   productId: string | null;
+  entitlementsActive: Record<string, boolean>;
   resolvedTier: SubscriptionTierId | null;
-  localTier: SubscriptionTierId;
+  storedTier: SubscriptionTierId;
   employeeEligible: boolean;
 };
 
-/** Dev-only diagnostic — prefix [TIER DEBUG]. */
+/** Dev diagnostic — prefix [TIER DEBUG]. */
 export function logTierDebug(snapshot: TierDebugSnapshot): void {
   if (!__DEV__) return;
   console.log("[TIER DEBUG]", {
-    activeEntitlement: snapshot.activeEntitlement,
     productId: snapshot.productId,
-    resolvedInternalTier: snapshot.resolvedTier,
-    storedLocalTier: snapshot.localTier,
+    "entitlements.active": snapshot.entitlementsActive,
+    resolvedTier: snapshot.resolvedTier,
+    storedTier: snapshot.storedTier,
     employeeEligible: snapshot.employeeEligible,
   });
 }

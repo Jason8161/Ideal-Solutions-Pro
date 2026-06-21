@@ -91,6 +91,8 @@ export default function SubscribeScreen() {  const router = useRouter();
     loading,
     isConfigured,
     activeTier,
+    storeTier,
+    accessSource,
     profileTier,
     proTrial,
     dailyUsage,
@@ -350,6 +352,8 @@ export default function SubscribeScreen() {  const router = useRouter();
                   : String(testFlightModuleValue)}
               </Text>
               <Text style={styles.devNote}>activeTier: {activeTier}</Text>
+              <Text style={styles.devNote}>storeTier (RevenueCat): {storeTier ?? "null"}</Text>
+              <Text style={styles.devNote}>accessSource: {accessSource}</Text>
               <Text style={styles.devNote}>profileTier: {profileTier}</Text>
               {subscriptionsEnabled ? (
                 <Text style={styles.devNote}>

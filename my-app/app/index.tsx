@@ -126,6 +126,9 @@ export default function Page() {
   const { coldSplashDone, profileHydrated } = useHomeBoot();
   const {
     activeTier: subscriptionTier,
+    storeTier,
+    accessSource,
+    loading: subscriptionLoading,
     testFlightDetectionDone,
     refresh: refreshSubscription,
     featureAccessContext,
@@ -201,13 +204,31 @@ export default function Page() {
     }, []),
   );
 
+  const employeeResolvedTier = useMemo((): SubscriptionTierId | null => {
+    if (storeTier && isEmployeeEligibleTier(storeTier)) {
+      return storeTier;
+    }
+    if (
+      accessSource === "dev_override" ||
+      accessSource === "testing" ||
+      accessSource === "beta" ||
+      accessSource === "free_admin"
+    ) {
+      return isEmployeeEligibleTier(subscriptionTier) ? subscriptionTier : null;
+    }
+    return null;
+  }, [storeTier, accessSource, subscriptionTier]);
+
   const homeGridRows = useMemo(() => {
     const rows = buildHomeGridRows();
-    if (isEmployeeEligibleTier(subscriptionTier)) {
+    if (subscriptionLoading) {
+      return rows.filter((item) => item.key !== "employee-actions");
+    }
+    if (employeeResolvedTier) {
       return rows;
     }
     return rows.filter((item) => item.key !== "employee-actions");
-  }, [subscriptionTier]);
+  }, [subscriptionLoading, employeeResolvedTier]);
   const gridInnerWidth = contentWidth ?? buttonWidth;
 
   if (!coldSplashDone || !employeeRedirectChecked) {

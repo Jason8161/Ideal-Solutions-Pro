@@ -435,12 +435,19 @@ export async function restorePurchases(): Promise<RevenueCatResult> {
   }
   try {
     rcLog("[RevenueCat] restore started");
-    await withPromiseTimeout(
+    const customerInfo = await withPromiseTimeout(
       Purchases.restorePurchases(),
       PURCHASE_ACTION_TIMEOUT_MS,
       "Restore timed out",
     );
-    rcLog("[RevenueCat] restore success");
+    const restoredTier = resolveTierFromCustomerInfo(customerInfo);
+    rcLog("[RevenueCat] restore success", {
+      resolvedTier: restoredTier,
+      activeSubscriptions: customerInfo.activeSubscriptions,
+      entitlements: Object.keys(customerInfo.entitlements.active).filter(
+        (key) => customerInfo.entitlements.active[key],
+      ),
+    });
     return { ok: true };
   } catch (error) {
     if (isPurchaseCancelledError(error)) {

@@ -126,9 +126,14 @@ export function ensureHomeBoot(): Promise<void> {
   return bootPromise;
 }
 
-/** Pushes a resolved subscription tier into the home snapshot (and profile when it differs). */
-export async function syncHomeSubscriptionTier(tier: SubscriptionTierId): Promise<HomeBootSnapshot> {
-  await updateProfileSubscriptionTier(tier);
+/** Pushes a resolved subscription tier into the home snapshot (optionally persists to profile). */
+export async function syncHomeSubscriptionTier(
+  tier: SubscriptionTierId,
+  options?: { persistProfile?: boolean },
+): Promise<HomeBootSnapshot> {
+  if (options?.persistProfile !== false) {
+    await updateProfileSubscriptionTier(tier);
+  }
   publish({ subscriptionTier: tier, profileHydrated: true });
   return snapshot;
 }

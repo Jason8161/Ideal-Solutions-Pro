@@ -51,6 +51,11 @@ export function resolveSubscriptionAccess(input: {
     input.storeTier && isPaidSubscriptionTier(input.storeTier) ? input.storeTier : null;
   const overrideTier = tierFromActiveFreeAccessOverride(input.freeAccessOverride);
   const profilePaid = isPaidSubscriptionTier(input.profileTier) ? input.profileTier : null;
+  const profileIsTrialMirror =
+    profilePaid != null &&
+    input.proTrial.isActive &&
+    input.proTrial.interestTier != null &&
+    profilePaid === input.proTrial.interestTier;
 
   if (input.testingUnlocked || input.betaFullAccess) {
     return {
@@ -100,7 +105,7 @@ export function resolveSubscriptionAccess(input: {
   const trialTier = trialEffectiveTier(input.proTrial, profilePaid);
   const locked = input.proTrial.isLocked && !hasPaid;
 
-  if (profilePaid) {
+  if (profilePaid && !profileIsTrialMirror) {
     return {
       activeTier: profilePaid,
       source: "profile_cache",
@@ -119,4 +124,15 @@ export function resolveSubscriptionAccess(input: {
     revenueCatTier: null,
     freeAccessOverride: input.freeAccessOverride,
   };
+}
+
+/** Persist profile/home tier only for authoritative paid sources — never guest trial interest. */
+export function shouldPersistActiveTierToProfile(source: SubscriptionAccessSource): boolean {
+  return (
+    source === "revenuecat" ||
+    source === "free_admin" ||
+    source === "dev_override" ||
+    source === "testing" ||
+    source === "beta"
+  );
 }

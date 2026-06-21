@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { Pressable, StyleSheet, Switch, Text, View, Platform } from "react-native";
 
-import { navCardStyle } from "@/components/themed/screenChrome";
+import { mutedTextColor, navCardStyle, placeholderTextColor } from "@/components/themed/screenChrome";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAppTheme } from "@/context/ThemeContext";
 import type { ColorScheme } from "@/lib/colorSchemeStorage";
@@ -27,10 +27,13 @@ export function SubscriptionDevControls({ onChanged }: SubscriptionDevControlsPr
 function SubscriptionDevControlsInner({ onChanged }: SubscriptionDevControlsProps) {
   const { colors } = useAppTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const { devOverride, setDevOverride, refresh } = useSubscription();
+  const { devOverride, setDevOverride, refresh, resetSubscriptionCache, storeTier, activeTier, accessSource } =
+    useSubscription();
   const [draft, setDraft] = useState<SubscriptionDevOverride>(
     devOverride ?? DEFAULT_SUBSCRIPTION_DEV_OVERRIDE,
   );
+  const [cacheResetBusy, setCacheResetBusy] = useState(false);
+  const [cacheResetMessage, setCacheResetMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (devOverride) setDraft(devOverride);
@@ -66,6 +69,31 @@ function SubscriptionDevControlsInner({ onChanged }: SubscriptionDevControlsProp
       <Text style={styles.hint}>
         Does not charge the store. When simulation is off, RevenueCat and your profile tier apply as usual.
       </Text>
+
+      <Text style={styles.devTierLine}>
+        storeTier (RevenueCat): {storeTier ?? "null"} · activeTier: {activeTier} · source: {accessSource}
+      </Text>
+
+      <Pressable
+        disabled={cacheResetBusy}
+        onPress={() =>
+          void (async () => {
+            setCacheResetBusy(true);
+            setCacheResetMessage(null);
+            const result = await resetSubscriptionCache();
+            await refresh();
+            onChanged?.();
+            setCacheResetMessage(result.ok ? "Cache cleared and purchases restored." : result.message ?? "Reset failed.");
+            setCacheResetBusy(false);
+          })()
+        }
+        style={({ pressed }) => [styles.resetBtn, styles.cacheResetBtn, pressed && styles.pressed]}
+      >
+        <Text style={styles.resetText}>
+          {cacheResetBusy ? "Resetting subscription cache…" : "Reset Subscription Cache"}
+        </Text>
+      </Pressable>
+      {cacheResetMessage ? <Text style={styles.hint}>{cacheResetMessage}</Text> : null}
 
       <View style={styles.row}>
         <Text style={styles.rowLabel}>Enable simulation</Text>
@@ -146,9 +174,7 @@ function makeStyles(colors: ColorScheme) {
       fontWeight: "800",
       letterSpacing: 0.5,
       textTransform: "uppercase",
-      color: colors.text,
-      opacity: 0.75,
-      backgroundColor: hexToRgba(colors.accent, 0.2),
+      color: mutedTextColor(colors), backgroundColor: hexToRgba(colors.accent, 0.2),
       paddingHorizontal: 8,
       paddingVertical: 4,
       borderRadius: 6,
@@ -162,15 +188,17 @@ function makeStyles(colors: ColorScheme) {
     hint: {
       fontSize: 13,
       lineHeight: 19,
-      color: colors.text,
-      opacity: 0.82,
+      color: mutedTextColor(colors)},
+    devTierLine: {
+      fontSize: 12,
+      lineHeight: 18,
+      color: mutedTextColor(colors),
+      fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
     },
     sectionLabel: {
       fontSize: 12,
       fontWeight: "800",
-      color: colors.text,
-      opacity: 0.75,
-      textTransform: "uppercase",
+      color: mutedTextColor(colors), textTransform: "uppercase",
       letterSpacing: 0.5,
       marginTop: 4,
     },
@@ -197,8 +225,8 @@ function makeStyles(colors: ColorScheme) {
       paddingVertical: 8,
       borderRadius: 10,
       borderWidth: StyleSheet.hairlineWidth,
-      borderColor: hexToRgba(colors.text, 0.25),
-      backgroundColor: hexToRgba(colors.text, 0.06),
+      borderColor: placeholderTextColor(colors),
+      backgroundColor: placeholderTextColor(colors),
     },
     chipSelected: {
       borderColor: hexToRgba(colors.accent, 0.8),
@@ -207,9 +235,7 @@ function makeStyles(colors: ColorScheme) {
     chipText: {
       fontSize: 13,
       fontWeight: "600",
-      color: colors.text,
-      opacity: 0.9,
-    },
+      color: colors.text},
     chipTextSelected: {
       fontWeight: "800",
       opacity: 1,
@@ -219,12 +245,16 @@ function makeStyles(colors: ColorScheme) {
       paddingVertical: 10,
       alignItems: "center",
     },
+    cacheResetBtn: {
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: hexToRgba(colors.accent, 0.55),
+      borderRadius: 10,
+      paddingHorizontal: 12,
+    },
     resetText: {
       fontSize: 14,
       fontWeight: "700",
-      color: colors.text,
-      opacity: 0.85,
-    },
+      color: mutedTextColor(colors)},
     pressed: {
       opacity: 0.88,
     },

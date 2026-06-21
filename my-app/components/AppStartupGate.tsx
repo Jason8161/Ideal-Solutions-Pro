@@ -16,7 +16,6 @@ import { loadLegalIntroSeen } from "@/lib/legal/legalIntroStorage";
 import {
   configurePurchases,
   getCustomerInfo,
-  highestTierFromEntitlements,
   resolveTierFromCustomerInfo,
 } from "@/lib/revenuecat";
 import { isSubscriptionGatingDisabled } from "@/lib/subscriptionTesting";
