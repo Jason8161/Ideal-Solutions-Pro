@@ -268,7 +268,6 @@ function makeStyles() {
       paddingHorizontal: 20,
       paddingTop: 8,
       paddingBottom: 40,
-      flexGrow: 1,
     },
     field: { marginBottom: 14 },
     label: { fontSize: 14, fontWeight: "700", marginBottom: 6 },

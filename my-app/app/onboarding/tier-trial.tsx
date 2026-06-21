@@ -171,6 +171,7 @@ export default function TierTrialOnboardingScreen() {
       style={styles.scroll}
       contentContainerStyle={[styles.content, contentWidth ? styles.contentTablet : null]}
       keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator
     >
       <View style={[styles.inner, contentWidth ? { width: contentWidth, maxWidth: "100%" } : null]}>
       <Text style={styles.headline}>{PLAN_PICKER_HEADLINE}</Text>

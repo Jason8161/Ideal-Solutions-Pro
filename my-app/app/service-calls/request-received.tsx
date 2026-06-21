@@ -1,7 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
-import { useScStyles } from "@/components/serviceCalls/screenChrome";
+import { ScreenScrollView, useScStyles } from "@/components/serviceCalls/screenChrome";
 
 export default function RequestReceivedScreen() {
   const scStyles = useScStyles();
@@ -12,7 +12,7 @@ export default function RequestReceivedScreen() {
   const isCombo = viaNorm === "email-and-text";
 
   return (
-    <ScrollView style={scStyles.screen} contentContainerStyle={scStyles.content}>
+    <ScreenScrollView style={scStyles.screen} contentContainerStyle={scStyles.content}>
       <View style={scStyles.headerBlock}>
         <Text style={scStyles.title}>Your service request has been sent.</Text>
         <Text style={scStyles.subtitle}>
@@ -24,6 +24,6 @@ export default function RequestReceivedScreen() {
               : " If you opened email, tap Send to deliver your message."}
         </Text>
       </View>
-    </ScrollView>
+    </ScreenScrollView>
   );
 }

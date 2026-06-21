@@ -17,6 +17,9 @@ import { isHomePath } from "@/lib/routePath";
 /** Approximate AppChrome footer bar height above the safe-area inset. */
 export const FOOTER_BAR_HEIGHT = 56;
 
+/** Extra scroll padding below content so the last field/button clears the footer bar. */
+export const SCROLL_CONTENT_BOTTOM_PADDING = 48;
+
 /** Default gap between focused field and keyboard (single-line fields). */
 export const FORM_EXTRA_SCROLL_HEIGHT = 56;
 
@@ -72,6 +75,7 @@ export type FormScrollViewExtraProps = {
 export function FormScrollView({
   contentContainerStyle,
   keyboardShouldPersistTaps = "handled",
+  showsVerticalScrollIndicator = true,
   enableOnAndroid = true,
   enableAutomaticScroll = true,
   extraScrollHeight = FORM_EXTRA_SCROLL_HEIGHT,
@@ -98,8 +102,11 @@ export function FormScrollView({
 
   const mergedContentStyle = useMemo(
     (): StyleProp<ViewStyle> => [
-      { paddingBottom: footerInset + keyboardOpenPadding },
       contentContainerStyle,
+      {
+        paddingBottom:
+          footerInset + SCROLL_CONTENT_BOTTOM_PADDING + keyboardOpenPadding,
+      },
     ],
     [contentContainerStyle, footerInset, keyboardOpenPadding],
   );
@@ -113,6 +120,7 @@ export function FormScrollView({
       automaticallyAdjustKeyboardInsets={iosNativeKeyboardAvoidance ? true : undefined}
       automaticallyAdjustContentInsets={false}
       keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+      showsVerticalScrollIndicator={showsVerticalScrollIndicator}
       extraScrollHeight={extraScrollHeight}
       extraHeight={Platform.OS === "ios" && libraryAutomaticScroll ? footerInset : 0}
       contentContainerStyle={mergedContentStyle}

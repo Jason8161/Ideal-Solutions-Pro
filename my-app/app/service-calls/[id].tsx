@@ -1,6 +1,6 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { FormScrollView, FORM_MULTILINE_EXTRA_SCROLL_HEIGHT } from "@/components/FormScrollView";
 import { VoiceTextInput } from "@/components/VoiceTextInput";
@@ -9,7 +9,7 @@ import { ServiceCallContactActions } from "@/components/serviceCalls/ServiceCall
 import { ServiceCallForm } from "@/components/serviceCalls/ServiceCallForm";
 import { ServiceCallPhotoGallery } from "@/components/serviceCalls/ServiceCallPhotoGallery";
 import { ServiceCallWorkflowPicker } from "@/components/serviceCalls/ServiceCallWorkflowPicker";
-import { StickyPageHeader, StickyScreenShell, useScStyles } from "@/components/serviceCalls/screenChrome";
+import { StickyPageHeader, StickyScreenShell, ScreenScrollView, useScStyles } from "@/components/serviceCalls/screenChrome";
 import { priorityLabel } from "@/lib/customerServiceRequest";
 import { workflowStatusLabel } from "@/lib/serviceRequestSync";
 import { inputStyle, placeholderTextColor } from "@/components/themed/screenChrome";
@@ -169,9 +169,9 @@ export default function ServiceCallDetailScreen() {
           <StickyPageHeader title="Service call" fallbackHref="/service-calls/current" />
         }
       >
-        <ScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
+        <ScreenScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
           <Text style={scStyles.emptyText}>Loading…</Text>
-        </ScrollView>
+        </ScreenScrollView>
       </StickyScreenShell>
     );
   }
@@ -372,9 +372,9 @@ export default function ServiceCallDetailScreen() {
 
   return (
     <StickyScreenShell header={stickyHeader}>
-      <ScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
+      <ScreenScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
         {innerBody}
-      </ScrollView>
+      </ScreenScrollView>
     </StickyScreenShell>
   );
 }

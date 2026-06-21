@@ -418,8 +418,9 @@ export default function AiAssistanceScreen() {
             scrollRef.current = ref;
           }}
           style={[scStyles.scrollBody, styles.chatScroll]}
-          contentContainerStyle={[styles.chatContent, styles.chatContentGrow]}
+          contentContainerStyle={styles.chatContent}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator
           keyboardDismissMode="interactive"
           enableAutomaticScroll={false}
           extraScrollHeight={FORM_MULTILINE_EXTRA_SCROLL_HEIGHT + 72}
@@ -571,8 +572,7 @@ function makeStyles(colors: ColorScheme) {
     },
     chatScroll: { flex: 1 },
     chatContent: { padding: 16, paddingBottom: 8, gap: 12 },
-    chatContentGrow: { flexGrow: 1 },
-    chatMain: { flexGrow: 1, gap: 12 },
+    chatMain: { gap: 12 },
     starterList: { gap: 0, marginBottom: 8 },
     starterRow: { marginBottom: 10 },
     starterRowDisabled: { opacity: 0.5 },

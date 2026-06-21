@@ -14,6 +14,8 @@ import {
 import {
   FormScrollView,
   FORM_MULTILINE_EXTRA_SCROLL_HEIGHT,
+  SCROLL_CONTENT_BOTTOM_PADDING,
+  useFooterScrollInset,
   type FormScrollViewProps,
 } from "@/components/FormScrollView";
 
@@ -178,6 +180,7 @@ export function StickyScrollScreen({
         style={[scStyles.scrollBody, scrollStyle]}
         contentContainerStyle={[scStyles.content, contentContainerStyle]}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator
         extraScrollHeight={FORM_MULTILINE_EXTRA_SCROLL_HEIGHT}
         {...scrollViewProps}
       >
@@ -193,12 +196,37 @@ export { FormScrollView } from "@/components/FormScrollView";
  * ScrollView for StickyPageHeader layouts (non-form pages). Wires TextInputs for immersive headers.
  * Prefer ScStickyScroll / StickyScrollScreen for new form screens.
  */
-export function ScreenScrollView({ children, ...rest }: ScrollViewProps) {
+export function ScreenScrollView({
+  children,
+  contentContainerStyle,
+  keyboardShouldPersistTaps = "handled",
+  showsVerticalScrollIndicator = true,
+  style,
+  ...rest
+}: ScrollViewProps) {
   const pathname = usePathname();
   const onHome = isHomePath(pathname);
   const immersiveHandlers = useImmersiveTextInputHandlers();
+  const footerInset = useFooterScrollInset();
   const body = onHome ? children : injectImmersiveTextInputHandlers(children, immersiveHandlers);
-  return <ScrollView {...rest}>{body}</ScrollView>;
+  const mergedContentStyle = useMemo(
+    (): StyleProp<ViewStyle> => [
+      contentContainerStyle,
+      { paddingBottom: footerInset + SCROLL_CONTENT_BOTTOM_PADDING },
+    ],
+    [contentContainerStyle, footerInset],
+  );
+  return (
+    <ScrollView
+      style={style}
+      contentContainerStyle={mergedContentStyle}
+      keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+      showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+      {...rest}
+    >
+      {body}
+    </ScrollView>
+  );
 }
 
 /** Alias used across app screens — supports `backHref` for stack fallback when history is empty. */

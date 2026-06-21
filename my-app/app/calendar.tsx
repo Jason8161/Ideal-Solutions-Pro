@@ -14,7 +14,7 @@ import {
 import { CustomerContactPicker } from "@/components/CustomerContactPicker";
 import { VoiceTextInput } from "@/components/VoiceTextInput";
 import { AppConstructionBackdrop } from "@/components/AppConstructionBackdrop";
-import { HOME_FALLBACK_HREF, StickyPageHeader, useScStyles } from "@/components/serviceCalls/screenChrome";
+import { HOME_FALLBACK_HREF, ScreenScrollView, StickyPageHeader, useScStyles } from "@/components/serviceCalls/screenChrome";
 import { useAppTheme } from "@/context/ThemeContext";
 import {
   cancelAppointmentNotification,
@@ -420,7 +420,7 @@ export default function CalendarScreen() {
         }
         fallbackHref={employeeMode ? "/employee" : HOME_FALLBACK_HREF}
       />
-      <ScrollView style={scStyles.scrollBody} contentContainerStyle={styles.content}>
+      <ScreenScrollView style={scStyles.scrollBody} contentContainerStyle={styles.content}>
       {!employeeMode ? (
       <View style={styles.topActions}>
         <Pressable
@@ -767,7 +767,7 @@ export default function CalendarScreen() {
           </ScrollView>
         </View>
       </Modal>
-      </ScrollView>
+      </ScreenScrollView>
     </View>
   );
 }

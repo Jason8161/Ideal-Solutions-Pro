@@ -70,6 +70,7 @@ export function LegalDocumentScreen({
           style={[styles.scroll, isAcceptMode && styles.scrollAccept]}
           contentContainerStyle={[styles.scrollContent, isAcceptMode && styles.scrollContentAccept]}
           showsVerticalScrollIndicator
+          keyboardShouldPersistTaps="handled"
           onScroll={({ nativeEvent }) => {
             const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
             const nearEnd = layoutMeasurement.height + contentOffset.y >= contentSize.height - 48;
@@ -191,12 +192,12 @@ function makeStyles(colors: ColorScheme) {
     },
     scrollContent: {
       padding: 16,
-      paddingBottom: 24,
+      paddingBottom: 48,
     },
     scrollContentAccept: {
       paddingHorizontal: 20,
       paddingTop: 4,
-      paddingBottom: 32,
+      paddingBottom: 56,
     },
     body: {
       color: colors.text,

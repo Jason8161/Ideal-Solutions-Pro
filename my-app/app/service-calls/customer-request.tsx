@@ -4,7 +4,6 @@ import {
   Alert,
   Linking,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   useWindowDimensions,
@@ -13,7 +12,7 @@ import {
 
 import { FormScrollView, FORM_MULTILINE_EXTRA_SCROLL_HEIGHT } from "@/components/FormScrollView";
 import { VoiceTextInput } from "@/components/VoiceTextInput";
-import { StickyPageHeader, StickyScreenShell, useScStyles } from "@/components/serviceCalls/screenChrome";
+import { StickyPageHeader, StickyScreenShell, ScreenScrollView, useScStyles } from "@/components/serviceCalls/screenChrome";
 import {
   getAccentTints,
   inputStyle,
@@ -246,7 +245,7 @@ export default function CustomerRequestScreen() {
   return (
     <View style={scStyles.screen}>
       {!showForm ? (
-        <ScrollView contentContainerStyle={[scStyles.content, landingStyles.landingScroll]} keyboardShouldPersistTaps="handled">
+        <ScreenScrollView contentContainerStyle={[scStyles.content, landingStyles.landingScroll]}>
           <View style={shellStyle}>
             {contact.companyName.trim() ? (
               <Text style={[scStyles.subtitle, landingStyles.companyLine]}>{contact.companyName.trim()}</Text>
@@ -261,7 +260,7 @@ export default function CustomerRequestScreen() {
               <Text style={scStyles.primaryCtaText}>{CUSTOMER_REQUEST_CUSTOMER_CTA_LABEL}</Text>
             </Pressable>
           </View>
-        </ScrollView>
+        </ScreenScrollView>
       ) : (
         <StickyScreenShell
           header={
@@ -444,8 +443,6 @@ export default function CustomerRequestScreen() {
 
 const landingStyles = StyleSheet.create({
   landingScroll: {
-    flexGrow: 1,
-    justifyContent: "center",
     paddingVertical: 32,
   },
   companyLine: {

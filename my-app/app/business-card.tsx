@@ -1,6 +1,8 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, Linking, Pressable, StyleSheet, Text, View } from "react-native";
+
+import { ScreenScrollView } from "@/components/serviceCalls/screenChrome";
 
 import {
   getAccentTints,
@@ -184,9 +186,9 @@ export default function PublicBusinessCardScreen() {
 
   if (!ready) {
     return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <ScreenScrollView style={styles.screen} contentContainerStyle={styles.content}>
         <Text style={styles.muted}>Loading…</Text>
-      </ScrollView>
+      </ScreenScrollView>
     );
   }
 
@@ -194,7 +196,7 @@ export default function PublicBusinessCardScreen() {
     audience === "publicQr" ? "Business card (shared view)" : "Virtual business card";
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScreenScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.kicker}>{kicker}</Text>
       {header.showLogo && profile.logoUri ? (
         <Image
@@ -238,7 +240,7 @@ export default function PublicBusinessCardScreen() {
           ) : null}
         </>
       )}
-    </ScrollView>
+    </ScreenScrollView>
   );
 }
 

@@ -1,11 +1,11 @@
 import { VoiceTextInput } from "@/components/VoiceTextInput";
 import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { FormScrollView, FORM_MULTILINE_EXTRA_SCROLL_HEIGHT } from "@/components/FormScrollView";
 import { useBossManChrome } from "@/components/bossMan/bossManChrome";
-import { StickyPageHeader, StickyScreenShell } from "@/components/serviceCalls/screenChrome";
+import { ScreenScrollView, StickyPageHeader, StickyScreenShell } from "@/components/serviceCalls/screenChrome";
 import { inputStyle, placeholderTextColor } from "@/components/themed/screenChrome";
 import { useAppTheme } from "@/context/ThemeContext";
 import { addBossJobNote, getBossJobById } from "@/lib/bossMan/jobStorage";
@@ -63,9 +63,9 @@ export default function BossJobNotesScreen() {
   if (!loaded) {
     return (
       <StickyScreenShell header={<StickyPageHeader title="Notes" fallbackHref="/job-folder/current-jobs" />}>
-        <ScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
+        <ScreenScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
           <Text style={scStyles.emptyText}>Loading…</Text>
-        </ScrollView>
+        </ScreenScrollView>
       </StickyScreenShell>
     );
   }
@@ -73,7 +73,7 @@ export default function BossJobNotesScreen() {
   if (!job) {
     return (
       <StickyScreenShell header={<StickyPageHeader title="Notes" fallbackHref="/job-folder/current-jobs" />}>
-        <ScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
+        <ScreenScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
           <Text style={scStyles.emptyText}>Job not found.</Text>
           <Pressable
             style={({ pressed }) => [bossStyles.actionBtn, pressed && { opacity: 0.9 }]}
@@ -81,7 +81,7 @@ export default function BossJobNotesScreen() {
           >
             <Text style={scStyles.menuButtonText}>Back to current jobs</Text>
           </Pressable>
-        </ScrollView>
+        </ScreenScrollView>
       </StickyScreenShell>
     );
   }

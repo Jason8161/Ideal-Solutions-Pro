@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 
-import { HOME_FALLBACK_HREF, StickyPageHeader, useScStyles } from "@/components/serviceCalls/screenChrome";
+import { HOME_FALLBACK_HREF, ScreenScrollView, StickyPageHeader, useScStyles } from "@/components/serviceCalls/screenChrome";
 import { VoiceTextInput } from "@/components/VoiceTextInput";
 import {
   accentPanelStyle,
@@ -172,7 +172,7 @@ export default function DistributorScreen() {
           subtitle="Save your distributor https sign-in page and open it in your browser."
           fallbackHref={HOME_FALLBACK_HREF}
         />
-        <ScrollView style={scStyles.scrollBody} contentContainerStyle={[styles.pad, styles.padBottom]}>
+        <ScreenScrollView style={scStyles.scrollBody} contentContainerStyle={[styles.pad, styles.padBottom]}>
         <View style={[styles.centerBlock, wide && styles.centerWide]}>
           <Text style={styles.body}>
             Save the <Text style={styles.bodyEm}>https</Text> address your distributor uses for sign-in (often ends in
@@ -228,7 +228,7 @@ export default function DistributorScreen() {
             </Pressable>
           ) : null}
         </View>
-      </ScrollView>
+      </ScreenScrollView>
       </View>
     );
   }

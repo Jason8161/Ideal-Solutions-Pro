@@ -1,6 +1,8 @@
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+
+import { FormScrollView } from "@/components/FormScrollView";
 
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAppTheme } from "@/context/ThemeContext";
@@ -22,7 +24,7 @@ export default function UpgradeScreen() {
         : "Subscribe to unlock premium features.";
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+    <FormScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator>
       <Text style={styles.title}>Upgrade to keep going</Text>
       <Text style={styles.body}>{reason}</Text>
       <Text style={styles.body}>
@@ -45,7 +47,7 @@ export default function UpgradeScreen() {
       <Pressable onPress={() => router.back()} style={({ pressed }) => [styles.secondary, pressed && styles.pressed]}>
         <Text style={styles.secondaryText}>Back</Text>
       </Pressable>
-    </ScrollView>
+    </FormScrollView>
   );
 }
 

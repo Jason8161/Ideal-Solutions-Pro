@@ -284,7 +284,6 @@ function makeStyles(colors: ColorScheme) {
       backgroundColor: "transparent",
     },
     content: {
-      flexGrow: 1,
       padding: 20,
       paddingBottom: 16,
     },

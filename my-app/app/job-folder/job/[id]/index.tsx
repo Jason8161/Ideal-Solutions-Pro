@@ -1,12 +1,12 @@
 import { useFocusEffect, useLocalSearchParams, useRouter, type Href } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { Alert, Image, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 
 import { FormScrollView, FORM_MULTILINE_EXTRA_SCROLL_HEIGHT } from "@/components/FormScrollView";
 import { VoiceTextInput } from "@/components/VoiceTextInput";
 import { CustomJobPhasePicker } from "@/components/bossMan/CustomJobPhasePicker";
 import { useBossManChrome } from "@/components/bossMan/bossManChrome";
-import { StickyPageHeader, StickyScreenShell } from "@/components/serviceCalls/screenChrome";
+import { ScreenScrollView, StickyPageHeader, StickyScreenShell } from "@/components/serviceCalls/screenChrome";
 import { inputStyle, placeholderTextColor } from "@/components/themed/screenChrome";
 import { useAppTheme } from "@/context/ThemeContext";
 import { useSubscription } from "@/context/SubscriptionContext";
@@ -122,9 +122,9 @@ export default function BossJobDetailScreen() {
       <StickyScreenShell
         header={<StickyPageHeader title="Job" fallbackHref="/job-folder/current-jobs" />}
       >
-        <ScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
+        <ScreenScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
           <Text style={scStyles.emptyText}>Loading…</Text>
-        </ScrollView>
+        </ScreenScrollView>
       </StickyScreenShell>
     );
   }
@@ -134,12 +134,12 @@ export default function BossJobDetailScreen() {
       <StickyScreenShell
         header={<StickyPageHeader title="Job" fallbackHref="/job-folder/current-jobs" />}
       >
-        <ScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
+        <ScreenScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
         <Text style={scStyles.emptyText}>Job not found.</Text>
         <Pressable style={bossStyles.actionBtn} onPress={() => router.replace("/job-folder/current-jobs" as Href)}>
           <Text style={scStyles.menuButtonText}>Back to current jobs</Text>
         </Pressable>
-        </ScrollView>
+        </ScreenScrollView>
       </StickyScreenShell>
     );
   }
@@ -155,7 +155,7 @@ export default function BossJobDetailScreen() {
           />
         }
       >
-        <ScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
+        <ScreenScrollView style={scStyles.scrollBody} contentContainerStyle={scStyles.content}>
           <Field label="Customer" styles={fieldStyles}>
             <Text style={fieldStyles.readOnly}>{customerName.trim() || "—"}</Text>
           </Field>
@@ -212,7 +212,7 @@ export default function BossJobDetailScreen() {
           <Pressable style={({ pressed }) => [bossStyles.actionBtn, pressed && { opacity: 0.9 }]} onPress={() => void addPhoto()}>
             <Text style={scStyles.menuButtonText}>Add photo</Text>
           </Pressable>
-        </ScrollView>
+        </ScreenScrollView>
       </StickyScreenShell>
     );
   }
