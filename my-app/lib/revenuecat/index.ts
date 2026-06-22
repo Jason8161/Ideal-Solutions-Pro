@@ -44,6 +44,8 @@ export {
 
   filterPlansByOfferings,
 
+  type FilterPlansByOfferingsOptions,
+
   findPackage,
 
   findTierPackage,

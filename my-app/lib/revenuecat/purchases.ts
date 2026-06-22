@@ -10,7 +10,9 @@ import {
   IDEAL_SOLUTIONS_PRO_ENTITLEMENT,
   LEGACY_TIER_PACKAGE_IDS,
   LEGACY_TIER_PRODUCT_IDS,
-  plansForSubscriptionScreen,
+  PAID_TIER_IDS,
+  resolveTierFromProductId,
+  type PaidSubscriptionTierId,
   type SubscriptionTierId,
 } from "@/lib/subscription/tiers";
 import { isSubscriptionGatingDisabled } from "@/lib/subscriptionTesting";
@@ -255,7 +257,10 @@ export function highestTierFromEntitlements(active: Record<string, unknown>): Su
   return highestTierFromKeys({ entitlementKeys: activeEntitlementKeys(active) });
 }
 
-function tierPackageIdentifiers(tierId: SubscriptionTierId, plan: ReturnType<typeof getSubscriptionPlan>): string[] {
+function tierPackageIdentifiers(
+  tierId: PaidSubscriptionTierId,
+  plan: ReturnType<typeof getSubscriptionPlan>,
+): string[] {
   const identifiers: string[] = [];
   if (plan.revenueCatPackageId) identifiers.push(plan.revenueCatPackageId);
   if (plan.revenueCatProductId) identifiers.push(plan.revenueCatProductId);
@@ -263,21 +268,34 @@ function tierPackageIdentifiers(tierId: SubscriptionTierId, plan: ReturnType<typ
   return identifiers;
 }
 
+function packageProductMatches(candidate: string, productIdentifier: string): boolean {
+  const a = candidate.trim();
+  const b = productIdentifier.trim();
+  if (!a || !b) return false;
+  return a === b || a.toLowerCase() === b.toLowerCase();
+}
+
 export function findPackage(
   packages: PurchasesPackage[],
   identifiers: string[],
   productId: string,
   legacyProductIds: readonly string[] = [],
+  expectedTierId?: SubscriptionTierId,
 ): PurchasesPackage | undefined {
-  const productIds = [productId, ...legacyProductIds, ...identifiers].filter(Boolean);
-  const uniqueProductIds = [...new Set(productIds)];
-  for (const id of uniqueProductIds) {
-    const byProduct = packages.find((p) => p.product.identifier === id);
+  const productCandidates = [productId, ...legacyProductIds].filter(Boolean);
+  const uniqueProductCandidates = [...new Set(productCandidates)];
+  for (const id of uniqueProductCandidates) {
+    const byProduct = packages.find((p) => packageProductMatches(id, p.product.identifier));
     if (byProduct) return byProduct;
   }
   for (const id of identifiers) {
     const byPackage = packages.find((p) => p.identifier === id);
-    if (byPackage) return byPackage;
+    if (!byPackage) continue;
+    if (expectedTierId) {
+      const mappedTier = resolveTierFromProductId(byPackage.product.identifier);
+      if (mappedTier && mappedTier !== expectedTierId) continue;
+    }
+    return byPackage;
   }
   return undefined;
 }
@@ -287,12 +305,13 @@ export function resolveTierPackageFromOfferings(
   tierId: SubscriptionTierId,
 ): PurchasesPackage | null {
   const plan = getSubscriptionPlan(tierId);
-  if (!plan.isPaid) return null;
+  if (!plan.isPaid || tierId === "locked") return null;
+  const paidTierId = tierId as PaidSubscriptionTierId;
   const productId = plan.revenueCatProductId ?? "";
-  const legacyProductIds = LEGACY_TIER_PRODUCT_IDS[tierId] ?? [];
-  const identifiers = tierPackageIdentifiers(tierId, plan);
-  const resolved = findPackage(packages, identifiers, productId, legacyProductIds) ?? null;
-  if (tierId === "enterprise_boss_man") {
+  const legacyProductIds = LEGACY_TIER_PRODUCT_IDS[paidTierId] ?? [];
+  const identifiers = tierPackageIdentifiers(paidTierId, plan);
+  const resolved = findPackage(packages, identifiers, productId, legacyProductIds, paidTierId) ?? null;
+  if (paidTierId === "enterprise_boss_man") {
     if (resolved) {
       rcLog("[RevenueCat] enterprise_boss_man package resolved", {
         packageId: resolved.identifier,
@@ -311,27 +330,71 @@ export function resolveTierPackageFromOfferings(
   return resolved;
 }
 
+export type FilterPlansByOfferingsOptions = {
+  /** Settings → Subscription: keep every configured tier even without a store package. */
+  includeAllSubscriptionScreenTiers?: boolean;
+};
+
 export function filterPlansByOfferings<T extends { id: SubscriptionTierId; isPaid: boolean }>(
   plans: T[],
   packages: PurchasesPackage[],
+  options?: FilterPlansByOfferingsOptions,
 ): T[] {
-  const subscriptionScreenIds = new Set(
-    plansForSubscriptionScreen().map((plan) => plan.id),
-  );
-  const filtered = plans.filter((plan) => {
-    if (!plan.isPaid) return true;
+  const includeAll = options?.includeAllSubscriptionScreenTiers === true;
+  const planById = new Map(plans.map((plan) => [plan.id, plan]));
+
+  if (includeAll) {
+    const filtered = plans.filter((plan) => {
+      if (!plan.isPaid) return true;
+      const config = getTierConfig(plan.id);
+      return config?.showOnSubscriptionScreen !== false;
+    });
+    rcLog("[RevenueCat] filterPlansByOfferings (subscription screen)", {
+      inputPlans: plans.length,
+      availablePackages: packages.length,
+      visiblePaidTiers: filtered.filter((plan) => plan.isPaid).length,
+      tierIds: filtered.map((plan) => plan.id),
+    });
+    return filtered;
+  }
+
+  if (packages.length === 0) {
+    rcLog("[RevenueCat] filterPlansByOfferings (paywall)", {
+      inputPlans: plans.length,
+      availablePackages: 0,
+      visiblePaidTiers: 0,
+      tierIds: [],
+    });
+    return [];
+  }
+
+  const visibleTierIds = new Set<PaidSubscriptionTierId>();
+
+  for (const pkg of packages) {
+    const tierFromProduct = resolveTierFromProductId(pkg.product.identifier);
+    if (!tierFromProduct) continue;
+    const config = getTierConfig(tierFromProduct);
+    if (config?.showOnPaywall === false) continue;
+    visibleTierIds.add(tierFromProduct);
+  }
+
+  for (const plan of plans) {
+    if (!plan.isPaid || plan.id === "locked") continue;
     const config = getTierConfig(plan.id);
-    if (config?.showOnSubscriptionScreen || subscriptionScreenIds.has(plan.id)) {
-      return true;
+    if (config?.showOnPaywall === false) continue;
+    if (resolveTierPackageFromOfferings(packages, plan.id)) {
+      visibleTierIds.add(plan.id as PaidSubscriptionTierId);
     }
-    if (packages.length === 0) return false;
-    return resolveTierPackageFromOfferings(packages, plan.id) !== null;
-  });
-  const paidCount = filtered.filter((plan) => plan.isPaid).length;
-  rcLog("[RevenueCat] filterPlansByOfferings", {
+  }
+
+  const filtered = PAID_TIER_IDS.filter((id) => visibleTierIds.has(id))
+    .map((id) => planById.get(id))
+    .filter((plan): plan is T => plan != null);
+
+  rcLog("[RevenueCat] filterPlansByOfferings (paywall)", {
     inputPlans: plans.length,
     availablePackages: packages.length,
-    visiblePaidTiers: paidCount,
+    visiblePaidTiers: filtered.filter((plan) => plan.isPaid).length,
     tierIds: filtered.map((plan) => plan.id),
   });
   return filtered;

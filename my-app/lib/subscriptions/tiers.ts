@@ -118,7 +118,7 @@ export const SUBSCRIPTION_TIER_CONFIG: Record<PaidSubscriptionTierId, Subscripti
   },
   boss_man: {
     id: "boss_man",
-    displayName: "Boss Man",
+    displayName: "Boss Man Mode",
     productIds: ["idealsolutionspro.BossManMode", ...LEGACY_BOSS_MAN_MONTHLY_PRODUCT_IDS, "BossManMode"],
     entitlementKeys: [IDEAL_SOLUTIONS_PRO_ENTITLEMENT, "idealsolutionspro.BossManMode", "BossManMode"],
     rank: 2,

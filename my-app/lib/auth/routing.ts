@@ -2,6 +2,32 @@ import type { Href } from "expo-router";
 
 import { isEmployeeAppVariant } from "@/lib/auth/appVariant";
 import { isBossAppRole, isEmployeeAppRole, type AppRole } from "@/lib/auth/roles";
+import type { CompanyRoleId } from "@/lib/permissions/companyRoles";
+import { isCompanyRoleId } from "@/lib/permissions/companyRoles";
+
+/** Primary home after login / cold start for company role. */
+export function getHomeRouteForCompanyRole(roleId: CompanyRoleId): Href {
+  switch (roleId) {
+    case "employee":
+      return "/employee" as Href;
+    case "superintendent":
+      return "/superintendent" as Href;
+    case "check_guy":
+      return "/check-guy" as Href;
+    case "admin":
+    case "owner":
+    default:
+      return "/" as Href;
+  }
+}
+
+/** Resolve home route from profile role or legacy app role. */
+export function getHomeRouteForSession(roleId: CompanyRoleId | null, appRole: AppRole): Href {
+  if (roleId && isCompanyRoleId(roleId)) {
+    return getHomeRouteForCompanyRole(roleId);
+  }
+  return getHomeRouteForRole(appRole);
+}
 
 /** Primary home after login / cold start for this role + store variant. */
 export function getHomeRouteForRole(role: AppRole): Href {

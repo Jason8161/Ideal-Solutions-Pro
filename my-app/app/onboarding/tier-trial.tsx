@@ -27,7 +27,7 @@ import {
   PLAN_PICKER_HEADLINE,
   TRIAL_AI_REQUESTS_TOTAL,
   TRIAL_DAYS,
-  paidSubscriptionPlans,
+  plansForPaywall,
   type SubscriptionTierId,
 } from "@/lib/subscriptions";
 import { startProTrial } from "@/lib/subscriptions/trialStorage";
@@ -63,7 +63,7 @@ export default function TierTrialOnboardingScreen() {
   const [actionError, setActionError] = useState<string | null>(null);
   const contentWidth = useFormContentWidth();
 
-  const allPlans = paidSubscriptionPlans();
+  const allPlans = plansForPaywall();
   const filterByOfferings =
     !isTestingUnlocked && !isBetaFullAccess && Platform.OS !== "web";
   const { offeringsLoading, offeringsLoaded, availablePlans, offeringsError } =

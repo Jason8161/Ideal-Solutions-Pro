@@ -23,9 +23,14 @@ export type OfferingsFilteredPlansState = {
  */
 export function useOfferingsFilteredPlans(
   plans: SubscriptionPlan[],
-  options: { enabled: boolean; isConfigured?: boolean },
+  options: {
+    enabled: boolean;
+    isConfigured?: boolean;
+    /** When true, keep all subscription-screen tiers (Settings). Default: paywall filtering. */
+    includeAllSubscriptionScreenTiers?: boolean;
+  },
 ): OfferingsFilteredPlansState {
-  const { enabled, isConfigured = false } = options;
+  const { enabled, isConfigured = false, includeAllSubscriptionScreenTiers = false } = options;
   const [offeringsLoading, setOfferingsLoading] = useState(enabled);
   const [offeringsLoaded, setOfferingsLoaded] = useState(!enabled);
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
@@ -78,8 +83,11 @@ export function useOfferingsFilteredPlans(
   }, [enabled, isConfigured]);
 
   const availablePlans = useMemo(
-    () => (enabled ? filterPlansByOfferings(plans, packages) : plans),
-    [enabled, plans, packages],
+    () =>
+      enabled
+        ? filterPlansByOfferings(plans, packages, { includeAllSubscriptionScreenTiers })
+        : plans,
+    [enabled, includeAllSubscriptionScreenTiers, plans, packages],
   );
 
   return { offeringsLoading, offeringsLoaded, packages, availablePlans, offeringsError };

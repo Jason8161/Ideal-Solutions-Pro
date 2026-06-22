@@ -134,7 +134,11 @@ export default function SubscribeScreen() {  const router = useRouter();
   const [rcDisclosure, setRcDisclosure] = useState<PackageDisclosureInfo | null>(null);
   const filterByOfferings = !isTestingUnlocked && Platform.OS !== "web";
   const { offeringsLoading, offeringsLoaded, availablePlans, offeringsError } =
-    useOfferingsFilteredPlans(pickerPlans, { enabled: filterByOfferings, isConfigured });
+    useOfferingsFilteredPlans(pickerPlans, {
+      enabled: filterByOfferings,
+      isConfigured,
+      includeAllSubscriptionScreenTiers: true,
+    });
   const visiblePlans = filterByOfferings ? availablePlans : pickerPlans;
 
   useEffect(() => {
