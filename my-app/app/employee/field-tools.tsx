@@ -6,21 +6,15 @@ import { ScStickyScroll } from "@/components/serviceCalls/screenChrome";
 
 type FieldToolItem = {
   label: string;
-  href?: Href;
-  scaffoldTitle?: string;
+  href: Href;
 };
 
+/** Wired routes only — scaffold placeholders stay out of the list until implemented. */
 const FIELD_TOOLS: FieldToolItem[] = [
-  { label: "Job Photos", href: "/job-folder/job-photos" },
-  { label: "Material Request", href: "/employee/ai-assistant/material-request" },
-  { label: "Job Chat", href: "/employee/messages" },
-  { label: "Tool Checkout", scaffoldTitle: "Tool Checkout" },
-  { label: "Vehicle Inspection", scaffoldTitle: "Vehicle Inspection" },
-  { label: "Safety Report", href: "/employee/ai-assistant/safety-question" },
-  { label: "Need Help", scaffoldTitle: "Need Help" },
-  { label: "Emergency / Need Boss Man", scaffoldTitle: "Emergency / Need Boss Man" },
-  { label: "Inventory Update", scaffoldTitle: "Inventory Update" },
-  { label: "Ready for Inspection", scaffoldTitle: "Ready for Inspection" },
+  { label: "Job Photos", href: "/job-folder/job-photos" as Href },
+  { label: "Material Request", href: "/employee/ai-assistant/material-request" as Href },
+  { label: "Job Chat", href: "/employee/messages" as Href },
+  { label: "Safety Report", href: "/employee/ai-assistant/safety-question" as Href },
 ];
 
 export default function EmployeeFieldToolsScreen() {
@@ -37,15 +31,7 @@ export default function EmployeeFieldToolsScreen() {
         <Pressable
           key={item.label}
           style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}
-          onPress={() => {
-            if (item.href) {
-              router.push(item.href);
-              return;
-            }
-            router.push(
-              `/employee/field-tool-scaffold?title=${encodeURIComponent(item.scaffoldTitle ?? item.label)}` as Href,
-            );
-          }}
+          onPress={() => router.push(item.href)}
           accessibilityRole="button"
           accessibilityLabel={item.label}
         >

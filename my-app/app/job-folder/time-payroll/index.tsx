@@ -26,7 +26,7 @@ import {
 } from "@/lib/bossMan/timeTrackingStorage";
 import type { TimeEntry } from "@/lib/bossMan/timeTrackingTypes";
 import { formatDurationShort, entryDurationMs } from "@/lib/bossMan/timeTrackingUtils";
-import { isProTier } from "@/lib/subscriptionGating";
+import { isProTier, canAccessCrewTools } from "@/lib/subscriptionGating";
 
 export default function TimePayrollHubScreen() {
   const { activeTier } = useSubscription();
@@ -79,6 +79,8 @@ export default function TimePayrollHubScreen() {
   if (!isProTier(activeTier)) {
     return <Redirect href={"/job-folder/current-jobs" as Href} />;
   }
+
+  const crewAllowed = canAccessCrewTools(activeTier);
 
   const onClockIn = () => {
     if (!selectedEmployeeId) {
@@ -170,12 +172,18 @@ export default function TimePayrollHubScreen() {
       <Text style={scStyles.sectionLabel}>Clock in</Text>
       {employees.length === 0 ? (
         <>
-          <Text style={scStyles.emptyText}>Add employees under Settings → My crew to track time.</Text>
-          <Link href={"/settings/employees" as Href} asChild>
-            <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}>
-              <Text style={scStyles.menuButtonText}>Manage employees</Text>
-            </Pressable>
-          </Link>
+          <Text style={scStyles.emptyText}>
+            {crewAllowed
+              ? "Add employees under Settings → My crew to track time."
+              : "Employee time tracking needs Super Boss Man or higher."}
+          </Text>
+          {crewAllowed ? (
+            <Link href={"/settings/employees" as Href} asChild>
+              <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}>
+                <Text style={scStyles.menuButtonText}>Manage employees</Text>
+              </Pressable>
+            </Link>
+          ) : null}
         </>
       ) : (
         <>
@@ -266,11 +274,13 @@ export default function TimePayrollHubScreen() {
           <Text style={scStyles.menuButtonText}>Clock verification settings</Text>
         </Pressable>
       </Link>
-      <Link href={"/settings/my-crew" as Href} asChild>
-        <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}>
-          <Text style={scStyles.menuButtonText}>Crew pay rates (My crew settings)</Text>
-        </Pressable>
-      </Link>
+      {crewAllowed ? (
+        <Link href={"/settings/my-crew" as Href} asChild>
+          <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}>
+            <Text style={scStyles.menuButtonText}>Crew pay rates (My crew settings)</Text>
+          </Pressable>
+        </Link>
+      ) : null}
     </ScStickyScroll>
   );
 }

@@ -21,7 +21,7 @@ import {
 import type { Employee } from "@/lib/employees/types";
 import { EMPLOYEE_INVITE_STATUS_LABELS } from "@/lib/employees/types";
 import { showEmployeeAppInviteMenu } from "@/lib/employeeAppInvite";
-import { isProTier } from "@/lib/subscriptionGating";
+import { canAccessCrewTools } from "@/lib/subscriptionGating";
 
 function FieldRow({ label, value }: { label: string; value: string }) {
   const { scStyles, styles } = useBossManChrome();
@@ -74,7 +74,7 @@ export default function CrewEmployeeProfileScreen() {
     }, [refresh]),
   );
 
-  if (!isProTier(activeTier)) {
+  if (!canAccessCrewTools(activeTier)) {
     return <Redirect href={"/job-folder/current-jobs" as Href} />;
   }
 

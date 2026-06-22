@@ -6,6 +6,7 @@ import { Pressable, Text } from "react-native";
 import { useBossManChrome } from "@/components/bossMan/bossManChrome";
 import { BossManMenuButton } from "@/components/bossMan/BossManMenuButton";
 import { ScStickyScroll } from "@/components/serviceCalls/screenChrome";
+import { useSubscription } from "@/context/SubscriptionContext";
 import type { JobFolderCategoryId } from "@/lib/bossMan/jobFolderCategories";
 import { getJobFolderCategory, getMenuItemsForCategory } from "@/lib/bossMan/jobFolderCategories";
 import {
@@ -13,6 +14,7 @@ import {
   isJobFolderHubItemEnabled,
   loadJobFolderHubEnabledKeys,
 } from "@/lib/jobFolderHubPreferences";
+import { canAccessCrewTools } from "@/lib/subscriptionGating";
 
 type Props = {
   categoryId: JobFolderCategoryId;
@@ -22,6 +24,7 @@ type Props = {
 export function JobFolderSubHubScreen({ categoryId, footer }: Props) {
   const category = getJobFolderCategory(categoryId);
   const { scStyles, styles } = useBossManChrome();
+  const { activeTier } = useSubscription();
   const [enabledKeys, setEnabledKeys] = useState<string[] | null>(null);
 
   useFocusEffect(
@@ -38,10 +41,13 @@ export function JobFolderSubHubScreen({ categoryId, footer }: Props) {
 
   const visibleMenuItems = useMemo(() => {
     const keys = enabledKeys ?? getDefaultJobFolderHubEnabledKeys();
-    return getMenuItemsForCategory(categoryId).filter((item) =>
-      isJobFolderHubItemEnabled(item.key, keys),
+    const crewAllowed = canAccessCrewTools(activeTier);
+    return getMenuItemsForCategory(categoryId).filter(
+      (item) =>
+        isJobFolderHubItemEnabled(item.key, keys) &&
+        (crewAllowed || item.key !== "crew-dispatch"),
     );
-  }, [categoryId, enabledKeys]);
+  }, [categoryId, enabledKeys, activeTier]);
 
   return (
     <ScStickyScroll

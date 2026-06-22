@@ -335,6 +335,7 @@ function isHomeMenuTileKey(key: string): key is HomeMenuTileKey {
     key === "ai-assistance" ||
     key === "job-folder" ||
     key === "calendar" ||
+    key === "getting-paid" ||
     key === "employee-actions" ||
     key === "social-media"
   );

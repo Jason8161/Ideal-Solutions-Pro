@@ -1,6 +1,7 @@
 /** @deprecated Import from `@/lib/subscription/featureAccess` — thin re-export for legacy paths. */
 export {
   SUBSCRIPTION_SETTINGS_HREF,
+  canAccessCrewTools,
   canAccessFeature,
   canUseFeature,
   featureGateAlertTitle,

@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 
-import { Link, type Href } from "expo-router";
+import { Link, Redirect, type Href } from "expo-router";
 import { StickyPageHeader, useScStyles } from "@/components/serviceCalls/screenChrome";
 import { VoiceTextInput } from "@/components/VoiceTextInput";
 import {
@@ -22,10 +22,12 @@ import {
   secondaryButtonStyle,
 } from "@/components/themed/screenChrome";
 import { useAppTheme } from "@/context/ThemeContext";
+import { useSubscription } from "@/context/SubscriptionContext";
 import type { ColorScheme } from "@/lib/colorSchemeStorage";
 import { CrewCloudInvites } from "@/components/cloud/CrewCloudInvites";
 import { defaultMyCrewSettings, loadMyCrewSettings, saveMyCrewSettings, type MyCrewSettings } from "@/lib/myCrewSettings";
-import { settingsBackHref, settingsBackLabel } from "@/lib/settingsGroups";
+import { settingsBackHref, settingsBackLabel, settingsGroupHref } from "@/lib/settingsGroups";
+import { canAccessCrewTools } from "@/lib/subscriptionGating";
 
 function Field({
   label,
@@ -61,6 +63,7 @@ function Field({
 }
 
 export default function MyCrewSettingsScreen() {
+  const { activeTier } = useSubscription();
   const { colors } = useAppTheme();
   const scStyles = useScStyles();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -97,6 +100,10 @@ export default function MyCrewSettingsScreen() {
       setSaving(false);
     }
   }, [form]);
+
+  if (!canAccessCrewTools(activeTier)) {
+    return <Redirect href={settingsGroupHref("team")} />;
+  }
 
   if (!hydrated) {
     return (

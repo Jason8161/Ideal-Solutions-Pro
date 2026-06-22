@@ -79,7 +79,7 @@ export const MATERIAL_SEARCH_DISABLED = false;
 
 
 
-/** Display order for the completed-profile home scroll list (6 tiles). */
+/** Display order for the completed-profile home scroll list (7 tiles). */
 
 export const HOME_GRID_TILE_KEYS = [
 
@@ -88,6 +88,8 @@ export const HOME_GRID_TILE_KEYS = [
   "job-folder",
 
   "calendar",
+
+  "getting-paid",
 
   "employee-actions",
 
@@ -99,7 +101,7 @@ export const HOME_GRID_TILE_KEYS = [
 
 
 
-/** All home menu tiles in scroll order — AI, Job Folder, Calendar, Employee Actions, Social, Misc Apps. */
+/** All home menu tiles in scroll order — AI, Job Folder, Calendar, Getting Paid, Employee Actions, Social, Misc Apps. */
 
 export function buildHomeGridRows(businessType = ""): HomeMenuItem[] {
 
@@ -140,6 +142,8 @@ export const HOME_TILE_ROUTES: Record<string, Href> = {
   "ai-assistance": "/ai-assistance",
 
   calendar: "/calendar",
+
+  "getting-paid": "/getting-paid",
 
   "employee-actions": "/employee/join",
 

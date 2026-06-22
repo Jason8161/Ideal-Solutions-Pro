@@ -5,7 +5,7 @@ import { useBossManChrome } from "@/components/bossMan/bossManChrome";
 import { ScStickyScroll } from "@/components/serviceCalls/screenChrome";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { FUTURE_CREW_FEATURES } from "@/lib/crew/futureFeatures";
-import { isProTier } from "@/lib/subscriptionGating";
+import { canAccessCrewTools } from "@/lib/subscriptionGating";
 
 export default function CrewComingSoonScreen() {
   const { activeTier } = useSubscription();
@@ -18,7 +18,7 @@ export default function CrewComingSoonScreen() {
     subtitle: "This crew feature is on the roadmap.",
   };
 
-  if (!isProTier(activeTier)) {
+  if (!canAccessCrewTools(activeTier)) {
     return <Redirect href={"/job-folder/current-jobs" as Href} />;
   }
 

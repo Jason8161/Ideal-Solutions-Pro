@@ -12,7 +12,7 @@ import { employeeDisplayName, listEmployees, searchEmployees } from "@/lib/emplo
 import { filterEmployeesForViewer } from "@/lib/employees/permissions";
 import { roleLabel } from "@/lib/employees/format";
 import type { Employee } from "@/lib/employees/types";
-import { isProTier } from "@/lib/subscriptionGating";
+import { canAccessCrewTools } from "@/lib/subscriptionGating";
 
 export default function MyCrewScreen() {
   const { activeTier } = useSubscription();
@@ -38,7 +38,7 @@ export default function MyCrewScreen() {
 
   const rows = useMemo(() => searchEmployees(employees, search), [employees, search]);
 
-  if (!isProTier(activeTier)) {
+  if (!canAccessCrewTools(activeTier)) {
     return <Redirect href={"/job-folder/current-jobs" as Href} />;
   }
 

@@ -29,7 +29,7 @@ import {
   updateEmployee,
 } from "@/lib/employees/employeeStorage";
 import type { Employee } from "@/lib/employees/types";
-import { isProTier } from "@/lib/subscriptionGating";
+import { canAccessCrewTools } from "@/lib/subscriptionGating";
 
 export default function CrewInviteScreen() {
   const { activeTier } = useSubscription();
@@ -75,7 +75,7 @@ export default function CrewInviteScreen() {
     }
   }, [selected?.id]);
 
-  if (!isProTier(activeTier)) {
+  if (!canAccessCrewTools(activeTier)) {
     return <Redirect href={"/job-folder/current-jobs" as Href} />;
   }
 

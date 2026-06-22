@@ -26,7 +26,7 @@ import {
   formatDurationShort,
   periodForPreset,
 } from "@/lib/bossMan/timeTrackingUtils";
-import { isProTier } from "@/lib/subscriptionGating";
+import { isProTier, canAccessCrewTools } from "@/lib/subscriptionGating";
 
 type PeriodFilter = "this_week" | "last_week" | "all";
 
@@ -77,6 +77,8 @@ export default function TimeEntriesScreen() {
   if (!isProTier(activeTier)) {
     return <Redirect href={"/job-folder/current-jobs" as Href} />;
   }
+
+  const crewAllowed = canAccessCrewTools(activeTier);
 
   const jobLabel = (id?: string) => {
     if (!id) return "—";
@@ -228,11 +230,13 @@ export default function TimeEntriesScreen() {
         })
       )}
 
-      <Link href={"/settings/employees" as Href} asChild>
-        <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}>
-          <Text style={scStyles.menuButtonText}>Manage employees</Text>
-        </Pressable>
-      </Link>
+      {crewAllowed ? (
+        <Link href={"/settings/employees" as Href} asChild>
+          <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.9 }]}>
+            <Text style={scStyles.menuButtonText}>Manage employees</Text>
+          </Pressable>
+        </Link>
+      ) : null}
     </ScStickyScroll>
   );
 }

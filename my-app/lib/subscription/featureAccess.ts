@@ -333,6 +333,12 @@ export function isSuperBossmanTier(tier: SubscriptionTierId): boolean {
   return tierMeetsMinimum(tier, "super_boss_man");
 }
 
+/** Crew / My Crew tools — Super Boss Man+ only (Boss Man has maxEmployees: 0). */
+export function canAccessCrewTools(tier: SubscriptionTierId): boolean {
+  if (isFullAccessUnlocked()) return true;
+  return isEmployeeEligibleTier(tier);
+}
+
 /** @deprecated Use isSuperBossmanTier */
 export const isBossTier = isSuperBossmanTier;
 

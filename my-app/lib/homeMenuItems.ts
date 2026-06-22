@@ -57,6 +57,16 @@ export const HOME_MENU_ITEMS: readonly HomeMenuItem[] = [
     alwaysShowTileImage: true,
   },
   {
+    key: "getting-paid",
+    label: "Getting Paid",
+    subtitle: "Accept payments — Cash App, Venmo, Square",
+    href: "/getting-paid",
+    icon: "cash-multiple",
+    image: require("@/assets/images/home-getting-paid.png"),
+    imageMonochrome: false,
+    alwaysShowTileImage: true,
+  },
+  {
     key: "employee-actions",
     label: "Employee Actions",
     subtitle: "Join your crew with an invitation code",

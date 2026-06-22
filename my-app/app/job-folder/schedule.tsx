@@ -38,7 +38,7 @@ import {
 } from "@/lib/bossMan/scheduling/types";
 import type { BossJob } from "@/lib/bossMan/types";
 import { isEmployeeSessionActive, loadEmployeeSession } from "@/lib/employeeSession";
-import { isProTier } from "@/lib/subscriptionGating";
+import { isProTier, canAccessCrewTools } from "@/lib/subscriptionGating";
 
 type HubTab = "jobs" | "employees" | "schedule";
 type ScheduleView = "daily" | "weekly" | "four_week";
@@ -178,6 +178,8 @@ export default function ScheduleDispatchScreen() {
     return <Redirect href={"/job-folder/current-jobs" as Href} />;
   }
 
+  const crewAllowed = canAccessCrewTools(activeTier);
+
   const hubTabs: { key: HubTab; label: string }[] = [
     { key: "jobs", label: "Jobs" },
     { key: "employees", label: "Employees" },
@@ -245,7 +247,7 @@ export default function ScheduleDispatchScreen() {
             : "Direct crews, assign jobs, and dispatch by text, email, or share."
         }
       >
-        {!employeeMode ? (
+        {!employeeMode && crewAllowed ? (
           <Link href={"/job-folder/crew/dispatch" as Href} asChild>
             <Pressable style={({ pressed }) => [styles.navRow, pressed && { opacity: 0.9 }, { marginBottom: 14 }]}>
               <Text style={scStyles.menuButtonText}>Dispatch board</Text>

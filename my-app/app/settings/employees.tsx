@@ -1,5 +1,5 @@
 import { VoiceTextInput } from "@/components/VoiceTextInput";
-import { useFocusEffect } from "expo-router";
+import { Redirect, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -13,6 +13,7 @@ import {
   useEmployeeChrome,
 } from "@/components/employees/employeeTheme";
 import { StickyScrollScreen } from "@/components/serviceCalls/screenChrome";
+import { useSubscription } from "@/context/SubscriptionContext";
 import { pickContactFromDevice } from "@/lib/customerContactPick";
 import { mapContactToEmployeeInput } from "@/lib/employees/contactToEmployee";
 import {
@@ -23,6 +24,8 @@ import {
   sortEmployees,
 } from "@/lib/employees/employeeStorage";
 import type { Employee, EmployeeInput, EmployeeSortKey, EmployeeStatus } from "@/lib/employees/types";
+import { settingsGroupHref } from "@/lib/settingsGroups";
+import { canAccessCrewTools } from "@/lib/subscriptionGating";
 
 const SORT_OPTIONS: { key: EmployeeSortKey; label: string }[] = [
   { key: "name", label: "Name" },
@@ -31,6 +34,7 @@ const SORT_OPTIONS: { key: EmployeeSortKey; label: string }[] = [
 ];
 
 export default function EmployeesScreen() {
+  const { activeTier } = useSubscription();
   const { styles } = useEmployeeChrome();
   const [statusTab, setStatusTab] = useState<EmployeeStatus>("current");
   const [search, setSearch] = useState("");
@@ -115,6 +119,10 @@ export default function EmployeesScreen() {
     setEditing(null);
     setPrefill(null);
   }, []);
+
+  if (!canAccessCrewTools(activeTier)) {
+    return <Redirect href={settingsGroupHref("team")} />;
+  }
 
   return (
     <StickyScrollScreen

@@ -5,11 +5,13 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { StickyScrollScreen } from "@/components/serviceCalls/screenChrome";
 import { navCardStyle } from "@/components/themed/screenChrome";
 import { useAppTheme } from "@/context/ThemeContext";
+import { useSubscription } from "@/context/SubscriptionContext";
 import type { ColorScheme } from "@/lib/colorSchemeStorage";
 import {
   settingsItemHref,
   type SettingsGroup,
 } from "@/lib/settingsGroups";
+import { canAccessCrewTools } from "@/lib/subscriptionGating";
 
 type Props = {
   group: SettingsGroup;
@@ -17,7 +19,15 @@ type Props = {
 
 export function SettingsGroupHubScreen({ group }: Props) {
   const { colors } = useAppTheme();
+  const { activeTier } = useSubscription();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const items = useMemo(
+    () =>
+      canAccessCrewTools(activeTier)
+        ? group.items
+        : group.items.filter((item) => item.route !== "my-crew"),
+    [activeTier, group.items],
+  );
 
   return (
     <StickyScrollScreen
@@ -28,7 +38,7 @@ export function SettingsGroupHubScreen({ group }: Props) {
       contentContainerStyle={styles.content}
     >
       <View style={styles.list}>
-        {group.items.map((item) => (
+        {items.map((item) => (
           <Link key={item.route} href={settingsItemHref(item.route)} asChild>
             <TouchableOpacity style={styles.navCard} activeOpacity={0.85}>
               <Text style={styles.cardTitle}>{item.title}</Text>

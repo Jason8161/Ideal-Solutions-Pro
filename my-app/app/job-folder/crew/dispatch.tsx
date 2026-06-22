@@ -18,7 +18,7 @@ import { resolveEmployeeDispatchStatus } from "@/lib/crew/dispatchStatus";
 import { employeeDisplayName, listEmployees } from "@/lib/employees/employeeStorage";
 import type { Employee } from "@/lib/employees/types";
 import type { ScheduleAssignment } from "@/lib/bossMan/scheduling/types";
-import { isProTier } from "@/lib/subscriptionGating";
+import { canAccessCrewTools } from "@/lib/subscriptionGating";
 
 type BoardColumn = "available" | "assigned" | "emergency" | "completed";
 
@@ -97,7 +97,7 @@ export default function CrewDispatchBoardScreen() {
     [assignments],
   );
 
-  if (!isProTier(activeTier)) {
+  if (!canAccessCrewTools(activeTier)) {
     return <Redirect href={"/job-folder/current-jobs" as Href} />;
   }
 
