@@ -6,3 +6,7 @@ pages_build_output_dir = "website/dist"
 
 [assets]
 directory = "./website/dist"
+
+[[kv_namespaces]]
+binding = "WORKSPACE_KV"
+id = "2663d1d5d2a84efd9f60f8830099d22b"
