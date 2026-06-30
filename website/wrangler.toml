@@ -2,3 +2,7 @@
 name = "ideal-solutions-pro"
 compatibility_date = "2024-04-01"
 pages_build_output_dir = "dist"
+
+[[kv_namespaces]]
+binding = "WORKSPACE_KV"
+id = "2663d1d5d2a84efd9f60f8830099d22b"
